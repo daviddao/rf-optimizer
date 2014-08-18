@@ -1,0 +1,30 @@
+
+
+This is RAxML version 8.0.25 released by Alexandros Stamatakis on June 16 2014.
+
+With greatly appreciated code contributions by:
+Andre Aberer      (HITS)
+Simon Berger      (HITS)
+Alexey Kozlov     (HITS)
+Nick Pattengale   (Sandia)
+Wayne Pfeiffer    (SDSC)
+Akifumi S. Tanabe (NRIFS)
+David Dao         (KIT)
+Charlie Taylor    (UF)
+
+
+RAxML large-tree plausibility-checker
+
+
+RAxML was called as follows:
+
+/Users/David/Desktop/standard-RAxML-master/raxmlHPC -f R -m GTRCAT -t largetree -z reference -n T13 
+
+
+Parsing reference tree largetree
+The reference tree has 8 tips
+
+
+Found 3 trees in File reference
+
+Small tree 0 has 5 tips and 2 bipartitions
