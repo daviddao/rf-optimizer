@@ -3080,8 +3080,8 @@ static void newviewGTRGAMMA(int tipCase,
 			    double *x1_start, double *x2_start, double *x3_start,
 			    double *EV, double *tipVector,
 			    int *ex3, unsigned char *tipX1, unsigned char *tipX2,
-			    const int n, double *left, double *right, int *wgt, int *scalerIncrement, const boolean useFastScaling,
-			    const unsigned int x1_presenceMap, const unsigned int x2_presenceMap)
+			    const int n, double *left, double *right, int *wgt, int *scalerIncrement, const boolean useFastScaling
+			    )
 {
   int 
     i, 
@@ -3121,44 +3121,36 @@ static void newviewGTRGAMMA(int tipCase,
 	    __m128d x1_1 = _mm_load_pd(&(tipVector[i*4]));
 	    __m128d x1_2 = _mm_load_pd(&(tipVector[i*4 + 2]));	   
 
+	    for (j = 0; j < 4; j++)
+	      for (k = 0; k < 4; k++)
+		{		 
+		  __m128d left1 = _mm_load_pd(&left[j*16 + k*4]);
+		  __m128d left2 = _mm_load_pd(&left[j*16 + k*4 + 2]);
+		  
+		  __m128d acc = _mm_setzero_pd();
 
-	    if(mask32[i] & x1_presenceMap)
-	      {
-		for (j = 0; j < 4; j++)
-		  for (k = 0; k < 4; k++)
-		    {		 
-		      __m128d left1 = _mm_load_pd(&left[j*16 + k*4]);
-		      __m128d left2 = _mm_load_pd(&left[j*16 + k*4 + 2]);
-		      
-		      __m128d acc = _mm_setzero_pd();
-		      
-		      acc = _mm_add_pd(acc, _mm_mul_pd(left1, x1_1));
-		      acc = _mm_add_pd(acc, _mm_mul_pd(left2, x1_2));
-		      
-		      acc = _mm_hadd_pd(acc, acc);
-		      _mm_storel_pd(&umpX1[i*16 + j*4 + k], acc);
-		    }
-	      }
+		  acc = _mm_add_pd(acc, _mm_mul_pd(left1, x1_1));
+		  acc = _mm_add_pd(acc, _mm_mul_pd(left2, x1_2));
+		  		  
+		  acc = _mm_hadd_pd(acc, acc);
+		  _mm_storel_pd(&umpX1[i*16 + j*4 + k], acc);
+		}
+	  
+	    for (j = 0; j < 4; j++)
+	      for (k = 0; k < 4; k++)
+		{
+		  __m128d left1 = _mm_load_pd(&right[j*16 + k*4]);
+		  __m128d left2 = _mm_load_pd(&right[j*16 + k*4 + 2]);
+		  
+		  __m128d acc = _mm_setzero_pd();
 
-	    
-	    if(mask32[i] & x2_presenceMap)
-	      {
-		for (j = 0; j < 4; j++)
-		  for (k = 0; k < 4; k++)
-		    {
-		      __m128d left1 = _mm_load_pd(&right[j*16 + k*4]);
-		      __m128d left2 = _mm_load_pd(&right[j*16 + k*4 + 2]);
-		      
-		      __m128d acc = _mm_setzero_pd();
-		      
-		      acc = _mm_add_pd(acc, _mm_mul_pd(left1, x1_1));
-		      acc = _mm_add_pd(acc, _mm_mul_pd(left2, x1_2));
-		      
-		      acc = _mm_hadd_pd(acc, acc);
-		      _mm_storel_pd(&umpX2[i*16 + j*4 + k], acc);
-		      
-		    }
-	      }
+		  acc = _mm_add_pd(acc, _mm_mul_pd(left1, x1_1));
+		  acc = _mm_add_pd(acc, _mm_mul_pd(left2, x1_2));
+		  		  
+		  acc = _mm_hadd_pd(acc, acc);
+		  _mm_storel_pd(&umpX2[i*16 + j*4 + k], acc);
+		 
+		}
 	  }   	
 	  
 	for (i = 0; i < n; i++)
@@ -3232,26 +3224,23 @@ static void newviewGTRGAMMA(int tipCase,
 
 	for (i = 1; i < 16; i++)
 	  {
-	    if(mask32[i] & x1_presenceMap)
-	      {
-		__m128d x1_1 = _mm_load_pd(&(tipVector[i*4]));
-		__m128d x1_2 = _mm_load_pd(&(tipVector[i*4 + 2]));	   
-		
-		for (j = 0; j < 4; j++)
-		  for (k = 0; k < 4; k++)
-		    {		 
-		      __m128d left1 = _mm_load_pd(&left[j*16 + k*4]);
-		      __m128d left2 = _mm_load_pd(&left[j*16 + k*4 + 2]);
-		      
-		      __m128d acc = _mm_setzero_pd();
-		      
-		      acc = _mm_add_pd(acc, _mm_mul_pd(left1, x1_1));
-		      acc = _mm_add_pd(acc, _mm_mul_pd(left2, x1_2));
-		      
-		      acc = _mm_hadd_pd(acc, acc);
-		      _mm_storel_pd(&umpX1[i*16 + j*4 + k], acc);		 
-		    }
-	      }	   
+	    __m128d x1_1 = _mm_load_pd(&(tipVector[i*4]));
+	    __m128d x1_2 = _mm_load_pd(&(tipVector[i*4 + 2]));	   
+
+	    for (j = 0; j < 4; j++)
+	      for (k = 0; k < 4; k++)
+		{		 
+		  __m128d left1 = _mm_load_pd(&left[j*16 + k*4]);
+		  __m128d left2 = _mm_load_pd(&left[j*16 + k*4 + 2]);
+		  
+		  __m128d acc = _mm_setzero_pd();
+
+		  acc = _mm_add_pd(acc, _mm_mul_pd(left1, x1_1));
+		  acc = _mm_add_pd(acc, _mm_mul_pd(left2, x1_2));
+		  		  
+		  acc = _mm_hadd_pd(acc, acc);
+		  _mm_storel_pd(&umpX1[i*16 + j*4 + k], acc);		 
+		}
 	  }
 
 	 for (i = 0; i < n; i++)
@@ -3603,7 +3592,7 @@ static void newviewGTRGAMMA_GAPPED_SAVE(int tipCase,
 					int *ex3, unsigned char *tipX1, unsigned char *tipX2,
 					const int n, double *left, double *right, int *wgt, int *scalerIncrement, const boolean useFastScaling,
 					unsigned int *x1_gap, unsigned int *x2_gap, unsigned int *x3_gap, 
-					double *x1_gapColumn, double *x2_gapColumn, double *x3_gapColumn, const unsigned int x1_presenceMap, const unsigned int x2_presenceMap)
+					double *x1_gapColumn, double *x2_gapColumn, double *x3_gapColumn)
 {
   int     
     i, 
@@ -3647,44 +3636,38 @@ static void newviewGTRGAMMA_GAPPED_SAVE(int tipCase,
 	  {	    
 	    __m128d x1_1 = _mm_load_pd(&(tipVector[i*4]));
 	    __m128d x1_2 = _mm_load_pd(&(tipVector[i*4 + 2]));	   
-	    
-	    if((mask32[i] & x1_presenceMap) || i == 15)
-	      {
-		for (j = 0; j < 4; j++)
-		  for (k = 0; k < 4; k++)
-		    {			 	 
-		      __m128d left1 = _mm_load_pd(&left[j*16 + k*4]);
-		      __m128d left2 = _mm_load_pd(&left[j*16 + k*4 + 2]);
-		      
-		      __m128d acc = _mm_setzero_pd();
-		      
-		      acc = _mm_add_pd(acc, _mm_mul_pd(left1, x1_1));
-		      acc = _mm_add_pd(acc, _mm_mul_pd(left2, x1_2));
-		      
-		      acc = _mm_hadd_pd(acc, acc);
-		      _mm_storel_pd(&umpX1[i*16 + j*4 + k], acc);
-		    }
-	      }
+
+	    for (j = 0; j < 4; j++)
+	      for (k = 0; k < 4; k++)
+		{			 	 
+		  __m128d left1 = _mm_load_pd(&left[j*16 + k*4]);
+		  __m128d left2 = _mm_load_pd(&left[j*16 + k*4 + 2]);
+		  
+		  __m128d acc = _mm_setzero_pd();
+
+		  acc = _mm_add_pd(acc, _mm_mul_pd(left1, x1_1));
+		  acc = _mm_add_pd(acc, _mm_mul_pd(left2, x1_2));
+		  		  
+		  acc = _mm_hadd_pd(acc, acc);
+		  _mm_storel_pd(&umpX1[i*16 + j*4 + k], acc);
+		}
 	  
-	    if((mask32[i] & x2_presenceMap) || i == 15)
-	      {
-		for (j = 0; j < 4; j++)
-		  for (k = 0; k < 4; k++)
-		    {
-		      __m128d left1 = _mm_load_pd(&right[j*16 + k*4]);
-		      __m128d left2 = _mm_load_pd(&right[j*16 + k*4 + 2]);
-		      
-		      __m128d acc = _mm_setzero_pd();
-		      
-		      acc = _mm_add_pd(acc, _mm_mul_pd(left1, x1_1));
-		      acc = _mm_add_pd(acc, _mm_mul_pd(left2, x1_2));
-		      
-		      acc = _mm_hadd_pd(acc, acc);
-		      _mm_storel_pd(&umpX2[i*16 + j*4 + k], acc);
-		      
-		    }
-	      }   	
-	  }
+	    for (j = 0; j < 4; j++)
+	      for (k = 0; k < 4; k++)
+		{
+		  __m128d left1 = _mm_load_pd(&right[j*16 + k*4]);
+		  __m128d left2 = _mm_load_pd(&right[j*16 + k*4 + 2]);
+		  
+		  __m128d acc = _mm_setzero_pd();
+
+		  acc = _mm_add_pd(acc, _mm_mul_pd(left1, x1_1));
+		  acc = _mm_add_pd(acc, _mm_mul_pd(left2, x1_2));
+		  		  
+		  acc = _mm_hadd_pd(acc, acc);
+		  _mm_storel_pd(&umpX2[i*16 + j*4 + k], acc);
+		 
+		}
+	  }   		  
 	
 	uX1 = &umpX1[240];
 	uX2 = &umpX2[240];	   	    	    
@@ -3806,26 +3789,23 @@ static void newviewGTRGAMMA_GAPPED_SAVE(int tipCase,
 
 	for (i = 1; i < 16; i++)
 	  {
-	    if((mask32[i] & x1_presenceMap) || i == 15)
-	      {
-		__m128d x1_1 = _mm_load_pd(&(tipVector[i*4]));
-		__m128d x1_2 = _mm_load_pd(&(tipVector[i*4 + 2]));	   
-		
-		for (j = 0; j < 4; j++)
-		  for (k = 0; k < 4; k++)
-		    {		 
-		      __m128d left1 = _mm_load_pd(&left[j*16 + k*4]);
-		      __m128d left2 = _mm_load_pd(&left[j*16 + k*4 + 2]);
-		      
-		      __m128d acc = _mm_setzero_pd();
-		      
-		      acc = _mm_add_pd(acc, _mm_mul_pd(left1, x1_1));
-		      acc = _mm_add_pd(acc, _mm_mul_pd(left2, x1_2));
-		      
-		      acc = _mm_hadd_pd(acc, acc);
-		      _mm_storel_pd(&umpX1[i*16 + j*4 + k], acc);		 
-		    }
-	      }
+	    __m128d x1_1 = _mm_load_pd(&(tipVector[i*4]));
+	    __m128d x1_2 = _mm_load_pd(&(tipVector[i*4 + 2]));	   
+
+	    for (j = 0; j < 4; j++)
+	      for (k = 0; k < 4; k++)
+		{		 
+		  __m128d left1 = _mm_load_pd(&left[j*16 + k*4]);
+		  __m128d left2 = _mm_load_pd(&left[j*16 + k*4 + 2]);
+		  
+		  __m128d acc = _mm_setzero_pd();
+
+		  acc = _mm_add_pd(acc, _mm_mul_pd(left1, x1_1));
+		  acc = _mm_add_pd(acc, _mm_mul_pd(left2, x1_2));
+		  		  
+		  acc = _mm_hadd_pd(acc, acc);
+		  _mm_storel_pd(&umpX1[i*16 + j*4 + k], acc);		 
+		}
 	  }
 
 	{
@@ -4516,64 +4496,48 @@ static void newviewGTRGAMMA(int tipCase,
 			    double *x1_start, double *x2_start, double *x3_start,
 			    double *EV, double *tipVector,
 			    int *ex3, unsigned char *tipX1, unsigned char *tipX2,
-			    const int n, double *left, double *right, int *wgt, int *scalerIncrement, const boolean useFastScaling,			    
-			    const unsigned int x1_presenceMap, const unsigned int x2_presenceMap
+			    const int n, double *left, double *right, int *wgt, int *scalerIncrement, const boolean useFastScaling
 			    )
 {
-  int 
-    i, 
-    j, 
-    k, 
-    l, 
-    scale, 
-    addScale = 0;
-  
+  int i, j, k, l, scale, addScale = 0;
   double
     *x1,
     *x2,
     *x3,
     buf,
     ump_x1,
-    ump_x2,
-    x1px2[4];
+    ump_x2;
+
+
+  double x1px2[4];
+
+  
  
+
+
   switch(tipCase)
     {
     case TIP_TIP:
       {
-	double 
-	  *uX1, 
-	  umpX1[256], 
-	  *uX2, 
-	  umpX2[256];
+	double *uX1, umpX1[256], *uX2, umpX2[256];
+
 
 	for(i = 1; i < 16; i++)
 	  {
 	    x1 = &(tipVector[i * 4]);
 
-	    if(mask32[i] & x1_presenceMap)
-	      {
-		for(j=0; j<4; j++)
-		  for(k=0; k<4; k++)
-		    {
-		      umpX1[i*16 + j*4 + k] = 0.0;		 
-		      
-		      for (l=0; l < 4; l++)		    
-			umpX1[i*16 + j*4 + k] += x1[l] * left[j*16 + k*4 + l];		     		   
-		    }
-	      }
+	    for(j=0; j<4; j++)
+	      for(k=0; k<4; k++)
+		{
+		  umpX1[i*16 + j*4 + k] = 0.0;
+		  umpX2[i*16 + j*4 + k] = 0.0;
 
-	    if(mask32[i] & x2_presenceMap)
-	      {
-		for(j=0; j<4; j++)
-		  for(k=0; k<4; k++)
-		    {		 
-		      umpX2[i*16 + j*4 + k] = 0.0;
-		      
-		      for (l=0; l < 4; l++)		    		      
-			umpX2[i*16 + j*4 + k] += x1[l] * right[j*16 + k*4 + l];		   
+		  for (l=0; l < 4; l++)
+		    {
+		      umpX1[i*16 + j*4 + k] += x1[l] * left[j*16 + k*4 + l];
+		      umpX2[i*16 + j*4 + k] += x1[l] * right[j*16 + k*4 + l];
 		    }
-	      }
+		}
 	  }
 
 	
@@ -4606,18 +4570,15 @@ static void newviewGTRGAMMA(int tipCase,
 
 	for (i = 1; i < 16; i++)
 	  {
-	    if(mask32[i] & x1_presenceMap)
-	      {
-		x1 = &(tipVector[i*4]);
-		
-		for (j = 0; j < 4; j++)
-		  for (k = 0; k < 4; k++)
-		    {
-		      umpX1[i*16 + j*4 + k] = 0.0;
-		      for (l=0; l < 4; l++)
-			umpX1[i*16 + j*4 + k] += x1[l] * left[j*16 + k*4 + l];
-		    }
-	      }
+	    x1 = &(tipVector[i*4]);
+
+	    for (j = 0; j < 4; j++)
+	      for (k = 0; k < 4; k++)
+		{
+		  umpX1[i*16 + j*4 + k] = 0.0;
+		  for (l=0; l < 4; l++)
+		    umpX1[i*16 + j*4 + k] += x1[l] * left[j*16 + k*4 + l];
+		}
 	  }
 
 
@@ -7816,8 +7777,6 @@ void newviewIterative (tree *tr)
 		rz;
 	      
 	      unsigned int
-		x1_presenceMap = 0,
-		x2_presenceMap = 0,
 		*x1_gap = (unsigned int*)NULL,
 		*x2_gap = (unsigned int*)NULL,
 		*x3_gap = (unsigned int*)NULL;
@@ -7916,9 +7875,6 @@ void newviewIterative (tree *tr)
 		  tipX1    = tr->partitionData[model].yVector[tInfo->qNumber];
 		  tipX2    = tr->partitionData[model].yVector[tInfo->rNumber];		 		 		 
 		  
-		  x1_presenceMap = tr->partitionData[model].presenceMap[tInfo->qNumber];
-		  x2_presenceMap = tr->partitionData[model].presenceMap[tInfo->rNumber];
-
 		  if(tr->saveMemory)
 		    {
 		      assert(gapOffset > 0);
@@ -7955,9 +7911,7 @@ void newviewIterative (tree *tr)
 		case TIP_INNER:		 
 		  tipX1    =  tr->partitionData[model].yVector[tInfo->qNumber];		 
 		  x2_start       = tr->partitionData[model].xVector[tInfo->rNumber - tr->mxtips - 1];
-		  
-		  x1_presenceMap = tr->partitionData[model].presenceMap[tInfo->qNumber];
-		  
+		 		  
 		  if(tr->saveMemory)
 		    {
 		      assert(gapOffset > 0);
@@ -8175,7 +8129,7 @@ void newviewIterative (tree *tr)
 			    newviewGTRGAMMA(tInfo->tipCase,
 					    x1_start, x2_start, x3_start, parentEV, tr->partitionData[model].tipVector_TIP,
 					    ex3, tipX1, tipX2,
-					    width, left, right, wgt, &scalerIncrement, tr->useFastScaling, x1_presenceMap, x2_presenceMap);
+					    width, left, right, wgt, &scalerIncrement, tr->useFastScaling);
 			    break;
 			  case TIP_INNER:
 			    assert(tInfo->qNumber <= tr->mxtips && tInfo->rNumber > tr->mxtips);
@@ -8187,7 +8141,7 @@ void newviewIterative (tree *tr)
 			    newviewGTRGAMMA(tInfo->tipCase,
 					    x1_start, x2_start, x3_start, parentEV, tr->partitionData[model].tipVector_TIP,
 					    ex3, tipX1, tipX2,
-					    width, left, right, wgt, &scalerIncrement, tr->useFastScaling, x1_presenceMap, x2_presenceMap);
+					    width, left, right, wgt, &scalerIncrement, tr->useFastScaling);
 			    
 			    break;
 			  case INNER_INNER:			       
@@ -8198,7 +8152,7 @@ void newviewIterative (tree *tr)
 			    newviewGTRGAMMA(tInfo->tipCase,
 					    x1_start, x2_start, x3_start, parentEV, (double *)NULL,
 					    ex3, tipX1, tipX2,
-					    width, left, right, wgt, &scalerIncrement, tr->useFastScaling, x1_presenceMap, x2_presenceMap);
+					    width, left, right, wgt, &scalerIncrement, tr->useFastScaling);
 			    break;
 			  default:
 			    assert(0);			      
@@ -8222,7 +8176,7 @@ void newviewIterative (tree *tr)
 							    ex3, tipX1, tipX2,
 							    width, left, right, wgt, &scalerIncrement, tr->useFastScaling,
 							    x1_gap, x2_gap, x3_gap, 
-							    x1_gapColumn, x2_gapColumn, x3_gapColumn, x1_presenceMap, x2_presenceMap); 
+							    x1_gapColumn, x2_gapColumn, x3_gapColumn); 
 			    
 #else
 			    newviewGTRGAMMA_GAPPED_SAVE(tInfo->tipCase,
@@ -8230,7 +8184,7 @@ void newviewIterative (tree *tr)
 							ex3, tipX1, tipX2,
 							width, left, right, wgt, &scalerIncrement, tr->useFastScaling,
 							x1_gap, x2_gap, x3_gap, 
-							x1_gapColumn, x2_gapColumn, x3_gapColumn, x1_presenceMap, x2_presenceMap);
+							x1_gapColumn, x2_gapColumn, x3_gapColumn);
 			    
 #endif
 			    
@@ -8238,17 +8192,16 @@ void newviewIterative (tree *tr)
 			else
 #endif
 			  {			     
-#ifdef __AVX			    
-
+#ifdef __AVX
 			    newviewGTRGAMMA_AVX(tInfo->tipCase,
 						x1_start, x2_start, x3_start, tr->partitionData[model].EV, tr->partitionData[model].tipVector,
 						ex3, tipX1, tipX2,
-						width, left, right, wgt, &scalerIncrement, tr->useFastScaling, x1_presenceMap, x2_presenceMap);
+						width, left, right, wgt, &scalerIncrement, tr->useFastScaling);
 #else
 			    newviewGTRGAMMA(tInfo->tipCase,
 					    x1_start, x2_start, x3_start, tr->partitionData[model].EV, tr->partitionData[model].tipVector,
 					    ex3, tipX1, tipX2,
-					    width, left, right, wgt, &scalerIncrement, tr->useFastScaling, x1_presenceMap, x2_presenceMap);
+					    width, left, right, wgt, &scalerIncrement, tr->useFastScaling);
 #endif
 			  }
 		      }
@@ -8691,11 +8644,6 @@ void newviewMultiGrain(tree *tr,  double *x1, double *x2, double *x3, int *_ex1,
 	  unsigned char
 	    *tipX1 = (unsigned char *)NULL,
 	    *tipX2 = (unsigned char *)NULL;     
-
-	  //TODO fix this or not?
-	   unsigned int
-	     x1_presenceMap = ~0,
-	     x2_presenceMap = ~0;
 	  
 	  switch(tipCase)
 	    {
@@ -8835,12 +8783,12 @@ void newviewMultiGrain(tree *tr,  double *x1, double *x2, double *x3, int *_ex1,
 		  newviewGTRGAMMA_AVX(tipCase,
 				      x1_start, x2_start, x3_start, tr->partitionData[model].EV, tr->partitionData[model].tipVector,
 				      ex3, tipX1, tipX2,
-				      width, left, right, wgt, &scalerIncrement, tr->useFastScaling, x1_presenceMap, x2_presenceMap);
+				      width, left, right, wgt, &scalerIncrement, tr->useFastScaling);
 #else
 		  newviewGTRGAMMA(tipCase,
 				  x1_start, x2_start, x3_start, tr->partitionData[model].EV, tr->partitionData[model].tipVector,
 				  ex3, tipX1, tipX2,
-				  width, left, right, wgt, &scalerIncrement, tr->useFastScaling, x1_presenceMap, x2_presenceMap);			      	     
+				  width, left, right, wgt, &scalerIncrement, tr->useFastScaling);			      	     
 #endif
 		  break;
 		default:

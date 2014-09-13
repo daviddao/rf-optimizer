@@ -309,7 +309,7 @@ static char *Tree2StringREC(char *treestr, tree *tr, nodeptr p, boolean printBra
 	      if(rellTree)
 		{
 		  if(printIC)
-		    sprintf(treestr, "%1.3f:%8.20f", p->bInf->ic, p->z[0]);
+		    sprintf(treestr, "%1.2f:%8.20f", p->bInf->ic, p->z[0]);
 		  else
 		    sprintf(treestr, "%d:%8.20f", p->bInf->support, p->z[0]);
 		}
@@ -317,7 +317,7 @@ static char *Tree2StringREC(char *treestr, tree *tr, nodeptr p, boolean printBra
 	      if(branchLabelSupport)
 		{
 		  if(printIC)
-		    sprintf(treestr, ":%8.20f[%1.3f,%1.3f]", p->z[0], p->bInf->ic, p->bInf->icAll);
+		    sprintf(treestr, ":%8.20f[%1.2f,%1.2f]", p->z[0], p->bInf->ic, p->bInf->icAll);
 		  else		    
 		    sprintf(treestr, ":%8.20f[%d]", p->z[0], p->bInf->support);
 		}
@@ -367,7 +367,7 @@ static char *Tree2StringREC(char *treestr, tree *tr, nodeptr p, boolean printBra
 }
 
 
-void collectSubtrees(tree *tr, nodeptr *subtrees, int *count, int ogn)
+static void collectSubtrees(tree *tr, nodeptr *subtrees, int *count, int ogn)
 {
   int i;
   for(i = tr->mxtips + 1; i <= tr->mxtips + tr->mxtips - 2; i++)
@@ -777,9 +777,8 @@ static boolean treeLabelEnd (int ch)
   return FALSE;
 } 
 
-static void treeEchoContext (FILE *fp1, FILE *fp2, int n);
 
-static boolean  treeGetLabel (FILE *fp, char *lblPtr, int maxlen, boolean taxonLabel)
+static boolean  treeGetLabel (FILE *fp, char *lblPtr, int maxlen)
 {
   int      ch;
   boolean  done, quoted, lblfound;
@@ -792,17 +791,6 @@ static boolean  treeGetLabel (FILE *fp, char *lblPtr, int maxlen, boolean taxonL
 
   ch = getc(fp);
   done = treeLabelEnd(ch);
-
-  if(done && taxonLabel)
-    {
-      printf("RAxML expects to read a taxon label in the tree file\n");
-      printf("but the taxon label is an empty string.\n\n");
-      printf("RAxML will print the context of the error and then exit:\n\n");
-      
-      treeEchoContext(fp, stdout, 40);
-      printf("\n                  ^^\n\n");
-      errorExit(-1);     
-    }
 
   lblfound = ! done;
   quoted = (ch == '\'');
@@ -841,13 +829,13 @@ static boolean  treeGetLabel (FILE *fp, char *lblPtr, int maxlen, boolean taxonL
 
 static boolean  treeFlushLabel (FILE *fp)
 { 
-  return  treeGetLabel(fp, (char *) NULL, (int) 0, FALSE);
+  return  treeGetLabel(fp, (char *) NULL, (int) 0);
 } 
 
 
 
 
-int treeFindTipByLabelString(char  *str, tree *tr, boolean check)                    
+static int treeFindTipByLabelString(char  *str, tree *tr, boolean check)                    
 {
   int 
     lookup = lookupWord(str, tr->nameHash);
@@ -871,7 +859,7 @@ int treeFindTipName(FILE *fp, tree *tr, boolean check)
   char    str[nmlngth+2];
   int      n;
 
-  if(treeGetLabel(fp, str, nmlngth+2, TRUE))
+  if(treeGetLabel(fp, str, nmlngth+2))
     n = treeFindTipByLabelString(str, tr, check);
   else
     n = 0;
@@ -1101,7 +1089,7 @@ static boolean addElementLen (FILE *fp, tree *tr, nodeptr p, boolean readBranchL
 	  char label[64];
 	  int support;
 
-	  if(treeGetLabel (fp, label, 10, FALSE))
+	  if(treeGetLabel (fp, label, 10))
 	    {	
 	      int val = sscanf(label, "%d", &support);
       

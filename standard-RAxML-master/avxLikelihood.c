@@ -62,12 +62,10 @@ static inline __m256d hadd3(__m256d v)
 
 
 void  newviewGTRGAMMA_AVX(int tipCase,
-			  double *x1, double *x2, double *x3,
-			  double *extEV, double *tipVector,
-			  int *ex3, unsigned char *tipX1, unsigned char *tipX2,
-			  const int n, double *left, double *right, int *wgt, int *scalerIncrement, const boolean useFastScaling, 
-			  const unsigned int x1_presenceMap,
-			  const unsigned int x2_presenceMap
+			 double *x1, double *x2, double *x3,
+			 double *extEV, double *tipVector,
+			 int *ex3, unsigned char *tipX1, unsigned char *tipX2,
+			 const int n, double *left, double *right, int *wgt, int *scalerIncrement, const boolean useFastScaling
 			 )
 {
  
@@ -93,44 +91,36 @@ void  newviewGTRGAMMA_AVX(int tipCase,
 	  umpX2[1024] __attribute__ ((aligned (BYTE_ALIGNMENT)));
 
 	for (i = 1; i < 16; i++)
-	  {	   
+	  {
 	    __m256d 
 	      tv = _mm256_load_pd(&(tipVector[i * 4]));
 
 	    int 
 	      j;
 	    
-	    if(mask32[i] & x1_presenceMap)
-	      {	
-		for (j = 0; j < 4; j++)
-		  for (k = 0; k < 4; k++)
-		    {		 
-		      __m256d 
-			left1 = _mm256_load_pd(&left[j * 16 + k * 4]);		  		  		  
-		      
-		      left1 = _mm256_mul_pd(left1, tv);		  
-		      left1 = hadd3(left1);
-		      
-		      _mm256_store_pd(&umpX1[i * 64 + j * 16 + k * 4], left1);
-		    }
-	      }
-	    
+	    for (j = 0; j < 4; j++)
+	      for (k = 0; k < 4; k++)
+		{		 
+		  __m256d 
+		    left1 = _mm256_load_pd(&left[j * 16 + k * 4]);		  		  		  
+
+		  left1 = _mm256_mul_pd(left1, tv);		  
+		  left1 = hadd3(left1);
+		  		  		  
+		  _mm256_store_pd(&umpX1[i * 64 + j * 16 + k * 4], left1);
+		}
 	  
-	    if(mask32[i] & x2_presenceMap)
-	      {		
-		for (j = 0; j < 4; j++)
-		  for (k = 0; k < 4; k++)
-		    {		 
-		      __m256d 
-			left1 = _mm256_load_pd(&right[j * 16 + k * 4]);		  		  		  
-		      
-		      left1 = _mm256_mul_pd(left1, tv);		  
-		      left1 = hadd3(left1);
-		      
-		      _mm256_store_pd(&umpX2[i * 64 + j * 16 + k * 4], left1);
-		    }	  
-	      }
-	    
+	    for (j = 0; j < 4; j++)
+	      for (k = 0; k < 4; k++)
+		{		 
+		  __m256d 
+		    left1 = _mm256_load_pd(&right[j * 16 + k * 4]);		  		  		  
+
+		  left1 = _mm256_mul_pd(left1, tv);		  
+		  left1 = hadd3(left1);
+		  		  		  
+		  _mm256_store_pd(&umpX2[i * 64 + j * 16 + k * 4], left1);
+		}	    
 	  }   	
 	  
 
@@ -174,26 +164,23 @@ void  newviewGTRGAMMA_AVX(int tipCase,
 
 	for (i = 1; i < 16; i++)
 	  {
-	    if(mask32[i] & x1_presenceMap)
-	      {
-		__m256d 
-		  tv = _mm256_load_pd(&(tipVector[i*4]));
-		
-		int 
-		  j;
-		
-		for (j = 0; j < 4; j++)
-		  for (k = 0; k < 4; k++)
-		    {		 
-		      __m256d 
-			left1 = _mm256_load_pd(&left[j * 16 + k * 4]);		  		  		  
-		      
-		      left1 = _mm256_mul_pd(left1, tv);		  
-		      left1 = hadd3(left1);
-		      
-		      _mm256_store_pd(&umpX1[i * 64 + j * 16 + k * 4], left1);
-		    }	 
-	      }
+	    __m256d 
+	      tv = _mm256_load_pd(&(tipVector[i*4]));
+
+	    int 
+	      j;
+	    
+	    for (j = 0; j < 4; j++)
+	      for (k = 0; k < 4; k++)
+		{		 
+		  __m256d 
+		    left1 = _mm256_load_pd(&left[j * 16 + k * 4]);		  		  		  
+
+		  left1 = _mm256_mul_pd(left1, tv);		  
+		  left1 = hadd3(left1);
+		  		  		  
+		  _mm256_store_pd(&umpX1[i * 64 + j * 16 + k * 4], left1);
+		}	 	   
 	  }   	
 	
 	for(i = 0; i < n; i++)
@@ -341,18 +328,14 @@ void  newviewGTRGAMMA_AVX(int tipCase,
   
 }
 
-
-
-
 void  newviewGTRGAMMA_AVX_GAPPED_SAVE(int tipCase,
 				      double *x1_start, double *x2_start, double *x3_start,
 				      double *extEV, double *tipVector,
 				      int *ex3, unsigned char *tipX1, unsigned char *tipX2,
 				      const int n, double *left, double *right, int *wgt, int *scalerIncrement, const boolean useFastScaling,
 				      unsigned int *x1_gap, unsigned int *x2_gap, unsigned int *x3_gap, 
-				      double *x1_gapColumn, double *x2_gapColumn, double *x3_gapColumn,
-				      const unsigned int x1_presenceMap,
-				      const unsigned int x2_presenceMap)
+				      double *x1_gapColumn, double *x2_gapColumn, double *x3_gapColumn
+				      )
 {
  
   int  
@@ -391,35 +374,29 @@ void  newviewGTRGAMMA_AVX_GAPPED_SAVE(int tipCase,
 	    int 
 	      j;
 	    
-	    if((mask32[i] & x1_presenceMap) || i == 15)
-	      {
-		for (j = 0; j < 4; j++)
-		  for (k = 0; k < 4; k++)
-		    {		 
-		      __m256d 
-			left1 = _mm256_load_pd(&left[j * 16 + k * 4]);		  		  		  
-		      
-		      left1 = _mm256_mul_pd(left1, tv);		  
-		      left1 = hadd3(left1);
-		      
-		      _mm256_store_pd(&umpX1[i * 64 + j * 16 + k * 4], left1);
-		    }
-	      }
+	    for (j = 0; j < 4; j++)
+	      for (k = 0; k < 4; k++)
+		{		 
+		  __m256d 
+		    left1 = _mm256_load_pd(&left[j * 16 + k * 4]);		  		  		  
+
+		  left1 = _mm256_mul_pd(left1, tv);		  
+		  left1 = hadd3(left1);
+		  		  		  
+		  _mm256_store_pd(&umpX1[i * 64 + j * 16 + k * 4], left1);
+		}
 	  
-	    if((mask32[i] & x2_presenceMap) || i == 15)
-	      {
-		for (j = 0; j < 4; j++)
-		  for (k = 0; k < 4; k++)
-		    {		 
-		      __m256d 
-			left1 = _mm256_load_pd(&right[j * 16 + k * 4]);		  		  		  
-		      
-		      left1 = _mm256_mul_pd(left1, tv);		  
-		      left1 = hadd3(left1);
-		      
-		      _mm256_store_pd(&umpX2[i * 64 + j * 16 + k * 4], left1);
-		    }	  
-	      }
+	    for (j = 0; j < 4; j++)
+	      for (k = 0; k < 4; k++)
+		{		 
+		  __m256d 
+		    left1 = _mm256_load_pd(&right[j * 16 + k * 4]);		  		  		  
+
+		  left1 = _mm256_mul_pd(left1, tv);		  
+		  left1 = hadd3(left1);
+		  		  		  
+		  _mm256_store_pd(&umpX2[i * 64 + j * 16 + k * 4], left1);
+		}	    
 	  }   	
 	  
 	x3 = x3_gapColumn;
@@ -503,24 +480,21 @@ void  newviewGTRGAMMA_AVX_GAPPED_SAVE(int tipCase,
 	  {
 	    __m256d 
 	      tv = _mm256_load_pd(&(tipVector[i*4]));
-	    
+
 	    int 
 	      j;
 	    
-	    if((mask32[i] & x1_presenceMap) || i == 15)
-	      {
-		for (j = 0; j < 4; j++)
-		  for (k = 0; k < 4; k++)
-		    {		 
-		      __m256d 
-			left1 = _mm256_load_pd(&left[j * 16 + k * 4]);		  		  		  
-		      
-		      left1 = _mm256_mul_pd(left1, tv);		  
-		      left1 = hadd3(left1);
-		      
-		      _mm256_store_pd(&umpX1[i * 64 + j * 16 + k * 4], left1);
-		    }	 
-	      }	    	
+	    for (j = 0; j < 4; j++)
+	      for (k = 0; k < 4; k++)
+		{		 
+		  __m256d 
+		    left1 = _mm256_load_pd(&left[j * 16 + k * 4]);		  		  		  
+
+		  left1 = _mm256_mul_pd(left1, tv);		  
+		  left1 = hadd3(left1);
+		  		  		  
+		  _mm256_store_pd(&umpX1[i * 64 + j * 16 + k * 4], left1);
+		}	 	   
 	  }	
 
 	{ 
@@ -1328,10 +1302,10 @@ void newviewGTRCAT_AVX_GAPPED_SAVE(int tipCase,  double *EV,  int *cptr,
 }
 
 void newviewGTRCATPROT_AVX(int tipCase, double *extEV,
-			   int *cptr,
-			   double *x1, double *x2, double *x3, double *tipVector,
-			   int *ex3, unsigned char *tipX1, unsigned char *tipX2,
-			   int n, double *left, double *right, int *wgt, int *scalerIncrement, const boolean useFastScaling)
+			       int *cptr,
+			       double *x1, double *x2, double *x3, double *tipVector,
+			       int *ex3, unsigned char *tipX1, unsigned char *tipX2,
+			       int n, double *left, double *right, int *wgt, int *scalerIncrement, const boolean useFastScaling)
 {
   double
     *le, *ri, *v, *vl, *vr;
@@ -2175,6 +2149,9 @@ void newviewGTRCATPROT_AVX_GAPPED_SAVE(int tipCase, double *extEV,
 
 
 
+
+ 
+
 void newviewGTRGAMMAPROT_AVX(int tipCase,
 			     double *x1, double *x2, double *x3, double *extEV, double *tipVector,
 			     int *ex3, unsigned char *tipX1, unsigned char *tipX2, int n, 
@@ -2221,7 +2198,6 @@ void newviewGTRGAMMAPROT_AVX(int tipCase,
 
 	for(i = 0; i < 23; i++) 
 	  {
-	    
 	    v = &(tipVector[20 * i]);
 	    
 	    for(k = 0; k < 80; k++) 
@@ -2252,7 +2228,7 @@ void newviewGTRGAMMAPROT_AVX(int tipCase,
 		umpX2v = hadd3(umpX2v);
 		_mm256_maskstore_pd(&umpX1[80 * i + k], bitmask, umpX1v);
 		_mm256_maskstore_pd(&umpX2[80 * i + k], bitmask, umpX2v);
-	      } 	     
+	      } 
 	  }
 
 	for(i = 0; i < n; i++) 
@@ -2669,9 +2645,6 @@ void newviewGTRGAMMAPROT_AVX(int tipCase,
   if(useFastScaling)
     *scalerIncrement = addScale;
 }
-
- 
-
 
 void newviewGTRGAMMAPROT_AVX_LG4(int tipCase,
 				 double *x1, double *x2, double *x3, double *extEV[4], double *tipVector[4],

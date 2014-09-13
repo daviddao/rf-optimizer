@@ -1,20 +1,17 @@
 
 
-WARNING: RAxML is not checking sequences for duplicate seqs and sites with missing data!
-
-
-
-This is RAxML version 8.1.3 released by Alexandros Stamatakis on August 13 2014.
+This is RAxML version 8.0.25 released by Alexandros Stamatakis on June 16 2014.
 
 With greatly appreciated code contributions by:
 Andre Aberer      (HITS)
 Simon Berger      (HITS)
 Alexey Kozlov     (HITS)
-Kassian Kobert    (HITS)
-David Dao         (KIT and HITS)
 Nick Pattengale   (Sandia)
 Wayne Pfeiffer    (SDSC)
 Akifumi S. Tanabe (NRIFS)
+David Dao         (KIT)
+Charlie Taylor    (UF)
+
 
 RAxML large-tree plausibility-checker
 
@@ -33,19 +30,23 @@ Found 3 trees in File ./test/reference
 Small tree 0 has 5 tips and 2 bipartitions
 Relative RF tree 0: 0.000000
 
+Relative RF tree 1: 0.500000
+
+Relative RF tree 2: 0.666667
+
 Number of small trees skipped: 0
 
 Average RF distance 0.388889
 
 Large Tree: 8, Number of SmallTrees analyzed: 3 
 
-Total execution time: 0.002507 secs
+Total execution time: 0.004185 secs
 
-File containing all 3 pair-wise RF distances written to file /Users/David/RF-Optimizer/RAxML_RF-Distances.T1
+File containing all 3 pair-wise RF distances written to file /Users/David/rf-optimizer/RAxML_RF-Distances.T1
 
 execution stats:
 
-Accumulated time Effective algorithm: 0.00002 sec 
-Average time for effective: 0.0000081062 sec 
+Accumulated time Effective algorithm: 0.00003 sec 
+Average time for effective: 0.0000103315 sec 
 Preprocessingtime: 0.00001 sec 
 

@@ -61,8 +61,6 @@ char run_id[128] = "",
   bipartitionsFileName[1024] = "",
   bipartitionsFileNameBranchLabels[1024] = "",
   icFileNameBranchLabels[1024] = "",
-  icFileNameBranchLabelsStochastic[1024] = "",
-  icFileNameBranchLabelsUniform[1024] = "",
   ratesFileName[1024] = "", 
   perSiteLLsFileName[1024] = "", 
   lengthFileName[1024] = "", 
@@ -73,9 +71,7 @@ char run_id[128] = "",
   binaryModelParamsInputFileName[1024] = "",
   quartetGroupingFileName[1024] = "",
   rellBootstrapFileName[1024] = "",
-  rellBootstrapFileNamePID[1024] = "",
-  mesquiteModel[1024] = "",
-  mesquiteTrees[1024] = "";
+  rellBootstrapFileNamePID[1024] = "";
 
 
 

@@ -34,7 +34,6 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <inttypes.h>
-#include <sys/types.h>
 
 #ifdef __AVX
 #define BYTE_ALIGNMENT 32
@@ -166,8 +165,8 @@
 #define PointGamma(prob,alpha,beta)  PointChi2(prob,2.0*(alpha))/(2.0*(beta))
 
 #define programName        "RAxML"
-#define programVersion     "8.1.3"
-#define programDate        "August 13 2014"
+#define programVersion     "8.0.25"
+#define programDate        "June 16 2014"
 
 
 #define  TREE_EVALUATION                 0
@@ -200,7 +199,6 @@
 #define  CALC_BIPARTITIONS_IC            27
 #define  ROOT_TREE                       28
 #define  MISSING_SEQUENCE_PREDICTION     29
-#define  SUBTREE_EPA                     30
 
 #define M_GTRCAT         1
 #define M_GTRGAMMA       2
@@ -253,7 +251,6 @@
 #define BIPARTITIONS_RF  4
 #define GATHER_BIPARTITIONS_IC 5
 #define FIND_BIPARTITIONS_IC 6
-#define BIPARTITIONS_PARTIAL_TC 7
 
 
 
@@ -354,13 +351,6 @@ struct ent
   unsigned int bipNumber;
   unsigned int bipNumber2;
   unsigned int supportFromTreeset[2]; 
-  
-  //added by Kassian for TC/IC correction on partial gene trees
-  unsigned int *taxonMask;
-  boolean wasFound;
-  unsigned int bLink;
-  //Kassian modif end 
-
   struct ent *next;
 };
 
@@ -467,6 +457,7 @@ typedef struct epBrData
 typedef struct
 {
   epaBranchData *epa;
+
   unsigned int *vector; 
   int support;
   int *supports;
@@ -668,8 +659,6 @@ typedef struct {
   parsimonyNumber *parsVect; 
 
   double brLenScaler;
-  //andre opt
-  unsigned int *presenceMap;
 
 } pInfo;
 
@@ -951,8 +940,6 @@ typedef  struct  {
   boolean useGammaMedian;
   boolean noRateHet;
 
-  boolean corrected_IC_Score;
-
 #ifdef _USE_PTHREADS
 
   double *ancestralStates;
@@ -1124,10 +1111,6 @@ typedef  struct {
   boolean       optimizeBaseFrequencies;
   boolean       ascertainmentBias;
   boolean       rellBootstrap;
-  boolean       mesquite;
-  boolean       silent;
-  boolean       noSequenceCheck;
-  boolean       useBFGS;
 } analdef;
 
 
@@ -1198,14 +1181,13 @@ extern boolean whitechar ( int ch );
 extern void errorExit ( int e );
 extern void printResult ( tree *tr, analdef *adef, boolean finalPrint );
 extern void printBootstrapResult ( tree *tr, analdef *adef, boolean finalPrint );
-extern void printBipartitionResult ( tree *tr, analdef *adef, boolean finalPrint, boolean printIC, char *fileName);
+extern void printBipartitionResult ( tree *tr, analdef *adef, boolean finalPrint, boolean printIC);
 extern void printLog ( tree *tr, analdef *adef, boolean finalPrint );
 extern void printStartingTree ( tree *tr, analdef *adef, boolean finalPrint );
 extern void writeInfoFile ( analdef *adef, tree *tr, double t );
 extern int main ( int argc, char *argv[] );
 extern void calcBipartitions ( tree *tr, analdef *adef, char *bestTreeFileName, char *bootStrapFileName );
-extern void calcBipartitions_IC_Global(tree *tr, analdef *adef, char *bestTreeFileName, char *bootStrapFileName);
-//extern void calcBipartitions_IC ( tree *tr, analdef *adef, char *bestTreeFileName, char *bootStrapFileName );
+extern void calcBipartitions_IC ( tree *tr, analdef *adef, char *bestTreeFileName, char *bootStrapFileName );
 
 extern void initReversibleGTR (tree *tr, int model);
 extern double LnGamma ( double alpha );
@@ -1218,13 +1200,9 @@ extern void doAllInOne ( tree *tr, analdef *adef );
 
 extern void classifyML(tree *tr, analdef *adef);
 extern void classifyMP(tree *tr, analdef *adef);
-extern void subtreeEPA(tree *tr, analdef *adef);
-extern void collectSubtrees(tree *tr, nodeptr *subtrees, int *count, int ogn);
-extern int treeFindTipByLabelString(char  *str, tree *tr, boolean check);
-extern ssize_t rax_getline(char **lineptr, size_t *n, FILE *h);
 extern void markTips(nodeptr p, int *perm, int maxTips);
 extern char *Tree2StringClassify(char *treestr, tree *tr, int *inserts, 
-				 boolean  originalTree, boolean jointLabels, boolean likelihood, int rootNumber, boolean subtreePlacement);
+				 boolean  originalTree, boolean jointLabels, boolean likelihood);
 
 
 extern void doBootstrap ( tree *tr, analdef *adef, rawdata *rdta, cruncheddata *cdta );
@@ -1532,7 +1510,6 @@ extern void testInsertThoroughIterative(tree *tr, int branchNumber);
 #define THREAD_COPY_LG4X_RATES              44
 #define THREAD_OPT_LG4X_RATES               45
 #define THREAD_FREE_VECTORS                 46
-#define THREAD_SETUP_PRESENCE_MAP           47
 
 
 /*
@@ -1575,8 +1552,6 @@ extern void masterBarrier(int jobType, tree *tr);
 boolean isGap(unsigned int *x, int pos);
 boolean noGap(unsigned int *x, int pos);
 
-
-
 #ifdef __AVX
 
 void newviewGTRGAMMAPROT_AVX_LG4(int tipCase,
@@ -1605,9 +1580,7 @@ void  newviewGTRGAMMA_AVX_GAPPED_SAVE(int tipCase,
 				      int *ex3, unsigned char *tipX1, unsigned char *tipX2,
 				      const int n, double *left, double *right, int *wgt, int *scalerIncrement, const boolean useFastScaling,
 				      unsigned int *x1_gap, unsigned int *x2_gap, unsigned int *x3_gap, 
-				      double *x1_gapColumn, double *x2_gapColumn, double *x3_gapColumn,
-				      const unsigned int x1_presenceMap,
-				      const unsigned int x2_presenceMap
+				      double *x1_gapColumn, double *x2_gapColumn, double *x3_gapColumn
 				      );
 
 void newviewGTRGAMMAPROT_AVX_GAPPED_SAVE(int tipCase,
@@ -1631,13 +1604,10 @@ void newviewGenericCATPROT_AVX(int tipCase, double *extEV,
 
 
 void newviewGTRGAMMA_AVX(int tipCase,
-			 double *x1_start, double *x2_start, double *x3_start,
-			 double *EV, double *tipVector,
-			 int *ex3, unsigned char *tipX1, unsigned char *tipX2,
-			 const int n, double *left, double *right, int *wgt, int *scalerIncrement, const boolean useFastScaling,
-			 const unsigned int x1_presenceMap,
-			 const unsigned int x2_presenceMap
-			 );
+    double *x1_start, double *x2_start, double *x3_start,
+    double *EV, double *tipVector,
+    int *ex3, unsigned char *tipX1, unsigned char *tipX2,
+    const int n, double *left, double *right, int *wgt, int *scalerIncrement, const boolean useFastScaling);
 
 void newviewGTRGAMMAPROT_AVX(int tipCase,
 			     double *x1, double *x2, double *x3, double *extEV, double *tipVector,
