@@ -2824,7 +2824,7 @@ static int sortIntegers(const void *a, const void *b)
 
 
 /**********************************************************************************/
-/*************************** OPT-RF Algorihm by David *****************************/
+/*************************** RF-OPT Algorihm by David *****************************/
 /**********************************************************************************/
 
 void plausibilityChecker(tree *tr, analdef *adef)
@@ -2957,6 +2957,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
   allocateMultifurcations(tr, smallTree);
 
+  /* create a hashtable to store a links to all hashtables of the reference tree */
   hashtable **tables[(tr->numberOfTrees)*sizeof(hashtable)];
   int hashcount = 0;
 
@@ -3003,7 +3004,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
 	  double 
 	    time_start = gettime();
 	  
-	  /* Init hashtable to store Bipartitions of the induced subtree */
+	  /* Init hashtable to store Bipartitions of the induced subtree T|t_i */
 	  /* 
 	     using smallTree->ntips instead of smallTree->mxtips yields faster code 
 	     e.g. 120 versus 128 seconds for 20,000 small trees on my laptop 
@@ -3011,8 +3012,10 @@ void plausibilityChecker(tree *tr, analdef *adef)
 	  hashtable
 	    *s_hash = initHashTable(smallTree->ntips * 4);
 
-    hashtable
-      *ref_hash = initHashTable(smallTree->ntips * 4);
+
+        /* Init hashtable to store Bipartitions of the reference tree t_i*/
+      hashtable
+        *ref_hash = initHashTable(smallTree->ntips * 4);
 	  
 	  /* smallTreeTaxa[smallTree->ntips]; 
 	     Stores all taxa numbers from smallTree into an array called smallTreeTaxa: (Index) -> (Taxonnumber)  */
@@ -3187,6 +3190,20 @@ void plausibilityChecker(tree *tr, analdef *adef)
       }
     }
     printf("\n");
+
+
+    //TODO !
+    printf("Set Calculation: \n");
+    for (int k=0,entryCount=0;k < ref_hash->tableSize; k++) {
+        entry *e = ref_hash->table[k];
+        int bitvector = *(e->bitVector);
+        printf("Now tested bitvector %i: %i \n",k,bitvector);
+        for (int q=0,entryCount_s=0;q < s_hash->tableSize; q++) {
+
+        }
+    }
+
+
 
     printf("address of s_hash %p \n", &s_hash);
 
