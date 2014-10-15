@@ -2821,6 +2821,20 @@ static int sortIntegers(const void *a, const void *b)
 
 /**********************************************************************************/
 
+/************************************* helper functions ***************************/
+char *int2bin(int a, char *buffer, int buf_size) {
+	    buffer += (buf_size - 1);
+
+		    for (int i = 31; i >= 0; i--) {
+				        *buffer-- = (a & 1) + '0';
+
+						        a >>= 1;
+								    }
+
+			    return buffer;
+}
+
+
 
 
 /**********************************************************************************/
@@ -3191,16 +3205,49 @@ void plausibilityChecker(tree *tr, analdef *adef)
     }
     printf("\n");
 
-
-    //TODO !
+    //TODO ! This function iterates through reference hash table and compares everything with the bitvectors in the induced hashtable
     printf("Set Calculation: \n");
     for (int k=0,entryCount=0;k < ref_hash->tableSize; k++) {
-        entry *e = ref_hash->table[k];
-        int bitvector = *(e->bitVector);
-        printf("Now tested bitvector %i: %i \n",k,bitvector);
-        for (int q=0,entryCount_s=0;q < s_hash->tableSize; q++) {
+		if (ref_hash->table[k] != NULL) {
+			entry *e = ref_hash->table[k];
+			do {
+				int ref_bitvector = *(e->bitVector);
 
-        }
+				for (int _k=0; _k < s_hash->tableSize; _k++) {
+					if (s_hash->table[_k] != NULL) {
+						entry *s_e = s_hash->table[_k];
+						do {
+							int s_bitvector = *(s_e->bitVector);
+							printf("Now we compare %i with %i \n", ref_bitvector, s_bitvector);
+							printf("MASK LENGTH is %i \n", MASK_LENGTH);
+
+							
+								//printf("Bitvector %i at Position %i is %u", s_bitvector, _i, s_bitvector[_i / MASK_LENGTH]);
+								printf("Bitvector is %i \n", s_bitvector);
+								char buffer[33];
+								buffer[32] = '\0';
+
+								int2bin(s_bitvector, buffer, 32);
+
+								printf("a = %s \n", buffer);
+
+								int2bin(ref_bitvector, buffer, 32);
+								printf("RefBitvector is %i \n", s_bitvector);
+
+								printf("b = %s \n", buffer);
+
+							
+
+							int set_calc = ref_bitvector & s_bitvector;
+							printf("& makes it %i \n",set_calc);
+
+							s_e = s_e->next;
+						} while (s_e!=NULL);
+					}
+				}
+				e = e->next;
+			} while (e!=NULL);
+		}
     }
 
 
@@ -3298,7 +3345,6 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
 /**********************************************************************************/
 /**********************************************************************************/
-
 
 
 

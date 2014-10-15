@@ -28,3 +28,25 @@ The reference tree has 8 tips
 Found 3 trees in File ./test/reference
 
 Small tree 0 has 5 tips and 2 bipartitions
+Relative RF tree 0: 0.000000
+
+Relative RF tree 1: 0.500000
+
+Relative RF tree 2: 0.666667
+
+Number of small trees skipped: 0
+
+Average RF distance 0.388889
+
+Large Tree: 8, Number of SmallTrees analyzed: 3 
+
+Total execution time: 0.004822 secs
+
+File containing all 3 pair-wise RF distances written to file /Users/David/rf-optimizer/RAxML_RF-Distances.T1
+
+execution stats:
+
+Accumulated time Effective algorithm: 0.00003 sec 
+Average time for effective: 0.0000116030 sec 
+Preprocessingtime: 0.00001 sec 
+
