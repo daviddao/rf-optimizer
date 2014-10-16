@@ -3211,36 +3211,42 @@ void plausibilityChecker(tree *tr, analdef *adef)
 		if (ref_hash->table[k] != NULL) {
 			entry *e = ref_hash->table[k];
 			do {
-				int ref_bitvector = *(e->bitVector);
+				unsigned int ref_bitvector = *(e->bitVector);
 
 				for (int _k=0; _k < s_hash->tableSize; _k++) {
 					if (s_hash->table[_k] != NULL) {
 						entry *s_e = s_hash->table[_k];
 						do {
-							int s_bitvector = *(s_e->bitVector);
+							unsigned int s_bitvector = *(s_e->bitVector);
 							printf("Now we compare %i with %i \n", ref_bitvector, s_bitvector);
-							printf("MASK LENGTH is %i \n", MASK_LENGTH);
 
-							
-								//printf("Bitvector %i at Position %i is %u", s_bitvector, _i, s_bitvector[_i / MASK_LENGTH]);
-								printf("Bitvector is %i \n", s_bitvector);
-								char buffer[33];
+							char buffer[33];
 								buffer[32] = '\0';
 
-								int2bin(s_bitvector, buffer, 32);
+								int2bin(ref_bitvector, buffer, 32);
 
 								printf("a = %s \n", buffer);
 
-								int2bin(ref_bitvector, buffer, 32);
-								printf("RefBitvector is %i \n", s_bitvector);
-
+								int2bin(s_bitvector, buffer, 32);
 								printf("b = %s \n", buffer);
 
 							
 
-							int set_calc = ref_bitvector & s_bitvector;
-							printf("& makes it %i \n",set_calc);
+							unsigned int set_calc = ref_bitvector & s_bitvector; //a = x|y , b = x*|y* -> x AND x* 
+							unsigned int cset_calc = ref_bitvector & ~(s_bitvector); // x AND y*
+							int2bin(set_calc, buffer, 32);
+							printf("a&b makes it %u : %s , c %i \n", set_calc,  buffer, __builtin_popcount(set_calc));
+							int2bin(cset_calc, buffer, 32);
+							printf("a&~b makes it %u : %s c %i \n", cset_calc ,buffer, __builtin_popcount(cset_calc));
 
+							unsigned int set_calc2 = ~ref_bitvector & s_bitvector; // y AND x* 
+							unsigned int cset_calc2 = ~ref_bitvector & ~(s_bitvector); // y AND y*
+							int2bin(set_calc2, buffer, 32);
+							printf("~a&b makes it %u : %s c %i \n", set_calc2,  buffer, __builtin_popcount(set_calc2));
+							int2bin(cset_calc2, buffer, 32);
+							printf("~a&~b makes it %u : %s c %i \n", cset_calc2 ,buffer, __builtin_popcount(cset_calc2));
+
+							
 							s_e = s_e->next;
 						} while (s_e!=NULL);
 					}
