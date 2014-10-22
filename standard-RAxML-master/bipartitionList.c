@@ -2981,6 +2981,8 @@ void plausibilityChecker(tree *tr, analdef *adef)
   int hashcount = 0;
 
 
+  /*START Additional preprocessing step */
+
   int 
 	numberOfBips = 0,
 	numberOfSets = 0;
@@ -2993,6 +2995,27 @@ void plausibilityChecker(tree *tr, analdef *adef)
   }
 
   printf("numberOfBips: %i , numberOfSets: %i \n \n", numberOfBips, numberOfSets);	
+
+  unsigned int *bips = (unsigned int *)rax_malloc(numberOfBips * sizeof(unsigned int));
+  int **sets = (int **)rax_malloc(numberOfSets * sizeof(int));
+  int **SmallTreeTaxaList = (int **)rax_malloc(tr->numberOfTrees * sizeof(int));
+  
+  //I use these variables to determine the position to save the information
+  int currentBips = 0;
+  int currentSets = 0;
+  int currentTree = 0;
+	
+  //EXAMPLE
+  int set[4] = {1,2,3,-1};
+	
+  sets[0] = set;
+  int it = 0;
+  while(sets[0][it] >= 0){
+	printf("sets %i \n", sets[0][it]);
+	it++;
+  }
+  //END EXAMPLE
+  /*END*/
 
   /* loop over all small trees */
 
@@ -3190,6 +3213,13 @@ void plausibilityChecker(tree *tr, analdef *adef)
         printf("%i ",smallTreeTaxa[gr]);
       }
       printf("\n");
+	
+	  printf("currentTree %i \n", currentTree);
+	  SmallTreeTaxaList[currentTree] = smallTreeTaxa;	  
+	  currentTree++;
+
+
+
 
       printf("smallTreeTaxa Names: ");
       for(int gr = 0; gr < (smallTree->ntips); gr++) {
@@ -3247,6 +3277,11 @@ void plausibilityChecker(tree *tr, analdef *adef)
 			entry *e = ref_hash->table[k];
 			do {
 				unsigned int ref_bitvector = *(e->bitVector);
+				
+				printf("CurrentBips %i ref_bitvector %u \n", currentBips, ref_bitvector);
+
+				bips[currentBips] = ref_bitvector;  
+				currentBips++;
 
 				for (int _k=0; _k < s_hash->tableSize; _k++) {
 					if (s_hash->table[_k] != NULL) {
@@ -3351,7 +3386,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
    //  freeHashTable(ref_hash);
    //  rax_free(ref_hash);
 	  
-	  rax_free(smallTreeTaxa);
+	  //rax_free(smallTreeTaxa); //Need it for calculating the SmallTreeTaxaList after all iterations!
 	  rax_free(seq);
 	  rax_free(seq2);
 	  rax_free(smallTreeTaxonToEulerIndex);
@@ -3362,9 +3397,19 @@ void plausibilityChecker(tree *tr, analdef *adef)
   
   
     //Print hashtable s_hash TODO!
+
+
+
+  for(int foo = 0;foo < numberOfBips; foo++) {
+	
+	printf("Bips %u \n",bips[foo]);
+
+  }
   
   for(int trCount=0;trCount < tr->numberOfTrees; trCount++){
   hashtable* htable = *(tables[trCount]);
+  
+  printf("SmallTreeTaxaList %i \n",SmallTreeTaxaList[trCount][0]);
   printf("s_hash from tree %i \n",trCount);
     for(int k=0,entryCount=0;k < htable->tableSize; k++) {
       if (htable->table[k] != NULL) {
