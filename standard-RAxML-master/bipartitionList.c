@@ -97,7 +97,7 @@ static void mre(hashtable *h, boolean icp, entry*** sbi, int* len, int which, in
 entry *initEntry(void)
 {
   entry *e = (entry*)rax_malloc(sizeof(entry));
-  int test[3] = {1,2,3};
+  int test[3] = {42,43,44};
 
   e->translate =  test;
   e->bitVector     = (unsigned int*)NULL;
@@ -2845,8 +2845,9 @@ char *int2bin(int a, char *buffer, int buf_size) {
 
 void plausibilityChecker(tree *tr, analdef *adef)
 {
-  FILE 
-    *treeFile,
+  FILE
+	*treeFile, 
+    *treeFile2,
     *rfFile;
   
   tree 
@@ -2880,6 +2881,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
   printBothOpen("Parsing reference tree %s\n", tree_file);
 
   treeReadLen(treeFile, tr, FALSE, TRUE, TRUE, adef, TRUE, FALSE);
+
 
   assert(tr->mxtips == tr->ntips);
   
@@ -2966,6 +2968,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
   /* now see how many small trees we have */
 
   treeFile = getNumberOfTrees(tr, bootStrapFile, adef);
+  treeFile2 = getNumberOfTrees(tr, bootStrapFile, adef);
 
   checkTreeNumber(tr->numberOfTrees, bootStrapFile);
 
@@ -2977,6 +2980,19 @@ void plausibilityChecker(tree *tr, analdef *adef)
   hashtable **tables[(tr->numberOfTrees)*sizeof(hashtable)];
   int hashcount = 0;
 
+
+  int 
+	numberOfBips = 0,
+	numberOfSets = 0;
+
+  //Calculate all bipartitions, I created a new treeFile2 and a new getNumberOfTrees method!!
+  for(i = 0; i < tr->numberOfTrees; i++) {
+	int this_treeBips = readMultifurcatingTree(treeFile2, smallTree, adef, TRUE);
+	numberOfBips = numberOfBips + this_treeBips;
+	numberOfSets = numberOfSets + 2 * this_treeBips * this_treeBips;
+  }
+
+  printf("numberOfBips: %i , numberOfSets: %i \n \n", numberOfBips, numberOfSets);	
 
   /* loop over all small trees */
 
@@ -3195,20 +3211,20 @@ void plausibilityChecker(tree *tr, analdef *adef)
     }
     printf("\n");
 
+/*	
   printf("TEST: \n" );
     //Print hashtable s_hash
     for(int k=0,entryCount=0;k < s_hash->tableSize; k++) {
       if (s_hash->table[k] != NULL) {
         entry *e = s_hash->table[k];
           do {
-			  int* test = (e->translate);
-              printf("%i ", test[0] );
+              printf("%i ", (e->translate) );
             e = e->next;
           } while( e!= NULL);
       }
     }
     printf("\n");
-
+*/
 
     printf("Reference Hashtable: \n" );
     for(int k=0,entryCount=0;k < ref_hash->tableSize; k++) {
@@ -3222,7 +3238,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
     }
     printf("\n");
 
-	if(false){ //IF PRINT
+	if(true){ //IF PRINT
 
     //TODO ! This function iterates through reference hash table and compares everything with the bitvectors in the induced hashtable
     printf("Set Calculation: \n");
