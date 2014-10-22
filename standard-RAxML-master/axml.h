@@ -342,8 +342,25 @@ typedef struct {
   double weight;
 } elw;
 
+//Safe copy of ent
+struct _ent
+{
+  unsigned int *bitVector;
+  unsigned int *treeVector;
+  unsigned int amountTips;
+  int *supportVector;
+  unsigned int bipNumber;
+  unsigned int bipNumber2;
+  unsigned int supportFromTreeset[2]; 
+  struct ent *next;
+};
+
+
 struct ent
 {
+  int *translate;
+  int *set;
+
   unsigned int *bitVector;
   unsigned int *treeVector;
   unsigned int amountTips;

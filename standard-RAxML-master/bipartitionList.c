@@ -97,7 +97,9 @@ static void mre(hashtable *h, boolean icp, entry*** sbi, int* len, int which, in
 entry *initEntry(void)
 {
   entry *e = (entry*)rax_malloc(sizeof(entry));
+  int test[3] = {1,2,3};
 
+  e->translate =  test;
   e->bitVector     = (unsigned int*)NULL;
   e->treeVector    = (unsigned int*)NULL;
   e->supportVector = (int*)NULL;
@@ -3193,6 +3195,21 @@ void plausibilityChecker(tree *tr, analdef *adef)
     }
     printf("\n");
 
+  printf("TEST: \n" );
+    //Print hashtable s_hash
+    for(int k=0,entryCount=0;k < s_hash->tableSize; k++) {
+      if (s_hash->table[k] != NULL) {
+        entry *e = s_hash->table[k];
+          do {
+			  int* test = (e->translate);
+              printf("%i ", test[0] );
+            e = e->next;
+          } while( e!= NULL);
+      }
+    }
+    printf("\n");
+
+
     printf("Reference Hashtable: \n" );
     for(int k=0,entryCount=0;k < ref_hash->tableSize; k++) {
       if (ref_hash->table[k] != NULL) {
@@ -3204,6 +3221,8 @@ void plausibilityChecker(tree *tr, analdef *adef)
       }
     }
     printf("\n");
+
+	if(false){ //IF PRINT
 
     //TODO ! This function iterates through reference hash table and compares everything with the bitvectors in the induced hashtable
     printf("Set Calculation: \n");
@@ -3234,19 +3253,45 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
 							unsigned int set_calc = ref_bitvector & s_bitvector; //a = x|y , b = x*|y* -> x AND x* 
 							unsigned int cset_calc = ref_bitvector & ~(s_bitvector); // x AND y*
-							int2bin(set_calc, buffer, 32);
-							printf("a&b makes it %u : %s , c %i \n", set_calc,  buffer, __builtin_popcount(set_calc));
-							int2bin(cset_calc, buffer, 32);
-							printf("a&~b makes it %u : %s c %i \n", cset_calc ,buffer, __builtin_popcount(cset_calc));
 
 							unsigned int set_calc2 = ~ref_bitvector & s_bitvector; // y AND x* 
 							unsigned int cset_calc2 = ~ref_bitvector & ~(s_bitvector); // y AND y*
-							int2bin(set_calc2, buffer, 32);
-							printf("~a&b makes it %u : %s c %i \n", set_calc2,  buffer, __builtin_popcount(set_calc2));
-							int2bin(cset_calc2, buffer, 32);
-							printf("~a&~b makes it %u : %s c %i \n", cset_calc2 ,buffer, __builtin_popcount(cset_calc2));
 
+							//Calculate number of bits of the resulting set calculations	
+							int count1 = __builtin_popcount(set_calc);
+							int count2 = __builtin_popcount(cset_calc);	
+							int count3 = __builtin_popcount(set_calc2);
+							int count4 = __builtin_popcount(cset_calc2);
+
+							//Print out debugging bitvectors
+							int2bin(set_calc, buffer, 32);
+							printf("a&b makes it %u : %s , c %i \n", set_calc,  buffer, count1);
+							int2bin(cset_calc, buffer, 32);
+							printf("a&~b makes it %u : %s c %i \n", cset_calc ,buffer, count2);
+							int2bin(set_calc2, buffer, 32);
+							printf("~a&b makes it %u : %s c %i \n", set_calc2,  buffer, count3);
+							int2bin(cset_calc2, buffer, 32);
+							printf("~a&~b makes it %u : %s c %i \n", cset_calc2 ,buffer, count4);
+
+							//TODO: Pick the two smallest dropsets
+							int arr[4] = {count1, count2, count3, count4};
+						    qsort(arr, 4, sizeof(int), sortIntegers);
 							
+							printf("The lowest: %i and %i \n", arr[0], arr[1]);
+	
+							//TODO: When two 0, bipartition matches
+							if(arr[0] == 0 && arr[1] == 0) {
+								printf("It matches!!! \n");
+							}
+							
+							
+						
+							//TODO: Create a list of all taxa with bips keys where the taxa is inside the bips (What is the best data structure?)
+							
+							
+							//TODO: Traverse the 
+							
+
 							s_e = s_e->next;
 						} while (s_e!=NULL);
 					}
@@ -3256,6 +3301,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
 		}
     }
 
+	}//IF PRINT
 
 
     printf("address of s_hash %p \n", &s_hash);
@@ -3264,6 +3310,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
     hashcount = hashcount + 1;
 
     printf("inside tables[%i] %p \n",hashcount,tables[hashcount]);
+
 
 	  rec_rf = (double)(2 * (numberOfSplits - rec_bips)) / maxRF;
 	  
@@ -3298,7 +3345,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
     }
   
   
-    //Print hashtable s_hash
+    //Print hashtable s_hash TODO!
   
   for(int trCount=0;trCount < tr->numberOfTrees; trCount++){
   hashtable* htable = *(tables[trCount]);
