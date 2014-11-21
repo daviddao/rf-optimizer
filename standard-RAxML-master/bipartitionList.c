@@ -2856,7 +2856,7 @@ static int* extractSet(int* bitvector, int* smallTreeTaxa){
 
 			//Extract the first bit from extract and identify the related taxa number in SmallTree
 			numberOfZerosBefore = __builtin_ctz(extract) + numberOfZerosBefore;
-			printf("Number of Zeros: %i \n", __builtin_ctz(extract));
+			//printf("Number of Zeros: %i \n", __builtin_ctz(extract));
 			set[i] = smallTreeTaxa[numberOfZerosBefore];
 			//Now move extract to the next significant bit
 			extract = extract >> numberOfZerosBefore;
@@ -2890,7 +2890,7 @@ static int* extractSets(int* bitvector, int* bitvector2, int* smallTreeTaxa){
 
       //Extract the first bit from extract and identify the related taxa number in SmallTree
       numberOfZerosBefore = __builtin_ctz(extract) + numberOfZerosBefore;
-      printf("Number of Zeros: %i \n", __builtin_ctz(extract));
+      //printf("Number of Zeros: %i \n", __builtin_ctz(extract));
       set[i] = smallTreeTaxa[numberOfZerosBefore];
       //Now move extract to the next significant bit
       extract = extract >> numberOfZerosBefore;
@@ -3369,14 +3369,14 @@ void plausibilityChecker(tree *tr, analdef *adef)
 	if(true){ //IF PRINT
 
     //TODO ! This function iterates through reference hash table and compares everything with the bitvectors in the induced hashtable
-    printf("Set Calculation: \n");
+    printf("=>Set Calculation: \n");
     for (int k=0,entryCount=0;k < ref_hash->tableSize; k++) {
 		if (ref_hash->table[k] != NULL) {
 			entry *e = ref_hash->table[k];
 			do {
 				unsigned int ref_bitvector = *(e->bitVector);
 				
-				printf("CurrentBips %i ref_bitvector %u \n", currentBips, ref_bitvector);
+				printf("CurrentBip Number %i ref_bitvector %u \n", currentBips, ref_bitvector);
 
 				bips[currentBips] = ref_bitvector;  
 				currentBips++;
@@ -3386,23 +3386,29 @@ void plausibilityChecker(tree *tr, analdef *adef)
 						entry *s_e = s_hash->table[_k];
 						do {
 							unsigned int s_bitvector = *(s_e->bitVector);
-							printf("Now we compare %i with %i \n", ref_bitvector, s_bitvector);
+							printf("==> Now we compare %i with %i \n", ref_bitvector, s_bitvector);
 
 							char buffer[33];
 								buffer[32] = '\0';
 
 								int2bin(ref_bitvector, buffer, 32);
 
-								printf("a = %s \n", buffer);
+								printf("ref (a) = %s \n", buffer);
 
 								int2bin(s_bitvector, buffer, 32);
-								printf("b = %s \n", buffer);
+								printf("ind (b) = %s \n", buffer);
 
-							unsigned int set_calc = ref_bitvector & s_bitvector; //a = x|y , b = x*|y* -> x AND x* 
-							unsigned int cset_calc = ref_bitvector & ~(s_bitvector); // x AND y*
 
-							unsigned int set_calc2 = ~ref_bitvector & s_bitvector; // y AND x* 
-							unsigned int cset_calc2 = ~ref_bitvector & ~(s_bitvector); // y AND y*
+              
+              //Use a Mask to get off the Offset ones that might resulted from the logical operations (i.e. for 5 taxa the mask is 000000...11111)							
+              unsigned int mask = pow(2,smallTree->ntips) - 1; //this results in a unsigned bitvector with the first ntips bits as 1
+
+              //calculate the dropsets by comparing two bipartitions
+              unsigned int set_calc = ref_bitvector & s_bitvector & mask; //a = x|y , b = x*|y* -> x AND x* 
+							unsigned int cset_calc = ref_bitvector & ~(s_bitvector) & mask; // x AND y*
+
+							unsigned int set_calc2 = ~ref_bitvector & s_bitvector & mask; // y AND x* 
+							unsigned int cset_calc2 = ~ref_bitvector & ~(s_bitvector) & mask; // y AND y*
 
 							//Calculate number of bits of the resulting set calculations	
 							int count1 = __builtin_popcount(set_calc);
@@ -3461,7 +3467,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
 									sets[currentSets] = set;
 									currentSets++;
 								}
-							}
+							}//END ELSE
 							
 							
 						
@@ -3533,10 +3539,15 @@ printf("Bips:");
 	printf("%u ",bips[foo]);
 
   }
-	printf("\n Sets: ");
+	printf("\n Sets: \n");
   for(int fooo = 0; fooo < numberOfSets; fooo++){
-
-	printf("%i ",sets[fooo][0]);
+    printf("Set %i: ", fooo);
+    int i = 0;
+    while(sets[fooo][i] > 0) {
+	   printf("%i ",sets[fooo][i]);
+     i++;
+    }
+    printf("\n");
   }
   printf("\n");
 
