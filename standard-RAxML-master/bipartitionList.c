@@ -3381,6 +3381,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
 	if(true){ //IF PRINT
 
+    int this_currentSmallBips = 0; //Variable resets everytime for each tree analyzed
     //TODO ! This function iterates through induced hash table and compares everything with the bitvectors in the smalltree hashtable
     printf("=>Set Calculation: \n");
     for (int k=0,entryCount=0;k < ind_hash->tableSize; k++) {
@@ -3402,10 +3403,11 @@ void plausibilityChecker(tree *tr, analdef *adef)
 							unsigned int s_bitvector = *(s_e->bitVector);
 
               //Include the small bipartitions if they are not yet present
-              if (currentBips > currentSmallBips) {
+              if (bipsPerTree[numberOfTreesAnalyzed] > this_currentSmallBips) {
                 
                 s_bips[currentSmallBips] = s_bitvector;
                 
+                this_currentSmallBips++;
                 currentSmallBips++;
               } 
 
@@ -3506,9 +3508,8 @@ void plausibilityChecker(tree *tr, analdef *adef)
 				}
 				e = e->next;
 			} while (e!=NULL);
-		}
     }
-
+    }
 	}//IF PRINT
 
     printf("address of s_hash %p \n", &s_hash);
@@ -3547,9 +3548,9 @@ void plausibilityChecker(tree *tr, analdef *adef)
 	  rax_free(seq2);
 	  rax_free(smallTreeTaxonToEulerIndex);
 
-	  numberOfTreesAnalyzed++;
+	  numberOfTreesAnalyzed++; //Counting the number of trees analyzed
 	}
-    }
+}// End of Tree Iterations
   
   
     //Print hashtable s_hash TODO!
