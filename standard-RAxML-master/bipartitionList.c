@@ -3091,11 +3091,17 @@ void plausibilityChecker(tree *tr, analdef *adef)
 	numberOfBips = 0,
 	numberOfSets = 0;
 
+  int *bipsPerTree = (int *)rax_malloc(tr->numberOfTrees * sizeof(int));
+
+
   //Calculate all bipartitions, I created a new treeFile2 and a new getNumberOfTrees method!!
   for(i = 0; i < tr->numberOfTrees; i++) {
 	int this_treeBips = readMultifurcatingTree(treeFile2, smallTree, adef, TRUE);
 	numberOfBips = numberOfBips + this_treeBips;
 	numberOfSets = numberOfSets + this_treeBips * this_treeBips;
+
+  bipsPerTree[i] = this_treeBips;
+
   }
 
   printf("numberOfBips: %i , numberOfSets: %i \n \n", numberOfBips, numberOfSets);	
@@ -3112,6 +3118,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
 //TODO: merge dropsets!
   //I use these variables to determine the max number of possible sets to generate a static array
   int currentBips = 0;
+  int currentSmallBips = 0;
   int currentSets = 0;
   int currentTree = 0;
 	
@@ -3374,7 +3381,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
 	if(true){ //IF PRINT
 
-    //TODO ! This function iterates through reference hash table and compares everything with the bitvectors in the induced hashtable
+    //TODO ! This function iterates through induced hash table and compares everything with the bitvectors in the smalltree hashtable
     printf("=>Set Calculation: \n");
     for (int k=0,entryCount=0;k < ind_hash->tableSize; k++) {
 		if (ind_hash->table[k] != NULL) {
@@ -3391,7 +3398,17 @@ void plausibilityChecker(tree *tr, analdef *adef)
 					if (s_hash->table[_k] != NULL) {
 						entry *s_e = s_hash->table[_k];
 						do {
+
 							unsigned int s_bitvector = *(s_e->bitVector);
+
+              //Include the small bipartitions if they are not yet present
+              if (currentBips > currentSmallBips) {
+                
+                s_bips[currentSmallBips] = s_bitvector;
+                
+                currentSmallBips++;
+              } 
+
 							printf("==> Now we compare %i with %i \n", ind_bitvector, s_bitvector);
 
 							char buffer[33];
@@ -3428,14 +3445,14 @@ void plausibilityChecker(tree *tr, analdef *adef)
 							int count4z = __builtin_ctz(cset_calc2);
 
 							//Print out debugging bitvectors
-							int2bin(set_calc, buffer, 32);
-							printf("a&b makes it %u : %s , c %i b %i \n", set_calc,  buffer, count1, count1z);
-							int2bin(cset_calc, buffer, 32);
-							printf("a&~b makes it %u : %s c %i b %i \n", cset_calc ,buffer, count2, count2z);
-							int2bin(set_calc2, buffer, 32);
-							printf("~a&b makes it %u : %s c %i b %i  \n", set_calc2,  buffer, count3, count3z);
-							int2bin(cset_calc2, buffer, 32);
-							printf("~a&~b makes it %u : %s c %i b %i \n", cset_calc2 ,buffer, count4, count4z);
+							// int2bin(set_calc, buffer, 32);
+							// printf("a&b makes it %u : %s , c %i b %i \n", set_calc,  buffer, count1, count1z);
+							// int2bin(cset_calc, buffer, 32);
+							// printf("a&~b makes it %u : %s c %i b %i \n", cset_calc ,buffer, count2, count2z);
+							// int2bin(set_calc2, buffer, 32);
+							// printf("~a&b makes it %u : %s c %i b %i  \n", set_calc2,  buffer, count3, count3z);
+							// int2bin(cset_calc2, buffer, 32);
+							// printf("~a&~b makes it %u : %s c %i b %i \n", cset_calc2 ,buffer, count4, count4z);
 
 							//printf("DEBUG ");
 
@@ -3494,7 +3511,6 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
 	}//IF PRINT
 
-
     printf("address of s_hash %p \n", &s_hash);
 
     tables[hashcount] = &s_hash;
@@ -3538,13 +3554,27 @@ void plausibilityChecker(tree *tr, analdef *adef)
   
     //Print hashtable s_hash TODO!
 
+  printf("BipsPerTree: ");
+  for(int foo = 0; foo < tr->numberOfTrees; foo++) {
 
-printf("Induced Bips:");
+    printf("%i ",bipsPerTree[foo]);
+
+  } 
+
+  printf("\nInduced Bips: ");
   for(int foo = 0;foo < numberOfBips; foo++) {
-	
-	printf("%u ",ind_bips[foo]);
+	  
+    printf("%u ",ind_bips[foo]);
+  
+  }
+
+  printf("\nSmall Tree Bips: ");
+  for(int foo = 0;foo < numberOfBips; foo++) {
+  
+    printf("%u ",s_bips[foo]);
 
   }
+
 	printf("\n Sets: \n");
   for(int fooo = 0; fooo < numberOfSets; fooo++){
     printf("Set %i: ", fooo);
