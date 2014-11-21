@@ -2355,8 +2355,8 @@ static int rec_findBipartitions(unsigned int ** bitvectors, int* seq, int arrays
   return found;
 }
 
-//Additionally to the method above, rec_findAddBipartitions add the bipartitions into a second hashtable ref_hash
-static int rec_findAddBipartitions(unsigned int ** bitvectors, int* seq, int arraysize, int* translate, int numsp, unsigned int vLength, int ntips, int first, hashtable* hash, hashtable* ref_hash, int* taxonToReduction)
+//Additionally to the method above, rec_findAddBipartitions add the bipartitions into a second hashtable ind_hash
+static int rec_findAddBipartitions(unsigned int ** bitvectors, int* seq, int arraysize, int* translate, int numsp, unsigned int vLength, int ntips, int first, hashtable* hash, hashtable* ind_hash, int* taxonToReduction)
 {
   int 
     i, 
@@ -2460,7 +2460,7 @@ static int rec_findAddBipartitions(unsigned int ** bitvectors, int* seq, int arr
       /* re-hash to the new hash table that contains the bips of the large tree, pruned down 
    to the taxa contained in the small tree
       */
-      insertHashPlausibility(toInsert, ref_hash, vLength, position);     
+      insertHashPlausibility(toInsert, ind_hash, vLength, position);     
 
       found = found + findHash(toInsert, hash, vLength, position);              
     }
@@ -3100,7 +3100,13 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
   printf("numberOfBips: %i , numberOfSets: %i \n \n", numberOfBips, numberOfSets);	
 
-  unsigned int *bips = (unsigned int *)rax_malloc(numberOfBips * sizeof(unsigned int));
+  //stores induced bips
+  unsigned int *ind_bips = (unsigned int *)rax_malloc(numberOfBips * sizeof(unsigned int));
+
+
+  //stores smalltree bips
+  unsigned int *s_bips = (unsigned int *)rax_malloc(numberOfBips * sizeof(unsigned int));
+
   int **sets = (int **)rax_malloc(numberOfSets * sizeof(int*)); //Stores all dropsets of all trees 
   int **SmallTreeTaxaList = (int **)rax_malloc(tr->numberOfTrees * sizeof(int*));
 //TODO: merge dropsets!
@@ -3168,7 +3174,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
         /* Init hashtable to store Bipartitions of the reference tree t_i*/
       hashtable
-        *ref_hash = initHashTable(smallTree->ntips * 4);
+        *ind_hash = initHashTable(smallTree->ntips * 4);
 	  
 	  /* smallTreeTaxa[smallTree->ntips]; 
 	     Stores all taxa numbers from smallTree into an array called smallTreeTaxa: (Index) -> (Taxonnumber)  */
@@ -3275,11 +3281,11 @@ void plausibilityChecker(tree *tr, analdef *adef)
 	  qsort(seq, (2 * smallTree->ntips - 2) + 1, sizeof(int), sortIntegers);
 	  
 	  /* calculates all bipartitions of the reference small tree and count how many bipartition it 
-    shares with the induced small tree and stores those bipartitions in a additional hashtable called ref_hash */
+    shares with the induced small tree and stores those bipartitions in a additional hashtable called ind_hash */
 	  int 
-	    rec_bips = rec_findAddBipartitions(bitVectors, seq,(2*smallTree->ntips - 1), labelToTaxon, tr->mxtips, vectorLength, smallTree->ntips, firstTaxon, s_hash, ref_hash, taxonToReduction);
+	    rec_bips = rec_findAddBipartitions(bitVectors, seq,(2*smallTree->ntips - 1), labelToTaxon, tr->mxtips, vectorLength, smallTree->ntips, firstTaxon, s_hash, ind_hash, taxonToReduction);
 	  
-    /* calculates all bipartitions of the reference small tree and put them into ref_hash*/
+    /* calculates all bipartitions of the reference small tree and put them into ind_hash*/
     // rec_extractBipartitionsMulti(bitVectors, seq2, (2*smallTree->ntips - 1),tr->mxtips, vectorLength, smallTree->ntips, 
              // firstTaxon, s_hash, taxonToReduction, taxonHasDeg, numberOfSplits);
 
@@ -3326,7 +3332,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
       printf("\n");
 
 
-    printf("Induced Hashtable: \n" );
+    printf("Small Hashtable: \n" );
     //Print hashtable s_hash
     for(int k=0,entryCount=0;k < s_hash->tableSize; k++) {
       if (s_hash->table[k] != NULL) {
@@ -3354,10 +3360,10 @@ void plausibilityChecker(tree *tr, analdef *adef)
     printf("\n");
 */
 
-    printf("Reference Hashtable: \n" );
-    for(int k=0,entryCount=0;k < ref_hash->tableSize; k++) {
-      if (ref_hash->table[k] != NULL) {
-        entry *e = ref_hash->table[k];
+    printf("Induced Hashtable: \n" );
+    for(int k=0,entryCount=0;k < ind_hash->tableSize; k++) {
+      if (ind_hash->table[k] != NULL) {
+        entry *e = ind_hash->table[k];
           do {
               printf("%i ", *(e->bitVector));
             e = e->next;
@@ -3370,15 +3376,15 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
     //TODO ! This function iterates through reference hash table and compares everything with the bitvectors in the induced hashtable
     printf("=>Set Calculation: \n");
-    for (int k=0,entryCount=0;k < ref_hash->tableSize; k++) {
-		if (ref_hash->table[k] != NULL) {
-			entry *e = ref_hash->table[k];
+    for (int k=0,entryCount=0;k < ind_hash->tableSize; k++) {
+		if (ind_hash->table[k] != NULL) {
+			entry *e = ind_hash->table[k];
 			do {
-				unsigned int ref_bitvector = *(e->bitVector);
+				unsigned int ind_bitvector = *(e->bitVector);
 				
-				printf("CurrentBip Number %i ref_bitvector %u \n", currentBips, ref_bitvector);
+				printf("CurrentBip Number %i ind_bitvector %u \n", currentBips, ind_bitvector);
 
-				bips[currentBips] = ref_bitvector;  
+				ind_bips[currentBips] = ind_bitvector;  
 				currentBips++;
 
 				for (int _k=0; _k < s_hash->tableSize; _k++) {
@@ -3386,17 +3392,17 @@ void plausibilityChecker(tree *tr, analdef *adef)
 						entry *s_e = s_hash->table[_k];
 						do {
 							unsigned int s_bitvector = *(s_e->bitVector);
-							printf("==> Now we compare %i with %i \n", ref_bitvector, s_bitvector);
+							printf("==> Now we compare %i with %i \n", ind_bitvector, s_bitvector);
 
 							char buffer[33];
 								buffer[32] = '\0';
 
-								int2bin(ref_bitvector, buffer, 32);
+								int2bin(ind_bitvector, buffer, 32);
 
-								printf("ref (a) = %s \n", buffer);
+								printf("ind (a) = %s \n", buffer);
 
 								int2bin(s_bitvector, buffer, 32);
-								printf("ind (b) = %s \n", buffer);
+								printf("smalltree (b) = %s \n", buffer);
 
 
               
@@ -3404,11 +3410,11 @@ void plausibilityChecker(tree *tr, analdef *adef)
               unsigned int mask = pow(2,smallTree->ntips) - 1; //this results in a unsigned bitvector with the first ntips bits as 1
 
               //calculate the dropsets by comparing two bipartitions
-              unsigned int set_calc = ref_bitvector & s_bitvector & mask; //a = x|y , b = x*|y* -> x AND x* 
-							unsigned int cset_calc = ref_bitvector & ~(s_bitvector) & mask; // x AND y*
+              unsigned int set_calc = ind_bitvector & s_bitvector & mask; //a = x|y , b = x*|y* -> x AND x* 
+							unsigned int cset_calc = ind_bitvector & ~(s_bitvector) & mask; // x AND y*
 
-							unsigned int set_calc2 = ~ref_bitvector & s_bitvector & mask; // y AND x* 
-							unsigned int cset_calc2 = ~ref_bitvector & ~(s_bitvector) & mask; // y AND y*
+							unsigned int set_calc2 = ~ind_bitvector & s_bitvector & mask; // y AND x* 
+							unsigned int cset_calc2 = ~ind_bitvector & ~(s_bitvector) & mask; // y AND y*
 
 							//Calculate number of bits of the resulting set calculations	
 							int count1 = __builtin_popcount(set_calc);
@@ -3517,8 +3523,8 @@ void plausibilityChecker(tree *tr, analdef *adef)
 	  // freeHashTable(s_hash);
 	  // rax_free(s_hash);
 
-   //  freeHashTable(ref_hash);
-   //  rax_free(ref_hash);
+   //  freeHashTable(ind_hash);
+   //  rax_free(ind_hash);
 	  
 	  //rax_free(smallTreeTaxa); //Need it for calculating the SmallTreeTaxaList after all iterations!
 	  rax_free(seq);
@@ -3533,10 +3539,10 @@ void plausibilityChecker(tree *tr, analdef *adef)
     //Print hashtable s_hash TODO!
 
 
-printf("Bips:");
+printf("Induced Bips:");
   for(int foo = 0;foo < numberOfBips; foo++) {
 	
-	printf("%u ",bips[foo]);
+	printf("%u ",ind_bips[foo]);
 
   }
 	printf("\n Sets: \n");
