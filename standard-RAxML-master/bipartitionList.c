@@ -2819,9 +2819,113 @@ static int sortIntegers(const void *a, const void *b)
     return 1;
 }
 
+//function for built-in quicksort sorting after number of bits
+
+static int sortBipartitions(const void *a, const void *b) 
+{
+  int 
+	ia = *(int *)(a),
+	ib = *(int *)(b),
+	bits_ia = __builtin_popcount(ia),
+	bits_ib = __builtin_popcount(ib);
+	
+   if(bits_ia == bits_ib)
+	   return 0;
+   if(bits_ib > bits_ia)
+	   return -1;
+   else
+	   return 1;
+}
 
 
 /**********************************************************************************/
+
+/************************************* TODO RF-OPT functions *********************/
+
+//Extract the set of the bitvector and stores the taxa into an array called set which it returns
+//TODO only for one bitvector! Stop Element is -1
+//
+static int* extractSet(int* bitvector, int* smallTreeTaxa){
+		int numberOfOnes = __builtin_popcount(bitvector[0]);
+		//plus one because of the terminal number -1 to determine the end of the array
+		int* set = rax_malloc((numberOfOnes + 1) * sizeof(int));
+		int i = 0;
+		int numberOfZerosBefore = 0;
+		int extract = bitvector[0];
+		while(i < numberOfOnes) {
+
+			//Extract the first bit from extract and identify the related taxa number in SmallTree
+			numberOfZerosBefore = __builtin_ctz(extract) + numberOfZerosBefore;
+			printf("Number of Zeros: %i \n", __builtin_ctz(extract));
+			set[i] = smallTreeTaxa[numberOfZerosBefore];
+			//Now move extract to the next significant bit
+			extract = extract >> numberOfZerosBefore;
+			numberOfZerosBefore = numberOfZerosBefore + 1;
+			i++;
+		}
+		//Add a stop element in the array
+		set[numberOfOnes] = -1;
+		
+		printf("\n ==>Extracted Set is ");
+		for (i = 0; i < (numberOfOnes + 1); i++) {
+			printf("%i ", set[i]);
+		}
+		printf("\n");
+		return set;
+}
+
+//Can extract two bipartitons and merge their sets
+//Edit compared to extractSet: for bitvector 2 we restart the loop at position set[i + numberOfOnesBip1]
+static int* extractSets(int* bitvector, int* bitvector2, int* smallTreeTaxa){
+    int numberOfOnesBip1 = __builtin_popcount(bitvector[0]);
+    int numberOfOnesBip2 = __builtin_popcount(bitvector2[0]);
+    int numberOfOnes = numberOfOnesBip1 + numberOfOnesBip2;
+
+    //plus one because of the terminal number -1 to determine the end of the array
+    int* set = rax_malloc((numberOfOnes + 1) * sizeof(int));
+    int i = 0;
+    int numberOfZerosBefore = 0;
+    int extract = bitvector[0];
+    while(i < numberOfOnesBip1) {
+
+      //Extract the first bit from extract and identify the related taxa number in SmallTree
+      numberOfZerosBefore = __builtin_ctz(extract) + numberOfZerosBefore;
+      printf("Number of Zeros: %i \n", __builtin_ctz(extract));
+      set[i] = smallTreeTaxa[numberOfZerosBefore];
+      //Now move extract to the next significant bit
+      extract = extract >> numberOfZerosBefore;
+      numberOfZerosBefore = numberOfZerosBefore + 1;
+      i++;
+    }
+
+
+    //restart the whole process for bitvector 2
+    i = 0;
+    numberOfZerosBefore = 0;
+    extract = bitvector2[0];
+
+    while(i < numberOfOnesBip2) {
+
+      //Extract the first bit from extract and identify the related taxa number in SmallTree
+      numberOfZerosBefore = __builtin_ctz(extract) + numberOfZerosBefore;
+      printf("Number of Zeros: %i \n", __builtin_ctz(extract));
+      set[i + numberOfOnesBip1] = smallTreeTaxa[numberOfZerosBefore];
+      //Now move extract to the next significant bit
+      extract = extract >> numberOfZerosBefore;
+      numberOfZerosBefore = numberOfZerosBefore + 1;
+      i++;
+    }
+    //Add a stop element in the array
+    set[numberOfOnes] = -1;
+    
+    printf("\n ==>Extracted Set for 2 Bips is ");
+    for (i = 0; i < (numberOfOnes + 1); i++) {
+      printf("%i ", set[i]);
+    }
+    printf("\n");
+    return set;
+}
+
 
 /************************************* helper functions ***************************/
 char *int2bin(int a, char *buffer, int buf_size) {
@@ -2966,7 +3070,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
   fclose(treeFile);
   
   /* now see how many small trees we have */
-
+	//TODO! ADDITIONAL PREPROCESSING
   treeFile = getNumberOfTrees(tr, bootStrapFile, adef);
   treeFile2 = getNumberOfTrees(tr, bootStrapFile, adef);
 
@@ -2991,31 +3095,25 @@ void plausibilityChecker(tree *tr, analdef *adef)
   for(i = 0; i < tr->numberOfTrees; i++) {
 	int this_treeBips = readMultifurcatingTree(treeFile2, smallTree, adef, TRUE);
 	numberOfBips = numberOfBips + this_treeBips;
-	numberOfSets = numberOfSets + 2 * this_treeBips * this_treeBips;
+	numberOfSets = numberOfSets + this_treeBips * this_treeBips;
   }
 
   printf("numberOfBips: %i , numberOfSets: %i \n \n", numberOfBips, numberOfSets);	
 
   unsigned int *bips = (unsigned int *)rax_malloc(numberOfBips * sizeof(unsigned int));
-  int **sets = (int **)rax_malloc(numberOfSets * sizeof(int));
-  int **SmallTreeTaxaList = (int **)rax_malloc(tr->numberOfTrees * sizeof(int));
-  
-  //I use these variables to determine the position to save the information
+  int **sets = (int **)rax_malloc(numberOfSets * sizeof(int*)); //Stores all dropsets of all trees 
+  int **SmallTreeTaxaList = (int **)rax_malloc(tr->numberOfTrees * sizeof(int*));
+//TODO: merge dropsets!
+  //I use these variables to determine the max number of possible sets to generate a static array
   int currentBips = 0;
   int currentSets = 0;
   int currentTree = 0;
 	
-  //EXAMPLE
-  int set[4] = {1,2,3,-1};
-	
-  sets[0] = set;
-  int it = 0;
-  while(sets[0][it] >= 0){
-	printf("sets %i \n", sets[0][it]);
-	it++;
+  //Prefill the array with the sets!
+  for(int it = 0;it < (numberOfSets);it++){
+	int fill[1] = {-1};
+	sets[it] = fill;
   }
-  //END EXAMPLE
-  /*END*/
 
   /* loop over all small trees */
 
@@ -3300,8 +3398,6 @@ void plausibilityChecker(tree *tr, analdef *adef)
 								int2bin(s_bitvector, buffer, 32);
 								printf("b = %s \n", buffer);
 
-							
-
 							unsigned int set_calc = ref_bitvector & s_bitvector; //a = x|y , b = x*|y* -> x AND x* 
 							unsigned int cset_calc = ref_bitvector & ~(s_bitvector); // x AND y*
 
@@ -3314,33 +3410,65 @@ void plausibilityChecker(tree *tr, analdef *adef)
 							int count3 = __builtin_popcount(set_calc2);
 							int count4 = __builtin_popcount(cset_calc2);
 
+							int count1z = __builtin_ctz(set_calc);
+							int count2z = __builtin_ctz(cset_calc);	
+							int count3z = __builtin_ctz(set_calc2);
+							int count4z = __builtin_ctz(cset_calc2);
+
 							//Print out debugging bitvectors
 							int2bin(set_calc, buffer, 32);
-							printf("a&b makes it %u : %s , c %i \n", set_calc,  buffer, count1);
+							printf("a&b makes it %u : %s , c %i b %i \n", set_calc,  buffer, count1, count1z);
 							int2bin(cset_calc, buffer, 32);
-							printf("a&~b makes it %u : %s c %i \n", cset_calc ,buffer, count2);
+							printf("a&~b makes it %u : %s c %i b %i \n", cset_calc ,buffer, count2, count2z);
 							int2bin(set_calc2, buffer, 32);
-							printf("~a&b makes it %u : %s c %i \n", set_calc2,  buffer, count3);
+							printf("~a&b makes it %u : %s c %i b %i  \n", set_calc2,  buffer, count3, count3z);
 							int2bin(cset_calc2, buffer, 32);
-							printf("~a&~b makes it %u : %s c %i \n", cset_calc2 ,buffer, count4);
+							printf("~a&~b makes it %u : %s c %i b %i \n", cset_calc2 ,buffer, count4, count4z);
 
-							//TODO: Pick the two smallest dropsets
-							int arr[4] = {count1, count2, count3, count4};
-						    qsort(arr, 4, sizeof(int), sortIntegers);
+							//printf("DEBUG ");
+
+							//int arr[4] = {count1, count2, count3, count4};
+						    int arr[4] = {set_calc,cset_calc,set_calc2,cset_calc2};
+							
+              //Sort to get the lowest sets
+							qsort(arr, 4, sizeof(int), sortBipartitions);
 							
 							printf("The lowest: %i and %i \n", arr[0], arr[1]);
 	
 							//TODO: When two 0, bipartition matches
 							if(arr[0] == 0 && arr[1] == 0) {
 								printf("It matches!!! \n");
+								//Now we don't have to add any sets to this array
+								currentSets++;
+								//TODO: Take the the reference vector and make it matching
+							} else {
+								if((arr[0] != 0) && (arr[1] == 0)){
+									int* set = extractSet(&arr[0], smallTreeTaxa);		
+									sets[currentSets] = set;
+									
+									currentSets++;
+								}
+
+								if((arr[1] != 0) && (arr[0] == 0)){
+									int* set = extractSet(&arr[1], smallTreeTaxa);
+									sets[currentSets] = set;
+									
+									currentSets++;
+								}
+								
+								if((arr[0] != 0) && (arr[1] != 0)) {
+                  int* set = extractSets(&arr[0], &arr[1], smallTreeTaxa);    
+									sets[currentSets] = set;
+									currentSets++;
+								}
 							}
 							
 							
 						
-							//TODO: Create a list of all taxa with bips keys where the taxa is inside the bips (What is the best data structure?)
+							//: Create a list of all taxa with bips keys where the taxa is inside the bips (What is the best data structure?)
 							
 							
-							//TODO: Traverse the 
+							//: Traverse the 
 							
 
 							s_e = s_e->next;
@@ -3399,13 +3527,19 @@ void plausibilityChecker(tree *tr, analdef *adef)
     //Print hashtable s_hash TODO!
 
 
-
+printf("Bips:");
   for(int foo = 0;foo < numberOfBips; foo++) {
 	
-	printf("Bips %u \n",bips[foo]);
+	printf("%u ",bips[foo]);
 
   }
-  
+	printf("\n Sets: ");
+  for(int fooo = 0; fooo < numberOfSets; fooo++){
+
+	printf("%i ",sets[fooo][0]);
+  }
+  printf("\n");
+
   for(int trCount=0;trCount < tr->numberOfTrees; trCount++){
   hashtable* htable = *(tables[trCount]);
   
