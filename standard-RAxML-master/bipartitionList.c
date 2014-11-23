@@ -3127,12 +3127,11 @@ void plausibilityChecker(tree *tr, analdef *adef)
   int **taxonToReductionList = (int **)rax_malloc(tr->numberOfTrees * sizeof(int*));
 
 
-//TODO: merge dropsets!
   //I use these variables to determine the max number of possible sets to generate a static array
   int currentBips = 0;
   int currentSmallBips = 0;
   int currentSets = 0;
-  int currentTree = 0;
+  //int currentTree = 0; already there in number of trees analyzed
 	
   //Prefill sets with -1s and predict array with 0s !
   for(int it = 0;it < (numberOfSets);it++){
@@ -3349,10 +3348,10 @@ void plausibilityChecker(tree *tr, analdef *adef)
       }
       printf("\n");
 	
-	  printf("currentTree %i \n", currentTree);
-	  smallTreeTaxaList[currentTree] = smallTreeTaxa;
-    taxonToReductionList[currentTree] = taxonToReductionCopy;	  
-	  currentTree++;
+	  printf("currentTree %i \n", numberOfTreesAnalyzed);
+	  smallTreeTaxaList[numberOfTreesAnalyzed] = smallTreeTaxa;
+    taxonToReductionList[numberOfTreesAnalyzed] = taxonToReductionCopy;	  
+
 
 
 
@@ -3580,11 +3579,54 @@ void plausibilityChecker(tree *tr, analdef *adef)
 }// End of Tree Iterations
   
 
+  //=== TREE GRAPH CONSTRUCTION ===
+
+  //We use these variables to iterate through all sets and bips
+  int countBips = 0;
+  int dropSetCount = 0;
+  //Now generate Graph and calculate the Scores for each bipartitions
+
+  //First iterate through all trees 
+  for(int i = 0; i < numberOfTreesAnalyzed; i++ ) {
+    //Iterate through all bipartitions of each trees
+    for(int j = 0; j < bipsPerTree[i]; j++) {
+
+      int dropSetsPerBip = bipsPerTree[i]; //Compare each bip with all bips
+      int matching = 0; //Will be set to one if dropset is matching
+      
+      //Check all dropsets of each bipartition
+      for(int k = 0; k < dropSetsPerBip; k++){
+        int* dropset = sets[dropSetCount + k];
+        printf("dropset : %i \n", dropset[0]);
 
 
-  //Now generate Graph and calculate the Scores
+        //Test if matching
+        if(dropset[0] == -1){
+          matching = 1;
+        }
+
+      }
+      if (matching) {
+        scores[countBips] = 0; 
+      } else {
+        scores[countBips] = 1;
+      }
+      
+      dropSetCount = dropSetCount + dropSetsPerBip;
+
+      countBips++;
+    }
+
+  }
+
+  //=== TREE GRAPH CONSTRUCTION ENDS ===
+  printf("Scores: ");
+  for(int foo = 0; foo < numberOfBips; foo++) {
+    printf("%i ",scores[foo]);
+  }
+
   
-  
+  printf("\n number of bips are %i \n",countBips);
 
   
     //Print hashtable s_hash TODO!
@@ -3622,7 +3664,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
   }
   printf("\n");
 
-  for(int trCount=0;trCount < tr->numberOfTrees; trCount++){
+  for(int trCount=0; trCount < tr->numberOfTrees; trCount++){
   
   // hashtable* htable = *(tables[trCount]);
   
