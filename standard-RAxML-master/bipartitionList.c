@@ -3109,12 +3109,24 @@ void plausibilityChecker(tree *tr, analdef *adef)
   //stores induced bips
   unsigned int *ind_bips = (unsigned int *)rax_malloc(numberOfBips * sizeof(unsigned int));
 
-
   //stores smalltree bips
   unsigned int *s_bips = (unsigned int *)rax_malloc(numberOfBips * sizeof(unsigned int));
 
+  //stores the scores for each bips
+  int *scores = (int *)rax_malloc(numberOfBips * sizeof(int));
+
+  //predict scores for drop set removals
+  int *predict = (int *)rax_malloc(numberOfSets * sizeof(int));
+
   int **sets = (int **)rax_malloc(numberOfSets * sizeof(int*)); //Stores all dropsets of all trees 
-  int **SmallTreeTaxaList = (int **)rax_malloc(tr->numberOfTrees * sizeof(int*));
+  
+  //For each tree, stores a translation array from taxanumber smalltree->largetree
+  int **smallTreeTaxaList = (int **)rax_malloc(tr->numberOfTrees * sizeof(int*)); 
+
+  //For each tree, store a translation array from taxanumber largetree->smalltree
+  int **taxonToReductionList = (int **)rax_malloc(tr->numberOfTrees * sizeof(int*));
+
+
 //TODO: merge dropsets!
   //I use these variables to determine the max number of possible sets to generate a static array
   int currentBips = 0;
@@ -3122,10 +3134,11 @@ void plausibilityChecker(tree *tr, analdef *adef)
   int currentSets = 0;
   int currentTree = 0;
 	
-  //Prefill the array with the sets!
+  //Prefill sets with -1s and predict array with 0s !
   for(int it = 0;it < (numberOfSets);it++){
 	int fill[1] = {-1};
-	sets[it] = fill;
+	sets[it] = fill; 
+  predict[it] = 0;
   }
 
   /* loop over all small trees */
@@ -3310,12 +3323,23 @@ void plausibilityChecker(tree *tr, analdef *adef)
 	  
 	  /* compute the relative RF */
 	  
-
-
+      //copy array taxonToReduction because it is originally defined in preprocessing step
+      int * taxonToReductionCopy = (int *)rax_malloc((tr->mxtips)*sizeof(int));
+      memcpy(taxonToReductionCopy,taxonToReduction,(tr->mxtips)*sizeof(int));
 
       printf("taxonToReduction: ");
       for(int gr = 0; gr < (tr->mxtips); gr++) {
+
         printf("%i ",taxonToReduction[gr]);
+
+      }
+      printf("\n");
+
+      printf("taxonToReductionCopy: ");
+      for(int gr = 0; gr < (tr->mxtips); gr++) {
+
+        printf("%i ",taxonToReductionCopy[gr]);
+
       }
       printf("\n");
 
@@ -3326,7 +3350,8 @@ void plausibilityChecker(tree *tr, analdef *adef)
       printf("\n");
 	
 	  printf("currentTree %i \n", currentTree);
-	  SmallTreeTaxaList[currentTree] = smallTreeTaxa;	  
+	  smallTreeTaxaList[currentTree] = smallTreeTaxa;
+    taxonToReductionList[currentTree] = taxonToReductionCopy;	  
 	  currentTree++;
 
 
@@ -3339,45 +3364,45 @@ void plausibilityChecker(tree *tr, analdef *adef)
       printf("\n");
 
 
-    printf("Small Hashtable: \n" );
-    //Print hashtable s_hash
-    for(int k=0,entryCount=0;k < s_hash->tableSize; k++) {
-      if (s_hash->table[k] != NULL) {
-        entry *e = s_hash->table[k];
-          do {
-              printf("%i ", *(e->bitVector));
-            e = e->next;
-          } while( e!= NULL);
-      }
-    }
-    printf("\n");
+//     printf("Small Hashtable: \n" );
+//     //Print hashtable s_hash
+//     for(int k=0,entryCount=0;k < s_hash->tableSize; k++) {
+//       if (s_hash->table[k] != NULL) {
+//         entry *e = s_hash->table[k];
+//           do {
+//               printf("%i ", *(e->bitVector));
+//             e = e->next;
+//           } while( e!= NULL);
+//       }
+//     }
+//     printf("\n");
 
-/*	
-  printf("TEST: \n" );
-    //Print hashtable s_hash
-    for(int k=0,entryCount=0;k < s_hash->tableSize; k++) {
-      if (s_hash->table[k] != NULL) {
-        entry *e = s_hash->table[k];
-          do {
-              printf("%i ", (e->translate) );
-            e = e->next;
-          } while( e!= NULL);
-      }
-    }
-    printf("\n");
-*/
+// /
+//   printf("TEST: \n" );
+//     //Print hashtable s_hash
+//     for(int k=0,entryCount=0;k < s_hash->tableSize; k++) {
+//       if (s_hash->table[k] != NULL) {
+//         entry *e = s_hash->table[k];
+//           do {
+//               printf("%i ", (e->translate) );
+//             e = e->next;
+//           } while( e!= NULL);
+//       }
+//     }
+//     printf("\n");
 
-    printf("Induced Hashtable: \n" );
-    for(int k=0,entryCount=0;k < ind_hash->tableSize; k++) {
-      if (ind_hash->table[k] != NULL) {
-        entry *e = ind_hash->table[k];
-          do {
-              printf("%i ", *(e->bitVector));
-            e = e->next;
-          } while( e!= NULL);
-      }
-    }
-    printf("\n");
+
+//     printf("Induced Hashtable: \n" );
+//     for(int k=0,entryCount=0;k < ind_hash->tableSize; k++) {
+//       if (ind_hash->table[k] != NULL) {
+//         entry *e = ind_hash->table[k];
+//           do {
+//               printf("%i ", *(e->bitVector));
+//             e = e->next;
+//           } while( e!= NULL);
+//       }
+//     }
+//     printf("\n");
 
 	if(true){ //IF PRINT
 
@@ -3468,6 +3493,8 @@ void plausibilityChecker(tree *tr, analdef *adef)
 	
 							//TODO: When two 0, bipartition matches
 							if(arr[0] == 0 && arr[1] == 0) {
+
+
 								printf("It matches!!! \n");
 								//Now we don't have to add any sets to this array
 								currentSets++;
@@ -3552,6 +3579,13 @@ void plausibilityChecker(tree *tr, analdef *adef)
 	}
 }// End of Tree Iterations
   
+
+
+
+  //Now generate Graph and calculate the Scores
+  
+  
+
   
     //Print hashtable s_hash TODO!
 
@@ -3576,7 +3610,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
   }
 
-	printf("\n Sets: \n");
+	printf("\n == Sets == \n");
   for(int fooo = 0; fooo < numberOfSets; fooo++){
     printf("Set %i: ", fooo);
     int i = 0;
@@ -3589,20 +3623,22 @@ void plausibilityChecker(tree *tr, analdef *adef)
   printf("\n");
 
   for(int trCount=0;trCount < tr->numberOfTrees; trCount++){
-  hashtable* htable = *(tables[trCount]);
   
-  printf("SmallTreeTaxaList %i \n",SmallTreeTaxaList[trCount][0]);
-  printf("s_hash from tree %i \n",trCount);
-    for(int k=0,entryCount=0;k < htable->tableSize; k++) {
-      if (htable->table[k] != NULL) {
-        entry *e = htable->table[k];
-          do {
-              printf("%i ", *(e->bitVector));
-            e = e->next;
-          } while( e!= NULL);
-      }
-    }
-    printf("\n");
+  // hashtable* htable = *(tables[trCount]);
+  
+  printf("SmallTreeTaxaList %i \n",smallTreeTaxaList[trCount][0]);
+  printf("taxonToReductionList! %i \n",taxonToReductionList[trCount][0]);
+  // printf("s_hash from tree %i \n",trCount);
+  //   for(int k=0,entryCount=0;k < htable->tableSize; k++) {
+  //     if (htable->table[k] != NULL) {
+  //       entry *e = htable->table[k];
+  //         do {
+  //             printf("%i ", *(e->bitVector));
+  //           e = e->next;
+  //         } while( e!= NULL);
+  //     }
+  //   }
+  //   printf("\n");
   }
 
 
