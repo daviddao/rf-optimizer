@@ -2865,6 +2865,10 @@ static int* extractSet(int* bitvector, int* smallTreeTaxa){
 		}
 		//Add a stop element in the array
 		set[numberOfOnes] = -1;
+
+    //Sort to get a comparable sequence for steps to follow
+    qsort(set, numberOfOnes, sizeof(int), sortIntegers);
+
 		
 		printf("\n ==>Extracted Set is ");
 		for (i = 0; i < (numberOfOnes + 1); i++) {
@@ -2917,6 +2921,9 @@ static int* extractSets(int* bitvector, int* bitvector2, int* smallTreeTaxa){
     }
     //Add a stop element in the array
     set[numberOfOnes] = -1;
+
+    //Sort to get a comparable sequence for steps to follow
+    qsort(set, numberOfOnes, sizeof(int), sortIntegers);
     
     printf("\n ==>Extracted Set for 2 Bips is ");
     for (i = 0; i < (numberOfOnes + 1); i++) {
@@ -3115,9 +3122,6 @@ void plausibilityChecker(tree *tr, analdef *adef)
   //stores the scores for each bips
   int *scores = (int *)rax_malloc(numberOfBips * sizeof(int));
 
-  //predict scores for drop set removals
-  int *predict = (int *)rax_malloc(numberOfSets * sizeof(int));
-
   int **sets = (int **)rax_malloc(numberOfSets * sizeof(int*)); //Stores all dropsets of all trees 
   
   //For each tree, stores a translation array from taxanumber smalltree->largetree
@@ -3137,7 +3141,6 @@ void plausibilityChecker(tree *tr, analdef *adef)
   for(int it = 0;it < (numberOfSets);it++){
 	int fill[1] = {-1};
 	sets[it] = fill; 
-  predict[it] = 0;
   }
 
   /* loop over all small trees */
@@ -3592,13 +3595,12 @@ void plausibilityChecker(tree *tr, analdef *adef)
     for(int j = 0; j < bipsPerTree[i]; j++) {
 
       int dropSetsPerBip = bipsPerTree[i]; //Compare each bip with all bips
-      int matching = 0; //Will be set to one if dropset is matching
+      int matching = 0; //Will be set to one if dropset is matching, resulting in a score = 0
       
       //Check all dropsets of each bipartition
       for(int k = 0; k < dropSetsPerBip; k++){
         int* dropset = sets[dropSetCount + k];
         printf("dropset : %i \n", dropset[0]);
-
 
         //Test if matching
         if(dropset[0] == -1){
@@ -3612,7 +3614,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
         scores[countBips] = 1;
       }
       
-      dropSetCount = dropSetCount + dropSetsPerBip;
+      dropSetCount = dropSetCount + dropSetsPerBip; //Index of starting DropSets in Sets for the next Bip 
 
       countBips++;
     }
