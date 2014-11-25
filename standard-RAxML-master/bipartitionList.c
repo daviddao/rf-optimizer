@@ -2819,69 +2819,6 @@ static int sortIntegers(const void *a, const void *b)
     return 1;
 }
 
-//function for built-in quicksort sorting after number of bits
-
-static int sortBipartitions(const void *a, const void *b) 
-{
-  int 
-	 ia = *(int *)(a),
-	 ib = *(int *)(b),
-	 bits_ia = __builtin_popcount(ia),
-	 bits_ib = __builtin_popcount(ib);
-	
-   if(bits_ia == bits_ib)
-	   return 0;
-   if(bits_ib > bits_ia)
-	   return -1;
-   else
-	   return 1;
-}
-
-//sort multidimensional arrays with different size 
-
-static int sortSets(const void *a, const void *b)
-{
-  int*
-    ia = *(int**)(a);
-  int*
-    ib = *(int**)(b);
-  int
-    j = 0;
-
-  //while it is equal, we look for the first comparison which is not equal
-  while((ia[j] != -1) && (ib[j] != -1)){
-  
-  int
-    ix = ia[j],
-    iy = ib[j];
-
-  //printf("iy: %i ix: %i \n",ix,iy);
-
-  // if(ix == iy)
-  //    return 0;
-
-  if(ix > iy)
-     return -1;
-  if(ix < iy)
-     return 1;
-
-  //counter increment
-  j++;
-  
-  }
-
-  if((ia[j] == -1) || (ib[j] == -1)){
-    if(ia[j] > ib[j])
-     return -1;
-    if(ia[j] < ib[j])
-     return 1;
-  }
-  return 0;    
-}
-
-
-
-
 /**********************************************************************************/
 
 /************************************* TODO RF-OPT functions *********************/
@@ -2990,6 +2927,89 @@ char *int2bin(int a, char *buffer, int buf_size) {
 
 			    return buffer;
 }
+
+/* function for built-in quicksort sorting after number of bits */
+static int sortBipartitions(const void *a, const void *b) 
+{
+  int 
+   ia = *(int *)(a),
+   ib = *(int *)(b),
+   bits_ia = __builtin_popcount(ia),
+   bits_ib = __builtin_popcount(ib);
+  
+   if(bits_ia == bits_ib)
+     return 0;
+   if(bits_ib > bits_ia)
+     return -1;
+   else
+     return 1;
+}
+
+/* sort multidimensional arrays with different size */
+static int sortSets(const void *a, const void *b)
+{
+  int*
+    ia = *(int**)(a);
+  int*
+    ib = *(int**)(b);
+  int
+    j = 0;
+
+  //while it is equal, we look for the first comparison which is not equal
+  while((ia[j] != -1) && (ib[j] != -1)){
+  
+  int
+    ix = ia[j],
+    iy = ib[j];
+
+  //printf("iy: %i ix: %i \n",ix,iy);
+
+  // if(ix == iy)
+  //    return 0;
+
+  if(ix > iy)
+     return -1;
+  if(ix < iy)
+     return 1;
+
+  //counter increment
+  j++;
+  
+  }
+
+  if((ia[j] == -1) || (ib[j] == -1)){
+    if(ia[j] > ib[j])
+     return -1;
+    if(ia[j] < ib[j])
+     return 1;
+  }
+  return 0;    
+}
+
+int isSameDropSet(int* a, int* b) {
+  int j = 0;
+
+  //while it is equal, we look for the first comparison which is not equal
+  while((a[j] != -1) && (b[j] != -1)){
+  int
+    x = a[j],
+    y = b[j];
+
+  //if not equal, return with false
+  if(x != y)
+    return 0;
+
+  j++;
+
+  }
+
+  if((a[j] == -1) || (b[j] == -1)){
+    if(a[j] != b[j])
+     return 0;
+  }
+  return 1; // made it through all tests, it is the same    
+}
+
 
 
 
@@ -3668,15 +3688,23 @@ void plausibilityChecker(tree *tr, analdef *adef)
   //Implement unique algorithm which keeps track of unique sets
   printf("===> Now Unique Algorithm runs (naive)...\n");
   printf("Number of Sets is %i \n",numberOfSets);
-  
-  qsort(sets,numberOfSets,sizeof(int*),sortSets);
 
+  //int **orderedSets = (int **)rax_malloc(numberOfSets * sizeof(int*)); // Array representing an ordered representation of all sets to extract 
 
+  //memcpy(orderedSets,sets,numberOfSets*sizeof(int*));
 
+  //qsort(orderedSets,numberOfSets,sizeof(int*),sortSets);
 
+  int numberOfUniqueSets = 0;
 
+  //We use this array to translate between Sets and a compressed unique set array representation
+  int* setsToUniqueSets = (int *)rax_malloc(numberOfSets * sizeof(int));
 
-  
+  // int a[] = {1,2,3,-1};
+  // int b[] = {1,2,3,-1};
+  // int c[] = {1,2,3,4,-1};
+
+  // printf("Bool Tests: %i %i \n",isSameDropSet(a,b),isSameDropSet(a,c));
 
 
 
