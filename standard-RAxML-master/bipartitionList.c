@@ -97,9 +97,9 @@ static void mre(hashtable *h, boolean icp, entry*** sbi, int* len, int which, in
 entry *initEntry(void)
 {
   entry *e = (entry*)rax_malloc(sizeof(entry));
-  int test[3] = {42,43,44};
+  //int test[3] = {42,43,44};
 
-  e->translate =  test;
+  //e->translate =  test;
   e->bitVector     = (unsigned int*)NULL;
   e->treeVector    = (unsigned int*)NULL;
   e->supportVector = (int*)NULL;
@@ -2824,10 +2824,10 @@ static int sortIntegers(const void *a, const void *b)
 static int sortBipartitions(const void *a, const void *b) 
 {
   int 
-	ia = *(int *)(a),
-	ib = *(int *)(b),
-	bits_ia = __builtin_popcount(ia),
-	bits_ib = __builtin_popcount(ib);
+	 ia = *(int *)(a),
+	 ib = *(int *)(b),
+	 bits_ia = __builtin_popcount(ia),
+	 bits_ib = __builtin_popcount(ib);
 	
    if(bits_ia == bits_ib)
 	   return 0;
@@ -2836,6 +2836,50 @@ static int sortBipartitions(const void *a, const void *b)
    else
 	   return 1;
 }
+
+//sort multidimensional arrays with different size 
+
+static int sortSets(const void *a, const void *b)
+{
+  int*
+    ia = *(int**)(a);
+  int*
+    ib = *(int**)(b);
+  int
+    j = 0;
+
+  //while it is equal, we look for the first comparison which is not equal
+  while((ia[j] != -1) && (ib[j] != -1)){
+  
+  int
+    ix = ia[j],
+    iy = ib[j];
+
+  //printf("iy: %i ix: %i \n",ix,iy);
+
+  // if(ix == iy)
+  //    return 0;
+
+  if(ix > iy)
+     return -1;
+  if(ix < iy)
+     return 1;
+
+  //counter increment
+  j++;
+  
+  }
+
+  if((ia[j] == -1) || (ib[j] == -1)){
+    if(ia[j] > ib[j])
+     return -1;
+    if(ia[j] < ib[j])
+     return 1;
+  }
+  return 0;    
+}
+
+
 
 
 /**********************************************************************************/
@@ -3088,8 +3132,8 @@ void plausibilityChecker(tree *tr, analdef *adef)
   allocateMultifurcations(tr, smallTree);
 
   /* create a hashtable to store a links to all hashtables of the reference tree */
-  hashtable **tables[(tr->numberOfTrees)*sizeof(hashtable)];
-  int hashcount = 0;
+  //hashtable **tables[(tr->numberOfTrees)*sizeof(hashtable)];
+  //int hashcount = 0;
 
 
   /*START Additional preprocessing step */
@@ -3495,8 +3539,9 @@ void plausibilityChecker(tree *tr, analdef *adef)
 	
 							//TODO: When two 0, bipartition matches
 							if(arr[0] == 0 && arr[1] == 0) {
+                int set[] = {0,-1};
 
-
+                sets[currentSets] = set;
 								printf("It matches!!! \n");
 								//Now we don't have to add any sets to this array
 								currentSets++;
@@ -3541,12 +3586,12 @@ void plausibilityChecker(tree *tr, analdef *adef)
     }
 	}//IF PRINT
 
-    printf("address of s_hash %p \n", &s_hash);
+    //printf("address of s_hash %p \n", &s_hash);
 
-    tables[hashcount] = &s_hash;
-    hashcount = hashcount + 1;
+    //tables[hashcount] = &s_hash;
+    //hashcount = hashcount + 1;
 
-    printf("inside tables[%i] %p \n",hashcount,tables[hashcount]);
+    //printf("inside tables[%i] %p \n",hashcount,tables[hashcount]);
 
 
 	  rec_rf = (double)(2 * (numberOfSplits - rec_bips)) / maxRF;
@@ -3600,14 +3645,14 @@ void plausibilityChecker(tree *tr, analdef *adef)
       //Check all dropsets of each bipartition
       for(int k = 0; k < dropSetsPerBip; k++){
         int* dropset = sets[dropSetCount + k];
-        printf("dropset : %i \n", dropset[0]);
+        //printf("dropset : %i \n", dropset[0]);
 
         //Test if matching
-        if(dropset[0] == -1){
+        if(dropset[0] == 0){
           matching = 1;
         }
-
       }
+
       if (matching) {
         scores[countBips] = 0; 
       } else {
@@ -3620,6 +3665,21 @@ void plausibilityChecker(tree *tr, analdef *adef)
     }
 
   }
+  //Implement unique algorithm which keeps track of unique sets
+  printf("===> Now Unique Algorithm runs (naive)...\n");
+  printf("Number of Sets is %i \n",numberOfSets);
+  
+  qsort(sets,numberOfSets,sizeof(int*),sortSets);
+
+
+
+
+
+
+  
+
+
+
 
   //=== TREE GRAPH CONSTRUCTION ENDS ===
   printf("Scores: ");
@@ -3628,7 +3688,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
   }
 
   
-  printf("\n number of bips are %i \n",countBips);
+  printf("\nnumber of bips are %i \n",countBips);
 
   
     //Print hashtable s_hash TODO!
@@ -3658,7 +3718,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
   for(int fooo = 0; fooo < numberOfSets; fooo++){
     printf("Set %i: ", fooo);
     int i = 0;
-    while(sets[fooo][i] > 0) {
+    while(sets[fooo][i] > -1) {
 	   printf("%i ",sets[fooo][i]);
      i++;
     }
