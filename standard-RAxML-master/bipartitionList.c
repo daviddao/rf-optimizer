@@ -3011,14 +3011,17 @@ int isSameDropSet(int* a, int* b) {
   return 1; // made it through all tests, it is the same    
 }
 
-/* Checks if check already is inside sets between 0 ... numberOfSets */
+/* Checks if check already is inside sets between 0 ... numberOfSets 
+    returns 0 if its not containing
+    returns index+1 if it contains the element 
+*/
 int contains(int* check, int** sets, int numberOfSets) {
-  printf("Now we check %i with ...\n",check[0]);
+  //printf("Now we check %i with ...\n",check[0]);
   for (int i = 0; i < numberOfSets; i++) {
     int* dropset = sets[i];
-    printf("%i .) %i \n",i,dropset[0]);
+    //printf("%i .) %i \n",i,dropset[0]);
     if(isSameDropSet(sets[i],check)){
-      return 1;
+      return (i+1);
     }
   }
 
@@ -3715,6 +3718,21 @@ void plausibilityChecker(tree *tr, analdef *adef)
   //Implement unique algorithm which keeps track of unique sets
   //printf("===> Now Unique Algorithm runs (naive)...\n");
   printf("Number of Sets is %i \n",numberOfSets);
+  printf("Number of Unique Sets is %i \n",numberOfUniqueSets);
+
+  printf("==> Unique Sets: ");
+  for(int i = 0; i < numberOfUniqueSets; i++) {
+    int j = 0;
+    int* set = uniqsets[i];
+    while(set[j] > -1) {
+      printf("%i ",set[j]);
+      j++;
+    }
+    printf(" ; ");
+  }
+  printf("\n");
+
+
 
   //int **orderedSets = (int **)rax_malloc(numberOfSets * sizeof(int*)); // Array representing an ordered representation of all sets to extract 
 
