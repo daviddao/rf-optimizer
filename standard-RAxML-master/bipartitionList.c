@@ -3670,7 +3670,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
   printf("===> Now Unique Algorithm runs (naive)...\n");
   /* unique sets array data structures */
-  int** uniqsets = (int **) rax_malloc(sizeof(int *) * numberOfSets);
+  int** uniqSets = (int **) rax_malloc(sizeof(int *) * numberOfSets);
   int* setsToUniqSets = (int*) rax_malloc(sizeof(int) * numberOfSets);
   int numberOfUniqueSets = 0;
 
@@ -3691,13 +3691,14 @@ void plausibilityChecker(tree *tr, analdef *adef)
       for(int k = 0; k < dropSetsPerBip; k++){
         int* dropset = sets[dropSetCount + k];
         //printf("dropset : %i \n", dropset[0]);
-        int containIndex = contains(dropset,uniqsets,numberOfUniqueSets);
 
+        //Add and filter uniq sets
+        int containIndex = contains(dropset,uniqSets,numberOfUniqueSets);
         if(!containIndex) {
           //If it is not inside uniqSet
           printf("==> Unique set %i added \n",(dropSetCount + k));
-          uniqsets[numberOfUniqueSets] = dropset;
-          setsToUniqSets[dropSetCount + k] = numberOfUniqueSets;
+          uniqSets[numberOfUniqueSets] = dropset;
+          setsToUniqSets[dropSetCount + k] = numberOfUniqueSets; //Add the new index to the translation array
           numberOfUniqueSets++;
         } else {
           //If it is already inside uniqSet
@@ -3722,20 +3723,49 @@ void plausibilityChecker(tree *tr, analdef *adef)
     }
 
   }
-  //Implement unique algorithm which keeps track of unique sets
-  //printf("===> Now Unique Algorithm runs (naive)...\n");
+
+
+  //Now go through all sets and count, how many bips they are for each set
+  printf("==> before counting ... \n");
+  int* numberOfBipsPerSet = (int*)rax_malloc(sizeof(int)*numberOfUniqueSets);
+  for(int i = 0; i < numberOfUniqueSets; i++) {
+    numberOfBipsPerSet[i] = 0;
+    printf("%i ",numberOfBipsPerSet[i]);
+  }
+  printf("\n");
+  
+  for(int i = 0; i < numberOfSets; i++) {
+    int setindex = setsToUniqSets[i];
+    numberOfBipsPerSet[setindex]++;
+  }
+
+  printf("==> After counting .. \n");
+  for(int i = 0; i < numberOfUniqueSets; i++) {
+    printf("%i ",numberOfBipsPerSet[i]);
+  }
+  printf("\n");
+
+  //Now using the knowledge of how many bips there are per set, generate an array for each unique dropset containing all bips
+  int** bipsOfDropSet = (int**)rax_malloc(sizeof(int*)*numberOfUniqueSets);
+  for(int i = 0; i < numberOfUniqueSets; i++) {
+    
+  }
+
+
+
+  //Testing ...
   printf("Number of Sets is %i \n",numberOfSets);
   printf("Number of Unique Sets is %i \n",numberOfUniqueSets);
 
   printf("==> Unique Sets: ");
   for(int i = 0; i < numberOfUniqueSets; i++) {
     int j = 0;
-    int* set = uniqsets[i];
+    int* set = uniqSets[i];
     while(set[j] > -1) {
       printf("%i ",set[j]);
       j++;
     }
-    printf(" ; ");
+    printf("; ");
   }
   printf("\n");
 
