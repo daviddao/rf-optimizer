@@ -2986,6 +2986,7 @@ static int sortSets(const void *a, const void *b)
   return 0;    
 }
 
+/* Checks if two arrays are identical and returns 1 and 0*/
 int isSameDropSet(int* a, int* b) {
   int j = 0;
 
@@ -3010,6 +3011,20 @@ int isSameDropSet(int* a, int* b) {
   return 1; // made it through all tests, it is the same    
 }
 
+/* Checks if check already is inside sets between 0 ... numberOfSets */
+int contains(int* check, int** sets, int numberOfSets) {
+  printf("Now we check %i with ...\n",check[0]);
+  for (int i = 0; i < numberOfSets; i++) {
+    int* dropset = sets[i];
+    printf("%i .) %i \n",i,dropset[0]);
+    if(isSameDropSet(sets[i],check)){
+      return 1;
+    }
+  }
+
+  return 0;
+
+}
 
 
 
@@ -3648,6 +3663,12 @@ void plausibilityChecker(tree *tr, analdef *adef)
   
 
   //=== TREE GRAPH CONSTRUCTION ===
+  
+
+  printf("===> Now Unique Algorithm runs (naive)...\n");
+  //unique sets array
+  int** uniqsets = (int **) rax_malloc(sizeof(int)*numberOfSets);
+  int numberOfUniqueSets = 0;
 
   //We use these variables to iterate through all sets and bips
   int countBips = 0;
@@ -3666,6 +3687,12 @@ void plausibilityChecker(tree *tr, analdef *adef)
       for(int k = 0; k < dropSetsPerBip; k++){
         int* dropset = sets[dropSetCount + k];
         //printf("dropset : %i \n", dropset[0]);
+
+        if(!contains(dropset,uniqsets,numberOfUniqueSets)) {
+          printf("==> Unique set %i added \n",(dropSetCount + k));
+          uniqsets[numberOfUniqueSets] = dropset;
+          numberOfUniqueSets++;
+        }
 
         //Test if matching
         if(dropset[0] == 0){
@@ -3686,7 +3713,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
   }
   //Implement unique algorithm which keeps track of unique sets
-  printf("===> Now Unique Algorithm runs (naive)...\n");
+  //printf("===> Now Unique Algorithm runs (naive)...\n");
   printf("Number of Sets is %i \n",numberOfSets);
 
   //int **orderedSets = (int **)rax_malloc(numberOfSets * sizeof(int*)); // Array representing an ordered representation of all sets to extract 
@@ -3695,18 +3722,25 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
   //qsort(orderedSets,numberOfSets,sizeof(int*),sortSets);
 
-  int numberOfUniqueSets = 0;
 
-  //We use this array to translate between Sets and a compressed unique set array representation
-  int* setsToUniqueSets = (int *)rax_malloc(numberOfSets * sizeof(int));
+   // int d[] = {0,-1};
 
-  // int a[] = {1,2,3,-1};
-  // int b[] = {1,2,3,-1};
-  // int c[] = {1,2,3,4,-1};
+   // int e[] = {0,-1};
+   // int a[] = {1,2,3,-1};
+   // int b[] = {1,2,3,-1};
+   // int c[] = {1,2,3,4,-1};
+
+   // int** test = (int**)rax_malloc(sizeof(int*)*3);
+
+   // test[0] = a;
+   // test[1] = a;
+   // test[2] = e;
+
+
+   // printf("CONTAINS %i \n",contains(d,test,3));
+
 
   // printf("Bool Tests: %i %i \n",isSameDropSet(a,b),isSameDropSet(a,c));
-
-
 
 
   //=== TREE GRAPH CONSTRUCTION ENDS ===
