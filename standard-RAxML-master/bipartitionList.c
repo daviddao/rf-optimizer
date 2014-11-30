@@ -3747,15 +3747,70 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
   //Now using the knowledge of how many bips there are per set, generate an array for each unique dropset containing all bips
   int** bipsOfDropSet = (int**)rax_malloc(sizeof(int*)*numberOfUniqueSets);
+  
   for(int i = 0; i < numberOfUniqueSets; i++) {
-    
+    bipsOfDropSet[i] = (int*)rax_malloc(sizeof(int)*numberOfBipsPerSet[i]); 
+    //int test[1] = {1};
+    //bipsOfDropSet[i] = test;
   }
 
+  //Now iterate through all bips and sort them according to the dropset
 
+
+  printf("==> Storing all bip indices of a certain dropset into an array");
+  //For checking if all dropsets are iterated
+  dropSetCount = 0;
+  //Arrays of counter to keep in track
+  int* counterOfSet = (int*)rax_malloc(sizeof(int)*numberOfUniqueSets);
+  for(int i = 0; i < numberOfUniqueSets; i++) {
+    counterOfSet[i] = 0;
+    printf("c%i ",counterOfSet[i]);
+  }
+
+  currentBips = 0; //Need to keep in track of the number of bips
+  //First iterate through all trees 
+  for(int i = 0; i < numberOfTreesAnalyzed; i++ ) {
+    //For each bipartition in the tree
+    for(int j = 0; j < bipsPerTree[i]; j++) {
+
+      //Look at all bips it is compared too
+      int dropSetsPerBip = bipsPerTree[i];
+
+      for(int k = 0; k < dropSetsPerBip; k++){
+
+        int indexOfUniqDropSet = setsToUniqSets[dropSetCount + k];
+        //printf("!%i \n",setsToUniqSets[dropSetCount + k]);
+
+        int* bips_array = bipsOfDropSet[indexOfUniqDropSet]; 
+
+        bips_array[counterOfSet[indexOfUniqDropSet]] = currentBips; //add bipartition j into the bips array of its dropset
+
+        //increment the internal array index 
+        counterOfSet[indexOfUniqDropSet]++;
+      }
+    //Jump to the next correct dropSetCount!
+    dropSetCount = dropSetCount + dropSetsPerBip;
+
+    currentBips++; //increment currentBips
+    }
+  }
+
+  printf("Number of DropSets extracted%i \n",dropSetCount);
+  printf("Number of Bips extracted %i \n",currentBips);
 
   //Testing ...
   printf("Number of Sets is %i \n",numberOfSets);
   printf("Number of Unique Sets is %i \n",numberOfUniqueSets);
+
+  printf("==> Testing bips of unique sets \n");
+  for(int i = 0; i < numberOfUniqueSets; i++) {
+    printf("Bips of Set %i: ", i);
+    for(int j = 0; j < numberOfBipsPerSet[i]; j++) {
+      int* bips = bipsOfDropSet[i];
+      printf("%i ", bips[j]);
+    }
+    printf("\n");
+  }
 
   printf("==> Unique Sets: ");
   for(int i = 0; i < numberOfUniqueSets; i++) {
