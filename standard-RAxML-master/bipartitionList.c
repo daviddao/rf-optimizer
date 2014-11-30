@@ -3669,8 +3669,9 @@ void plausibilityChecker(tree *tr, analdef *adef)
   
 
   printf("===> Now Unique Algorithm runs (naive)...\n");
-  //unique sets array
-  int** uniqsets = (int **) rax_malloc(sizeof(int)*numberOfSets);
+  /* unique sets array data structures */
+  int** uniqsets = (int **) rax_malloc(sizeof(int *) * numberOfSets);
+  int* setsToUniqSets = (int*) rax_malloc(sizeof(int) * numberOfSets);
   int numberOfUniqueSets = 0;
 
   //We use these variables to iterate through all sets and bips
@@ -3690,11 +3691,17 @@ void plausibilityChecker(tree *tr, analdef *adef)
       for(int k = 0; k < dropSetsPerBip; k++){
         int* dropset = sets[dropSetCount + k];
         //printf("dropset : %i \n", dropset[0]);
+        int containIndex = contains(dropset,uniqsets,numberOfUniqueSets);
 
-        if(!contains(dropset,uniqsets,numberOfUniqueSets)) {
+        if(!containIndex) {
+          //If it is not inside uniqSet
           printf("==> Unique set %i added \n",(dropSetCount + k));
           uniqsets[numberOfUniqueSets] = dropset;
+          setsToUniqSets[dropSetCount + k] = numberOfUniqueSets;
           numberOfUniqueSets++;
+        } else {
+          //If it is already inside uniqSet
+          setsToUniqSets[dropSetCount + k] = (containIndex - 1);
         }
 
         //Test if matching
@@ -3729,6 +3736,12 @@ void plausibilityChecker(tree *tr, analdef *adef)
       j++;
     }
     printf(" ; ");
+  }
+  printf("\n");
+
+  printf("==> setsToUniqSets: ");
+  for(int i = 0; i < numberOfSets; i++) {
+    printf("%i ",setsToUniqSets[i]);
   }
   printf("\n");
 
