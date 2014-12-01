@@ -2838,10 +2838,17 @@ static int* extractSet(int* bitvector, int* smallTreeTaxa){
 			//Extract the first bit from extract and identify the related taxa number in SmallTree
 			numberOfZerosBefore = __builtin_ctz(extract) + numberOfZerosBefore;
 			//printf("Number of Zeros: %i \n", __builtin_ctz(extract));
-			set[i] = smallTreeTaxa[numberOfZerosBefore];
+
+      set[i] = smallTreeTaxa[numberOfZerosBefore];
+
+
+      if(extract == 33){
+        printf("====>>>> %i with %i Zeros before \n", set[i], numberOfZerosBefore);
+      }
+
 			//Now move extract to the next significant bit
-			extract = extract >> numberOfZerosBefore;
-			numberOfZerosBefore = numberOfZerosBefore + 1;
+      numberOfZerosBefore = numberOfZerosBefore + 1;
+			extract = extract >> numberOfZerosBefore; //Never moved!
 			i++;
 		}
 		//Add a stop element in the array
@@ -2877,9 +2884,10 @@ static int* extractSets(int* bitvector, int* bitvector2, int* smallTreeTaxa){
       numberOfZerosBefore = __builtin_ctz(extract) + numberOfZerosBefore;
       //printf("Number of Zeros: %i \n", __builtin_ctz(extract));
       set[i] = smallTreeTaxa[numberOfZerosBefore];
+
+      numberOfZerosBefore = numberOfZerosBefore + 1;
       //Now move extract to the next significant bit
       extract = extract >> numberOfZerosBefore;
-      numberOfZerosBefore = numberOfZerosBefore + 1;
       i++;
     }
 
@@ -2895,9 +2903,11 @@ static int* extractSets(int* bitvector, int* bitvector2, int* smallTreeTaxa){
       numberOfZerosBefore = __builtin_ctz(extract) + numberOfZerosBefore;
       printf("Number of Zeros: %i \n", __builtin_ctz(extract));
       set[i + numberOfOnesBip1] = smallTreeTaxa[numberOfZerosBefore];
+
+      
+      numberOfZerosBefore = numberOfZerosBefore + 1;
       //Now move extract to the next significant bit
       extract = extract >> numberOfZerosBefore;
-      numberOfZerosBefore = numberOfZerosBefore + 1;
       i++;
     }
     //Add a stop element in the array
@@ -3538,41 +3548,56 @@ void plausibilityChecker(tree *tr, analdef *adef)
               unsigned int mask = pow(2,smallTree->ntips) - 1; //this results in a unsigned bitvector with the first ntips bits as 1
 
               //calculate the dropsets by comparing two bipartitions
+              //Be careful (BUG):!! Determine the smallest of two sets (xANDx*,yANDy* | xANDy*,yANDx*)
               unsigned int set_calc = ind_bitvector & s_bitvector & mask; //a = x|y , b = x*|y* -> x AND x* 
-							unsigned int cset_calc = ind_bitvector & ~(s_bitvector) & mask; // x AND y*
-
-							unsigned int set_calc2 = ~ind_bitvector & s_bitvector & mask; // y AND x* 
-							unsigned int cset_calc2 = ~ind_bitvector & ~(s_bitvector) & mask; // y AND y*
+              unsigned int cset_calc2 = ~ind_bitvector & ~(s_bitvector) & mask; // y AND y*
+							
+              unsigned int cset_calc = ind_bitvector & ~(s_bitvector) & mask; // x AND y*
+              unsigned int set_calc2 = ~ind_bitvector & s_bitvector & mask; // y AND x* 
 
 							//Calculate number of bits of the resulting set calculations	
 							int count1 = __builtin_popcount(set_calc);
+              int count4 = __builtin_popcount(cset_calc2);
+
 							int count2 = __builtin_popcount(cset_calc);	
 							int count3 = __builtin_popcount(set_calc2);
-							int count4 = __builtin_popcount(cset_calc2);
 
 							int count1z = __builtin_ctz(set_calc);
+              int count4z = __builtin_ctz(cset_calc2);
+
 							int count2z = __builtin_ctz(cset_calc);	
 							int count3z = __builtin_ctz(set_calc2);
-							int count4z = __builtin_ctz(cset_calc2);
 
 							//Print out debugging bitvectors
-							// int2bin(set_calc, buffer, 32);
-							// printf("a&b makes it %u : %s , c %i b %i \n", set_calc,  buffer, count1, count1z);
-							// int2bin(cset_calc, buffer, 32);
-							// printf("a&~b makes it %u : %s c %i b %i \n", cset_calc ,buffer, count2, count2z);
-							// int2bin(set_calc2, buffer, 32);
-							// printf("~a&b makes it %u : %s c %i b %i  \n", set_calc2,  buffer, count3, count3z);
-							// int2bin(cset_calc2, buffer, 32);
-							// printf("~a&~b makes it %u : %s c %i b %i \n", cset_calc2 ,buffer, count4, count4z);
+							int2bin(set_calc, buffer, 32);
+							printf("a&b makes it %u : %s , c %i b %i \n", set_calc,  buffer, count1, count1z);
+              int2bin(cset_calc2, buffer, 32);
+              printf("~a&~b makes it %u : %s c %i b %i \n", cset_calc2 ,buffer, count4, count4z);
+							int2bin(cset_calc, buffer, 32);
+							printf("a&~b makes it %u : %s c %i b %i \n", cset_calc ,buffer, count2, count2z);
+							int2bin(set_calc2, buffer, 32);
+							printf("~a&b makes it %u : %s c %i b %i  \n", set_calc2,  buffer, count3, count3z);
 
 							//printf("DEBUG ");
 
 							//int arr[4] = {count1, count2, count3, count4};
-						    int arr[4] = {set_calc,cset_calc,set_calc2,cset_calc2};
+						    //int arr[4] = {set_calc,cset_calc,set_calc2,cset_calc2};
 							
               //Sort to get the lowest sets
-							qsort(arr, 4, sizeof(int), sortBipartitions);
-							
+							//qsort(arr, 4, sizeof(int), sortBipartitions);
+
+              //Bug fix, decides which dropset to take
+              int arr[2] = {0,0};
+              if((count1+count4) < (count2+count3)){
+                arr[0] = set_calc;
+                arr[1] = cset_calc2;
+              } else {
+                arr[0] = cset_calc;
+                arr[1] = set_calc2;
+              }
+							qsort(arr,2,sizeof(int),sortBipartitions);
+
+
 							printf("The lowest: %i and %i \n", arr[0], arr[1]);
 	
 							//TODO: When two 0, bipartition matches
@@ -3592,6 +3617,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
 									currentSets++;
 								}
 
+                //BUG: 0,33 it extracts instead of 35 -> 45
 								if((arr[1] != 0) && (arr[0] == 0)){
 									int* set = extractSet(&arr[1], smallTreeTaxa);
 									sets[currentSets] = set;
@@ -3764,7 +3790,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
   int* counterOfSet = (int*)rax_malloc(sizeof(int)*numberOfUniqueSets);
   for(int i = 0; i < numberOfUniqueSets; i++) {
     counterOfSet[i] = 0;
-    printf("c%i ",counterOfSet[i]);
+    //printf("c%i ",counterOfSet[i]);
   }
 
   currentBips = 0; //Need to keep in track of the number of bips
@@ -3794,6 +3820,28 @@ void plausibilityChecker(tree *tr, analdef *adef)
     currentBips++; //increment currentBips
     }
   }
+
+  /* Short summary :
+    sets - array of all dropsets
+    uniqSets - array of all unique dropsets
+    bipsPerTree - bips per tree
+    setsToUniqSets - translates the index of sets to the index of its unique dropset index
+    bipsOfDropSets - all bips which disappear when dropset i is pruned
+    scores - has all scores between 0 and 1 for the bips (however 0s can be found out by looking at all dropsets with link to dropset 0 (because we sort and it will always be the lowest))  
+  */
+
+    printf("Induced Bips! \n");
+  // Now checking which dropset would destroy which bipartition 
+  for(int i = 0 ; i < numberOfBips; i++) {
+    printf("Bip %i is %i \n",i,ind_bips[i]);
+  }
+
+
+  printf("Taxa Names : \n");
+  for(int i = 0; i < tr->mxtips + 1; i++) {
+    printf("%s ",tr->nameList[i]);
+  }
+  printf("\n");
 
   printf("Number of DropSets extracted%i \n",dropSetCount);
   printf("Number of Bips extracted %i \n",currentBips);
