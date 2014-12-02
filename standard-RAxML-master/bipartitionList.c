@@ -3470,7 +3470,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
 			do {
 				unsigned int ind_bitvector = *(e->bitVector);
 				
-				printf("CurrentBip Number %i ind_bitvector %u \n", currentBips, ind_bitvector);
+				//printf("CurrentBip Number %i ind_bitvector %u \n", currentBips, ind_bitvector);
 
 				ind_bips[currentBips] = ind_bitvector;  
 				currentBips++;
@@ -3500,10 +3500,10 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
 								int2bin(ind_bitvector, buffer, 32);
 
-								printf("ind (a) = %s \n", buffer);
+								//printf("ind (a) = %s \n", buffer);
 
 								int2bin(s_bitvector, buffer, 32);
-								printf("smalltree (b) = %s \n", buffer);
+								//printf("smalltree (b) = %s \n", buffer);
 
 
               
@@ -3561,14 +3561,14 @@ void plausibilityChecker(tree *tr, analdef *adef)
 							qsort(arr,2,sizeof(int),sortBipartitions);
 
 
-							printf("The lowest: %i and %i \n", arr[0], arr[1]);
+							//printf("The lowest: %i and %i \n", arr[0], arr[1]);
 	
 							//TODO: When two 0, bipartition matches
 							if(arr[0] == 0 && arr[1] == 0) {
                 int set[] = {0,-1};
 
                 sets[currentSets] = set;
-								printf("It matches!!! \n");
+								//printf("It matches!!! \n");
 								//Now we don't have to add any sets to this array
 								currentSets++;
 								//TODO: Take the the reference vector and make it matching
@@ -3734,22 +3734,50 @@ void plausibilityChecker(tree *tr, analdef *adef)
     //bipsOfDropSet[i] = test;
   }
 
-  //Now iterate through all bips and sort them according to the dropset
+  
+  printf("==> Initialize the Bips Of Taxa \n");
+  //Stores the number of bips each taxa is included (ABC|DE is stored by A,B,C,D and E)
+  //It can be calculated by iterating through all trees and adding the taxa 
+  int **bipsOfTaxa = (int**)rax_malloc(tr->mxtips *sizeof(int*) + 1);
+  int *numberOfBipsPerTaxa = (int*)rax_malloc(tr->mxtips * sizeof(int) + 1);
+  int *taxaBipsCounter = (int*)rax_malloc(tr->mxtips * sizeof(int) + 1);
 
+  //Initialize and start it with 1 ... mxtips for easier processing
+  for(int i = 1; i < tr->mxtips+1; i++){
+    numberOfBipsPerTaxa[i] = 0;
+    taxaBipsCounter[i] = 0;
+  }
 
-  printf("==> Storing all bip indices of a certain dropset into an array");
+  //Now add up all
+  for (int tree = 0; tree < tr->numberOfTrees; tree++) {
+    int* list = smallTreeTaxaList[tree];
+    for (int j = 0; j < taxaPerTree[tree]; j++) {
+      int taxa = list[j];
+      numberOfBipsPerTaxa[taxa] = numberOfBipsPerTaxa[taxa] + bipsPerTree[tree];
+    } 
+  }
+
+  //Now create dummy arrays inside bipsOfTaxa
+  for(int i = 1; i < tr->mxtips+1; i++) {
+    bipsOfTaxa[i] = (int*)rax_malloc(sizeof(int)*numberOfBipsPerTaxa[i]);
+  }
+
+  printf("==> Storing all bip indices of a certain dropset into an array \n");
   //For checking if all dropsets are iterated
   dropSetCount = 0;
   //Arrays of counter to keep in track
   int* counterOfSet = (int*)rax_malloc(sizeof(int)*numberOfUniqueSets);
   for(int i = 0; i < numberOfUniqueSets; i++) {
     counterOfSet[i] = 0;
-    //printf("c%i ",counterOfSet[i]);
   }
 
   currentBips = 0; //Need to keep in track of the number of bips
   //First iterate through all trees 
   for(int i = 0; i < numberOfTreesAnalyzed; i++ ) {
+
+    //get the correct smallTreeTaxa List
+    int* list = smallTreeTaxaList[i];
+
     //For each bipartition in the tree
     for(int j = 0; j < bipsPerTree[i]; j++) {
 
@@ -3771,6 +3799,23 @@ void plausibilityChecker(tree *tr, analdef *adef)
     //Jump to the next correct dropSetCount!
     dropSetCount = dropSetCount + dropSetsPerBip;
 
+    //now insert the bip into bipsOfTaxa Array
+    for(int ix = 0; ix < taxaPerTree[i]; ix++) {
+
+      //get the taxa number
+      int stree_Taxa = list[ix];
+
+      //get the bips list of this taxa number
+      int* bipsList = bipsOfTaxa[stree_Taxa];
+
+      //now get the position of the biplist and put in our bip index
+      bipsList[taxaBipsCounter[stree_Taxa]] = currentBips;
+
+      //increment the counter 
+      taxaBipsCounter[stree_Taxa]++;
+
+    }
+
     currentBips++; //increment currentBips
     }
   }
@@ -3784,32 +3829,6 @@ void plausibilityChecker(tree *tr, analdef *adef)
     scores - has all scores between 0 and 1 for the bips (however 0s can be found out by looking at all dropsets with link to dropset 0 (because we sort and it will always be the lowest))  
   */
 
-
-
-  //Stores the number of bips each taxa is included (ABC|DE is stored by A,B,C,D and E)
-  //It can be calculated by iterating through all trees and adding the taxa 
-  int *taxaBipsListSize = (int*)rax_malloc(tr->mxtips * sizeof(int) + 1);
-
-  //Initialize and start it with 1 ... mxtips for easier processing
-  for(int i = 1; i < tr->mxtips+1; i++){
-    taxaBipsListSize[i] = 0;
-  }
-
-  //Now add up all
-  for (int tree = 0; tree < tr->numberOfTrees; tree++) {
-    int* list = smallTreeTaxaList[tree];
-    for (int j = 0; j < taxaPerTree[tree]; j++) {
-      int taxa = list[j];
-      taxaBipsListSize[taxa]++;
-    } 
-  }
-
-  //Now print out result
-  printf("==>Number of Bips with this Taxa");
-  for(int i = 1; i < tr->mxtips+1; i++){
-    printf("Taxa %i => %i \n",i,taxaBipsListSize[i]);
-  }
-
   // for(int trCount=0; trCount < tr->numberOfTrees; trCount++){
   //     for(int i = 0; i < (sizeof(smallTreeTaxaList[i])); i++){
   //       printf("For Tree %i its %i \n",trCount,i);
@@ -3817,25 +3836,9 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
   // }
   
-  // hashtable* htable = *(tables[trCount]);
-  
-  //printf("SmallTreeTaxaList %i \n",smallTreeTaxaList[trCount][0]);
 
 
 
-  //printf("taxonToReductionList! %i \n",taxonToReductionList[trCount][0]);
-  // printf("s_hash from tree %i \n",trCount);
-  //   for(int k=0,entryCount=0;k < htable->tableSize; k++) {
-  //     if (htable->table[k] != NULL) {
-  //       entry *e = htable->table[k];
-  //         do {
-  //             printf("%i ", *(e->bitVector));
-  //           e = e->next;
-  //         } while( e!= NULL);
-  //     }
-  //   }
-  //   printf("\n");
-  //}  
 
   //Check if it destroys the bipartition
   //Starting from index 1 (because 0 stands for all who already matches)
@@ -3848,7 +3851,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
 
 //Printing if
-if(0){
+if(1){
   for(int i = 0; i < numberOfUniqueSets; i++) {
     printf("Bips of Set %i: ", i);
     for(int j = 0; j < numberOfBipsPerSet[i]; j++) {
@@ -3888,6 +3891,18 @@ if(0){
     }
     printf("\n");
   }
+
+  printf("!!!==> Testing bips of taxa \n");
+  for(int i = 1; i < tr->mxtips; i++) {
+    printf("Bips of Taxa %i: ", i);
+    for(int j = 0; j < numberOfBipsPerTaxa[i]; j++) {
+      int* bips = bipsOfTaxa[i];
+      printf("%i ", bips[j]);
+    }
+    printf("\n");
+  }
+
+
 
   printf("==> Unique Sets: ");
   for(int i = 0; i < numberOfUniqueSets; i++) {
@@ -3979,7 +3994,7 @@ if(0){
     printf("\n");
   }
   printf("\n");
-  
+
 }//End Printif
 
 
