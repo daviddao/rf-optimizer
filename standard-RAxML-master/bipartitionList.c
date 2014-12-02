@@ -2904,7 +2904,7 @@ static int* extractSets(int* bitvector, int* bitvector2, int* smallTreeTaxa){
       printf("Number of Zeros: %i \n", __builtin_ctz(extract));
       set[i + numberOfOnesBip1] = smallTreeTaxa[numberOfZerosBefore];
 
-      
+
       numberOfZerosBefore = numberOfZerosBefore + 1;
       //Now move extract to the next significant bit
       extract = extract >> numberOfZerosBefore;
@@ -3043,7 +3043,7 @@ int contains(int* check, int** sets, int numberOfSets) {
 
 
 /**********************************************************************************/
-/*************************** RF-OPT Algorihm by David *****************************/
+/*************************** RF-OPT Algorihm by David Dao *************************/
 /**********************************************************************************/
 
 void plausibilityChecker(tree *tr, analdef *adef)
@@ -3190,10 +3190,14 @@ void plausibilityChecker(tree *tr, analdef *adef)
 	numberOfBips = 0,
 	numberOfSets = 0;
 
+  //Stores the number of bips of each tree
   int *bipsPerTree = (int *)rax_malloc(tr->numberOfTrees * sizeof(int));
 
+  //Stores the number of taxa for each tree
+  int *taxaPerTree = (int *)rax_malloc(tr->numberOfTrees * sizeof(int));
 
-  //Calculate all bipartitions, I created a new treeFile2 and a new getNumberOfTrees method!!
+
+  //To calculate all bipartitions, I created a new treeFile2 and a new getNumberOfTrees method!!
   for(i = 0; i < tr->numberOfTrees; i++) {
 	int this_treeBips = readMultifurcatingTree(treeFile2, smallTree, adef, TRUE);
 	numberOfBips = numberOfBips + this_treeBips;
@@ -3270,6 +3274,9 @@ void plausibilityChecker(tree *tr, analdef *adef)
 	  */
 	  
 	  firstTaxon = smallTree->start->number;
+
+    //Saves the number of taxa in the tree
+    taxaPerTree[numberOfTreesAnalyzed] = smallTree->ntips; 
 	  
 	  /***********************************************************************************/
 	  /* Reconstruction Step */
@@ -3447,58 +3454,12 @@ void plausibilityChecker(tree *tr, analdef *adef)
 	  smallTreeTaxaList[numberOfTreesAnalyzed] = smallTreeTaxa;
     taxonToReductionList[numberOfTreesAnalyzed] = taxonToReductionCopy;	  
 
+    printf("smallTreeTaxa Names: ");
+    for(int gr = 0; gr < (smallTree->ntips); gr++) {
+      printf("%s ",smallTree->nameList[smallTreeTaxa[gr]]);
+    }
+    printf("\n");
 
-
-
-
-      printf("smallTreeTaxa Names: ");
-      for(int gr = 0; gr < (smallTree->ntips); gr++) {
-        printf("%s ",smallTree->nameList[smallTreeTaxa[gr]]);
-      }
-      printf("\n");
-
-
-//     printf("Small Hashtable: \n" );
-//     //Print hashtable s_hash
-//     for(int k=0,entryCount=0;k < s_hash->tableSize; k++) {
-//       if (s_hash->table[k] != NULL) {
-//         entry *e = s_hash->table[k];
-//           do {
-//               printf("%i ", *(e->bitVector));
-//             e = e->next;
-//           } while( e!= NULL);
-//       }
-//     }
-//     printf("\n");
-
-// /
-//   printf("TEST: \n" );
-//     //Print hashtable s_hash
-//     for(int k=0,entryCount=0;k < s_hash->tableSize; k++) {
-//       if (s_hash->table[k] != NULL) {
-//         entry *e = s_hash->table[k];
-//           do {
-//               printf("%i ", (e->translate) );
-//             e = e->next;
-//           } while( e!= NULL);
-//       }
-//     }
-//     printf("\n");
-
-
-//     printf("Induced Hashtable: \n" );
-//     for(int k=0,entryCount=0;k < ind_hash->tableSize; k++) {
-//       if (ind_hash->table[k] != NULL) {
-//         entry *e = ind_hash->table[k];
-//           do {
-//               printf("%i ", *(e->bitVector));
-//             e = e->next;
-//           } while( e!= NULL);
-//       }
-//     }
-//     printf("\n");
-
-	if(true){ //IF PRINT
 
     int this_currentSmallBips = 0; //Variable resets everytime for each tree analyzed
     //TODO ! This function iterates through induced hash table and compares everything with the bitvectors in the smalltree hashtable
@@ -3514,6 +3475,8 @@ void plausibilityChecker(tree *tr, analdef *adef)
 				ind_bips[currentBips] = ind_bitvector;  
 				currentBips++;
 
+
+        //Iterate through all bips and calculate the dropsets
 				for (int _k=0; _k < s_hash->tableSize; _k++) {
 					if (s_hash->table[_k] != NULL) {
 						entry *s_e = s_hash->table[_k];
@@ -3568,15 +3531,15 @@ void plausibilityChecker(tree *tr, analdef *adef)
 							int count2z = __builtin_ctz(cset_calc);	
 							int count3z = __builtin_ctz(set_calc2);
 
-							//Print out debugging bitvectors
-							int2bin(set_calc, buffer, 32);
-							printf("a&b makes it %u : %s , c %i b %i \n", set_calc,  buffer, count1, count1z);
-              int2bin(cset_calc2, buffer, 32);
-              printf("~a&~b makes it %u : %s c %i b %i \n", cset_calc2 ,buffer, count4, count4z);
-							int2bin(cset_calc, buffer, 32);
-							printf("a&~b makes it %u : %s c %i b %i \n", cset_calc ,buffer, count2, count2z);
-							int2bin(set_calc2, buffer, 32);
-							printf("~a&b makes it %u : %s c %i b %i  \n", set_calc2,  buffer, count3, count3z);
+							// //Print out debugging bitvectors
+							// int2bin(set_calc, buffer, 32);
+							// printf("a&b makes it %u : %s , c %i b %i \n", set_calc,  buffer, count1, count1z);
+       //        int2bin(cset_calc2, buffer, 32);
+       //        printf("~a&~b makes it %u : %s c %i b %i \n", cset_calc2 ,buffer, count4, count4z);
+							// int2bin(cset_calc, buffer, 32);
+							// printf("a&~b makes it %u : %s c %i b %i \n", cset_calc ,buffer, count2, count2z);
+							// int2bin(set_calc2, buffer, 32);
+							// printf("~a&b makes it %u : %s c %i b %i  \n", set_calc2,  buffer, count3, count3z);
 
 							//printf("DEBUG ");
 
@@ -3586,7 +3549,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
               //Sort to get the lowest sets
 							//qsort(arr, 4, sizeof(int), sortBipartitions);
 
-              //Bug fix, decides which dropset to take
+              //Bug fix, decides which dropset to take, there are only two choices
               int arr[2] = {0,0};
               if((count1+count4) < (count2+count3)){
                 arr[0] = set_calc;
@@ -3631,15 +3594,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
 									currentSets++;
 								}
 							}//END ELSE
-							
-							
 						
-							//: Create a list of all taxa with bips keys where the taxa is inside the bips (What is the best data structure?)
-							
-							
-							//: Traverse the 
-							
-
 							s_e = s_e->next;
 						} while (s_e!=NULL);
 					}
@@ -3648,7 +3603,6 @@ void plausibilityChecker(tree *tr, analdef *adef)
 			} while (e!=NULL);
     }
     }
-	}//IF PRINT
 
     //printf("address of s_hash %p \n", &s_hash);
 
@@ -3830,6 +3784,81 @@ void plausibilityChecker(tree *tr, analdef *adef)
     scores - has all scores between 0 and 1 for the bips (however 0s can be found out by looking at all dropsets with link to dropset 0 (because we sort and it will always be the lowest))  
   */
 
+
+
+  //Stores the number of bips each taxa is included (ABC|DE is stored by A,B,C,D and E)
+  //It can be calculated by iterating through all trees and adding the taxa 
+  int *taxaBipsListSize = (int*)rax_malloc(tr->mxtips * sizeof(int) + 1);
+
+  //Initialize and start it with 1 ... mxtips for easier processing
+  for(int i = 1; i < tr->mxtips+1; i++){
+    taxaBipsListSize[i] = 0;
+  }
+
+  //Now add up all
+  for (int tree = 0; tree < tr->numberOfTrees; tree++) {
+    int* list = smallTreeTaxaList[tree];
+    for (int j = 0; j < taxaPerTree[tree]; j++) {
+      int taxa = list[j];
+      taxaBipsListSize[taxa]++;
+    } 
+  }
+
+  //Now print out result
+  printf("==>Number of Bips with this Taxa");
+  for(int i = 1; i < tr->mxtips+1; i++){
+    printf("Taxa %i => %i \n",i,taxaBipsListSize[i]);
+  }
+
+  // for(int trCount=0; trCount < tr->numberOfTrees; trCount++){
+  //     for(int i = 0; i < (sizeof(smallTreeTaxaList[i])); i++){
+  //       printf("For Tree %i its %i \n",trCount,i);
+  //     }
+
+  // }
+  
+  // hashtable* htable = *(tables[trCount]);
+  
+  //printf("SmallTreeTaxaList %i \n",smallTreeTaxaList[trCount][0]);
+
+
+
+  //printf("taxonToReductionList! %i \n",taxonToReductionList[trCount][0]);
+  // printf("s_hash from tree %i \n",trCount);
+  //   for(int k=0,entryCount=0;k < htable->tableSize; k++) {
+  //     if (htable->table[k] != NULL) {
+  //       entry *e = htable->table[k];
+  //         do {
+  //             printf("%i ", *(e->bitVector));
+  //           e = e->next;
+  //         } while( e!= NULL);
+  //     }
+  //   }
+  //   printf("\n");
+  //}  
+
+  //Check if it destroys the bipartition
+  //Starting from index 1 (because 0 stands for all who already matches)
+  //We need a score array saving the scores for each uniqset
+
+
+
+  
+  int* rf_score = (int*)rax_malloc(sizeof(int)*numberOfUniqueSets);
+
+
+//Printing if
+if(0){
+  for(int i = 0; i < numberOfUniqueSets; i++) {
+    printf("Bips of Set %i: ", i);
+    for(int j = 0; j < numberOfBipsPerSet[i]; j++) {
+      int* bips = bipsOfDropSet[i];
+      printf("%i ", bips[j]);
+    }
+    printf("\n");
+  }
+
+
     printf("Induced Bips! \n");
   // Now checking which dropset would destroy which bipartition 
   for(int i = 0 ; i < numberOfBips; i++) {
@@ -3877,7 +3906,6 @@ void plausibilityChecker(tree *tr, analdef *adef)
     printf("%i ",setsToUniqSets[i]);
   }
   printf("\n");
-
 
 
   //int **orderedSets = (int **)rax_malloc(numberOfSets * sizeof(int*)); // Array representing an ordered representation of all sets to extract 
@@ -3951,25 +3979,8 @@ void plausibilityChecker(tree *tr, analdef *adef)
     printf("\n");
   }
   printf("\n");
-
-  for(int trCount=0; trCount < tr->numberOfTrees; trCount++){
   
-  // hashtable* htable = *(tables[trCount]);
-  
-  printf("SmallTreeTaxaList %i \n",smallTreeTaxaList[trCount][0]);
-  printf("taxonToReductionList! %i \n",taxonToReductionList[trCount][0]);
-  // printf("s_hash from tree %i \n",trCount);
-  //   for(int k=0,entryCount=0;k < htable->tableSize; k++) {
-  //     if (htable->table[k] != NULL) {
-  //       entry *e = htable->table[k];
-  //         do {
-  //             printf("%i ", *(e->bitVector));
-  //           e = e->next;
-  //         } while( e!= NULL);
-  //     }
-  //   }
-  //   printf("\n");
-  }
+}//End Printif
 
 
   printBothOpen("Number of small trees skipped: %d\n\n", tr->numberOfTrees - numberOfTreesAnalyzed);
