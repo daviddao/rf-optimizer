@@ -3518,9 +3518,9 @@ void plausibilityChecker(tree *tr, analdef *adef)
               unsigned int cset_calc = ind_bitvector & ~(s_bitvector) & mask; // x AND y*
               unsigned int set_calc2 = ~ind_bitvector & s_bitvector & mask; // y AND x* 
 
-							//Calculate number of bits of the resulting set calculations	
+			//Calculate number of bits of the resulting set calculations	
 							int count1 = __builtin_popcount(set_calc);
-              int count4 = __builtin_popcount(cset_calc2);
+            int count4 = __builtin_popcount(cset_calc2);
 
 							int count2 = __builtin_popcount(cset_calc);	
 							int count3 = __builtin_popcount(set_calc2);
@@ -3829,26 +3829,55 @@ void plausibilityChecker(tree *tr, analdef *adef)
     scores - has all scores between 0 and 1 for the bips (however 0s can be found out by looking at all dropsets with link to dropset 0 (because we sort and it will always be the lowest))  
   */
 
-  // for(int trCount=0; trCount < tr->numberOfTrees; trCount++){
-  //     for(int i = 0; i < (sizeof(smallTreeTaxaList[i])); i++){
-  //       printf("For Tree %i its %i \n",trCount,i);
-  //     }
-
-  // }
-  
-
-
-
 
   //Check if it destroys the bipartition
   //Starting from index 1 (because 0 stands for all who already matches)
   //We need a score array saving the scores for each uniqset
-
-
-
   
   int* rf_score = (int*)rax_malloc(sizeof(int)*numberOfUniqueSets);
 
+  printf("\n==> Calculating the score for the first iteration \n");
+  //Iterate through all 
+  for(int i = 0; i < numberOfUniqueSets; i++) {
+  	int* set = uniqSets[i]; //Get the dropset, first dropset is 0 (if something is matching)
+
+  	printf("==> Analyze Unique DropSet %i \n", i);
+
+  	//Now iterate through the set
+  	int j = 0;
+  	while(set[j] != -1) {
+
+
+  		int taxa = set[j]; //Get the taxa
+  		printf("Taxa number is %i \n",taxa);
+
+  		int* listOfBips = bipsOfTaxa[taxa]; //Get all bips of this taxa
+
+  		//Go through all bipartitions containing this taxa
+  		for(int k = 0; k < numberOfBipsPerTaxa[taxa]; k++){
+
+  			int bipindex = listOfBips[k]; //Get the index of the Bipartition
+
+  			int bip = ind_bips[bipindex];
+
+
+  			//Printing for testing
+  			char buffer[33];
+			buffer[32] = '\0';
+			int2bin(bip, buffer, 32);
+			printf("bip %i = %s \n", bipindex, buffer);
+			//End Printing
+
+			//Now analyze this Bipartition
+
+
+
+  		}	
+  		printf("\n \n");
+
+  		j++;
+  	}
+  }
 
 //Printing if
 if(1){
@@ -3892,8 +3921,8 @@ if(1){
     printf("\n");
   }
 
-  printf("!!!==> Testing bips of taxa \n");
-  for(int i = 1; i < tr->mxtips; i++) {
+  printf("==> Testing bips of taxa \n");
+  for(int i = 1; i < tr->mxtips + 1; i++) {
     printf("Bips of Taxa %i: ", i);
     for(int j = 0; j < numberOfBipsPerTaxa[i]; j++) {
       int* bips = bipsOfTaxa[i];
