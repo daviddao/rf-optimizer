@@ -3851,8 +3851,9 @@ void plausibilityChecker(tree *tr, analdef *adef)
   int* rf_score = (int*)rax_malloc(sizeof(int)*numberOfUniqueSets);
 
   printf("\n==> Calculating the score for the first iteration \n");
-  //Iterate through all 
+  //Iterate through all sets
   for(int i = 0; i < numberOfUniqueSets; i++) {
+
   	int* set = uniqSets[i]; //Get the dropset, first dropset is 0 (if something is matching)
 
   	printf("==> Analyze Unique DropSet %i \n", i);
@@ -3888,13 +3889,36 @@ void plausibilityChecker(tree *tr, analdef *adef)
 			//Which tree does this bipartition belongs too?
 			int treenumber = treenumberOfBip[bipindex];
 
-			//Get the smallTreeTaxa Array of this tree
-			int* stTaxa = smallTreeTaxaList[treenumber];
+			//Get the taxonToSmallTree Array of this tree
+			int* stTaxa = taxonToReductionList[treenumber];
 
 			//Translate the global taxon number it into the local index used by our bips
-			int translated_index = stTaxa[taxa];
+			int translated_index = stTaxa[taxa - 1]; //We use taxa - 1 because we start counting at taxa 1 = 0 !
 
-			printf("%i \n", translated_index);
+			//printf("%i \n", translated_index);
+
+			//Create a mask with bit on index set to 1!
+			// int mask = 0;
+			// mask |= 1 << translated_index;
+
+			//Check if Bip bit on desired index is set to 1 otherwise use the complement
+			int bit = bip & (1 << translated_index);
+			
+			if(bit){
+				//Clear the bit
+				bip &= ~(1 << translated_index);
+				printf("after clearing: %i \n", __builtin_popcount(bip));
+			} else {
+				//Clear the bit on the complement, don't forget to set the offset to 0
+				int numberOfTaxa = taxaPerTree[treenumber];
+				unsigned int mask = pow(2,numberOfTaxa) - 1;
+				bip = ~bip;
+				bip &= ~(1 << translated_index);
+				bip = bip & mask;
+				printf("after clearing complement: %i \n", __builtin_popcount(bip));
+			}
+
+
 
 
 
