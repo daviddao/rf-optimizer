@@ -3858,6 +3858,12 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
   	printf("==> Analyze Unique DropSet %i \n", i);
 
+  	//We use this data structure to keep track of the to toggled bits
+  	int* toggleBits = (int*)rax_malloc(sizeof(int)*numberOfBips);
+  	for(int ix = 0; ix < numberOfBips; ix++) {
+  		toggleBits[ix] = 0;
+  	}
+
   	//Now iterate through the set
   	int j = 0;
   	while(set[j] != -1) {
@@ -3875,12 +3881,14 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
   			int bip = ind_bips[bipindex];
 
-  			//Printing for testing
-  			//char buffer[33];
-			//buffer[32] = '\0';
-			//int2bin(bip, buffer, 32);
-			//printf("bip %i = %s \n", bipindex, buffer);
-			//End Printing
+  			// Printing for testing
+  			if(bipindex == 4) {
+  			char buffer[33];
+			buffer[32] = '\0';
+			int2bin(bip, buffer, 32);
+			printf("bip %i = %s \n", bipindex, buffer);
+			}
+			// End Printing
 
 			//Now analyze this Bipartition
 
@@ -3895,35 +3903,20 @@ void plausibilityChecker(tree *tr, analdef *adef)
 			//Translate the global taxon number it into the local index used by our bips
 			int translated_index = stTaxa[taxa - 1]; //We use taxa - 1 because we start counting at taxa 1 = 0 !
 
-			//printf("%i \n", translated_index);
+			//Save the to toggle index into toggleBits vector
+			toggleBits[bipindex] |= 1 << translated_index;
 
-			//Create a mask with bit on index set to 1!
-			// int mask = 0;
-			// mask |= 1 << translated_index;
+			//Sort for bits set on one side of the bip
+			int leftBits = __builtin_popcount(toggleBits[bipindex] & bip);
+			int rightBits = __builtin_popcount(toggleBits[bipindex]) - leftBits;
 
-			//Check if Bip bit on desired index is set to 1 otherwise use the complement
-			int bit = bip & (1 << translated_index);
+			int leftBip = __builtin_popcount(bip);
+			int rightBip = taxaPerTree[treenumber] - leftBip;
+
+			//Check if bipartition now became trivial
+			printf("bits on the left side after deleting %i: %i \n",translated_index,leftBip - leftBits);
+			printf("bits on the right side after deleting %i: %i \n",translated_index,rightBip - rightBits);
 			
-			if(bit){
-				//Clear the bit
-				bip &= ~(1 << translated_index);
-				printf("after clearing: %i \n", __builtin_popcount(bip));
-			} else {
-				//Clear the bit on the complement, don't forget to set the offset to 0
-				int numberOfTaxa = taxaPerTree[treenumber];
-				unsigned int mask = pow(2,numberOfTaxa) - 1;
-				bip = ~bip;
-				bip &= ~(1 << translated_index);
-				bip = bip & mask;
-				printf("after clearing complement: %i \n", __builtin_popcount(bip));
-			}
-
-
-
-
-
-
-
 
   		}	
   		printf("\n \n");
