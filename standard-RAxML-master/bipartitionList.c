@@ -2355,122 +2355,6 @@ static int rec_findBipartitions(unsigned int ** bitvectors, int* seq, int arrays
   return found;
 }
 
-//Additionally to the method above, rec_findAddBipartitions add the bipartitions into a second hashtable ind_hash
-static int rec_findAddBipartitions(unsigned int ** bitvectors, int* seq, int arraysize, int* translate, int numsp, unsigned int vLength, int ntips, int first, hashtable* hash, hashtable* ind_hash, int* taxonToReduction)
-{
-  int 
-    i, 
-    j,
-    o, 
-    taxon,
-    found = 0,
-    before;
-    
-  unsigned int 
-    k, 
-    *toInsert = (unsigned int*)NULL,
-    *bipartition = (unsigned int*)NULL;
-    
-  hashNumberType 
-    position;
-  
-  int 
-    numberOfSplits = 0, /* stop after extracting n-3 splits */ 
-    firstTaxon = taxonToReduction[first - 1] + 1,   
-    *V = (int *)rax_malloc((arraysize) * sizeof(int)),
-    *bipartitions = (int *)rax_malloc((ntips - 3) * sizeof(int));
-
-  for(i = arraysize - 1; i >= 0; i--) 
-    {
-      V[i] = 1;
-    
-      /* Extract Bipartiton from inner node! */
-      if(!isTip(translate[seq[i]],numsp) && (numberOfSplits < (ntips - 3)))
-  {
-    /* we can be sure of bifurcating trees, therefore j < deg(i) = 2 */
-    for(j = 0; j < 2; j++)      
-      V[i] = V[i] + V[i + V[i]];     
-
-    /* find out the memory efficient index for this taxon which lies between 0.. (ntips - 1) instead of 1..mxtips  
-       We have to subtract 1 because array starts from 0.. */  
-    int 
-      index = taxonToReduction[translate[seq[i]] - 1];
-
-    /* save bipartition */
-    bipartitions[numberOfSplits] = index;
-
-    toInsert = bitvectors[index];
-
-    //printf("We are working with %i \n", index);
-    /* Calculate Bipartition */
-    for(j = 1; j < V[i]; j++) 
-      {   
-        /* look if Preorderlabel at index i + j is a tip! */
-        if(isTip(translate[seq[i + j]],numsp))
-    {
-      /* translate taxon number to a number between 0 and smalltreesize */      
-      taxon = taxonToReduction[translate[seq[i + j]] - 1] + 1;
-
-      /* set bit to one */
-      toInsert[(taxon-1)  / MASK_LENGTH] |= mask32[(taxon-1) % MASK_LENGTH];
-    }
-        else
-    {      
-      before = taxonToReduction[translate[seq[i+j]] - 1];
-
-      bipartition = bitvectors[before];
-
-      for(k = 0; k < vLength; k++) 
-        toInsert[k] |= bipartition[k];
-
-      /* jump to the next relevant taxon */ 
-      j = j + V[i+j] - 1;
-    }        
-      }
-    /* count number of splits and stop at n-3 */
-    numberOfSplits += 1;
-  }
-    }
-  
-  for(i=0;i < (ntips - 3); i++) 
-    {
-      toInsert = bitvectors[bipartitions[i]];
-
-      /* if bitvector contains first taxon, use its complement */
-      if(toInsert[(firstTaxon-1) / MASK_LENGTH] & mask32[(firstTaxon-1) % MASK_LENGTH]) 
-  {                 
-    /* Padding the last bits! */
-    if(ntips % MASK_LENGTH != 0) 
-      {            
-        for(o = MASK_LENGTH; o > (ntips % MASK_LENGTH); o--)         
-    toInsert[vLength - 1] |= mask32[o-1];       
-      }
-    
-    for(k=0;k < vLength; k++)         
-      toInsert[k] = ~toInsert[k];         
-  }
-      
-      assert(!(toInsert[(firstTaxon-1) / MASK_LENGTH] & mask32[(firstTaxon-1) % MASK_LENGTH]));
-      
-      /* compute hash */
-      position = oat_hash((unsigned char *)toInsert, sizeof(unsigned int) * vLength);
-      
-      position = position % hash->tableSize;
-      
-      /* re-hash to the new hash table that contains the bips of the large tree, pruned down 
-   to the taxa contained in the small tree
-      */
-      insertHashPlausibility(toInsert, ind_hash, vLength, position);     
-
-      found = found + findHash(toInsert, hash, vLength, position);              
-    }
-
-  rax_free(V);
-  rax_free(bipartitions);
-  
-  return found;
-}
-
 /* method adapted for multifurcating trees, changes are: 
 we now need information about the degree of an inner node, because it is not 2 anymore 
 we also can have less than n-3 splits and therefore need a new parameter telling us the actual split number */
@@ -2821,11 +2705,129 @@ static int sortIntegers(const void *a, const void *b)
 
 /**********************************************************************************/
 
-/************************************* TODO RF-OPT functions *********************/
+/************************************* RF-OPT functions ***************************/
 
-//Extract the set of the bitvector and stores the taxa into an array called set which it returns
-//TODO only for one bitvector! Stop Element is -1
-//
+/* Additionally to the method above, rec_findAddBipartitions add the bipartitions into a second hashtable ind_hash */
+static int rec_findAddBipartitions(unsigned int ** bitvectors, int* seq, int arraysize, int* translate, int numsp, unsigned int vLength, int ntips, int first, hashtable* hash, hashtable* ind_hash, int* taxonToReduction)
+{
+  int 
+    i, 
+    j,
+    o, 
+    taxon,
+    found = 0,
+    before;
+    
+  unsigned int 
+    k, 
+    *toInsert = (unsigned int*)NULL,
+    *bipartition = (unsigned int*)NULL;
+    
+  hashNumberType 
+    position;
+  
+  int 
+    numberOfSplits = 0, /* stop after extracting n-3 splits */ 
+    firstTaxon = taxonToReduction[first - 1] + 1,   
+    *V = (int *)rax_malloc((arraysize) * sizeof(int)),
+    *bipartitions = (int *)rax_malloc((ntips - 3) * sizeof(int));
+
+  for(i = arraysize - 1; i >= 0; i--) 
+    {
+      V[i] = 1;
+    
+      /* Extract Bipartiton from inner node! */
+      if(!isTip(translate[seq[i]],numsp) && (numberOfSplits < (ntips - 3)))
+  {
+    /* we can be sure of bifurcating trees, therefore j < deg(i) = 2 */
+    for(j = 0; j < 2; j++)      
+      V[i] = V[i] + V[i + V[i]];     
+
+    /* find out the memory efficient index for this taxon which lies between 0.. (ntips - 1) instead of 1..mxtips  
+       We have to subtract 1 because array starts from 0.. */  
+    int 
+      index = taxonToReduction[translate[seq[i]] - 1];
+
+    /* save bipartition */
+    bipartitions[numberOfSplits] = index;
+
+    toInsert = bitvectors[index];
+
+    //printf("We are working with %i \n", index);
+    /* Calculate Bipartition */
+    for(j = 1; j < V[i]; j++) 
+      {   
+        /* look if Preorderlabel at index i + j is a tip! */
+        if(isTip(translate[seq[i + j]],numsp))
+    {
+      /* translate taxon number to a number between 0 and smalltreesize */      
+      taxon = taxonToReduction[translate[seq[i + j]] - 1] + 1;
+
+      /* set bit to one */
+      toInsert[(taxon-1)  / MASK_LENGTH] |= mask32[(taxon-1) % MASK_LENGTH];
+    }
+        else
+    {      
+      before = taxonToReduction[translate[seq[i+j]] - 1];
+
+      bipartition = bitvectors[before];
+
+      for(k = 0; k < vLength; k++) 
+        toInsert[k] |= bipartition[k];
+
+      /* jump to the next relevant taxon */ 
+      j = j + V[i+j] - 1;
+    }        
+      }
+    /* count number of splits and stop at n-3 */
+    numberOfSplits += 1;
+  }
+    }
+  
+  for(i=0;i < (ntips - 3); i++) 
+    {
+      toInsert = bitvectors[bipartitions[i]];
+
+      /* if bitvector contains first taxon, use its complement */
+      if(toInsert[(firstTaxon-1) / MASK_LENGTH] & mask32[(firstTaxon-1) % MASK_LENGTH]) 
+  {                 
+    /* Padding the last bits! */
+    if(ntips % MASK_LENGTH != 0) 
+      {            
+        for(o = MASK_LENGTH; o > (ntips % MASK_LENGTH); o--)         
+    toInsert[vLength - 1] |= mask32[o-1];       
+      }
+    
+    for(k=0;k < vLength; k++)         
+      toInsert[k] = ~toInsert[k];         
+  }
+      
+      assert(!(toInsert[(firstTaxon-1) / MASK_LENGTH] & mask32[(firstTaxon-1) % MASK_LENGTH]));
+      
+      /* compute hash */
+      position = oat_hash((unsigned char *)toInsert, sizeof(unsigned int) * vLength);
+      
+      position = position % hash->tableSize;
+      
+      /* re-hash to the new hash table that contains the bips of the large tree, pruned down 
+   to the taxa contained in the small tree
+      */
+      insertHashPlausibility(toInsert, ind_hash, vLength, position);     
+
+      found = found + findHash(toInsert, hash, vLength, position);              
+    }
+
+  rax_free(V);
+  rax_free(bipartitions);
+  
+  return found;
+}
+
+
+/* 
+Extract the set of the bitvector and stores the taxa into an array called set which it returns
+TODO only for one bitvector! Stop Element is -1 
+*/
 static int* extractSet(int* bitvector, int* smallTreeTaxa){
 		int numberOfOnes = __builtin_popcount(bitvector[0]);
 		//plus one because of the terminal number -1 to determine the end of the array
@@ -2863,8 +2865,10 @@ static int* extractSet(int* bitvector, int* smallTreeTaxa){
 		return set;
 }
 
-//Can extract two bipartitons and merge their sets
-//Edit compared to extractSet: for bitvector 2 we restart the loop at position set[i + numberOfOnesBip1]
+/* 
+Can extract two bipartitons and merge their sets
+Edit compared to extractSet: for bitvector 2 we restart the loop at position set[i + numberOfOnesBip1]
+*/
 static int* extractSets(int* bitvector, int* bitvector2, int* smallTreeTaxa){
     int numberOfOnesBip1 = __builtin_popcount(bitvector[0]);
     int numberOfOnesBip2 = __builtin_popcount(bitvector2[0]);
@@ -2923,6 +2927,8 @@ static int* extractSets(int* bitvector, int* bitvector2, int* smallTreeTaxa){
 
 
 /************************************* helper functions ***************************/
+
+/* converts integer into binary representation */
 char *int2bin(int a, char *buffer, int buf_size) {
 	    buffer += (buf_size - 1);
 
@@ -2993,7 +2999,7 @@ static int sortSets(const void *a, const void *b)
   return 0;    
 }
 
-/* Checks if two arrays are identical and returns 1 and 0*/
+/* Checks if two arrays are identical and returns 1 and 0 */
 int isSameDropSet(int* a, int* b) {
   int j = 0;
 
@@ -3036,13 +3042,44 @@ int contains(int* check, int** sets, int numberOfSets) {
 
 }
 
+/*
+	Bit vector functionality
+*/
+int setBit(int bitVector, int pos) {
+	
+	bitVector |= 1 << pos;
 
+	return bitVector;
+}
 
+int clearBit(int bitVector, int pos) {
+	
+	bitVector &= ~(1 << pos);
+
+	return bitVector;
+}
+
+int checkBit(int bitVector, int pos) {
+	
+	int bit = 0;
+	
+	bit = bitVector & (1 << pos);
+
+	return bit;
+}
+
+void printBitVector(int bitVector) {
+  char buffer[33];
+  buffer[32] = '\0';
+  int2bin(bitVector, buffer, 32);
+  printf("\n==> BitVector = %s \n", buffer);
+}
 
 /**********************************************************************************/
-/*************************** RF-OPT Algorihm by David Dao *************************/
+/*************************** RF-OPT Algorihm **************************************/
 /**********************************************************************************/
 
+//Use the plausibility checker overhead
 void plausibilityChecker(tree *tr, analdef *adef)
 {
   FILE
@@ -3165,8 +3202,10 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
   fclose(treeFile);
   
+  /*************************************************************************************/
+  /* RF-OPT Preprocessing Step */
+
   /* now see how many small trees we have */
-	//TODO! ADDITIONAL PREPROCESSING
   treeFile = getNumberOfTrees(tr, bootStrapFile, adef);
   treeFile2 = getNumberOfTrees(tr, bootStrapFile, adef);
 
@@ -3176,12 +3215,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
   allocateMultifurcations(tr, smallTree);
 
-  /* create a hashtable to store a links to all hashtables of the reference tree */
-  //hashtable **tables[(tr->numberOfTrees)*sizeof(hashtable)];
-  //int hashcount = 0;
-
-
-  /*START Additional preprocessing step */
+  /* Start Additional preprocessing step */
 
   int 
 	numberOfBips = 0,
@@ -3193,15 +3227,15 @@ void plausibilityChecker(tree *tr, analdef *adef)
   //Stores the number of taxa for each tree
   int *taxaPerTree = (int *)rax_malloc(tr->numberOfTrees * sizeof(int));
 
-
   //To calculate all bipartitions, I created a new treeFile2 and a new getNumberOfTrees method!!
   for(i = 0; i < tr->numberOfTrees; i++) {
 	int this_treeBips = readMultifurcatingTree(treeFile2, smallTree, adef, TRUE);
+	
 	numberOfBips = numberOfBips + this_treeBips;
+	
 	numberOfSets = numberOfSets + this_treeBips * this_treeBips;
 
-  bipsPerTree[i] = this_treeBips;
-
+  	bipsPerTree[i] = this_treeBips;
   }
 
   printf("numberOfBips: %i , numberOfSets: %i \n \n", numberOfBips, numberOfSets);	
@@ -3215,9 +3249,6 @@ void plausibilityChecker(tree *tr, analdef *adef)
   //stores the corresponding tree number for each bip
   int *treenumberOfBip = (int *)rax_malloc(numberOfBips * sizeof(int));
 
-  //stores the scores for each bips
-  int *scores = (int *)rax_malloc(numberOfBips * sizeof(int));
-
   //Stores all dropsets of all trees 
   int **sets = (int **)rax_malloc(numberOfSets * sizeof(int*)); 
   
@@ -3227,25 +3258,27 @@ void plausibilityChecker(tree *tr, analdef *adef)
   //For each tree, store a translation array from taxanumber largetree->smalltree
   int **taxonToReductionList = (int **)rax_malloc(tr->numberOfTrees * sizeof(int*));
 
-
   //I use these variables to determine the max number of possible sets to generate a static array
   int currentBips = 0;
   int currentSmallBips = 0;
   int currentSets = 0;
   //int currentTree = 0; already there in number of trees analyzed
 	
-  //Prefill sets with -1s and predict array with 0s !
+  //Prefill sets with -1s
   for(int it = 0;it < (numberOfSets);it++){
 	int fill[1] = {-1};
 	sets[it] = fill; 
   }
+
+  /* RF-Opt Preprocessing Step End */
+  /*************************************************************************************/
 
   /* loop over all small trees */
 
   for(i = 0; i < tr->numberOfTrees;  i++)
     {      
       int
-	numberOfSplits = readMultifurcatingTree(treeFile, smallTree, adef, TRUE);
+		numberOfSplits = readMultifurcatingTree(treeFile, smallTree, adef, TRUE);
       
       if(numberOfSplits > 0)
 	{
@@ -3276,8 +3309,8 @@ void plausibilityChecker(tree *tr, analdef *adef)
 	  
 	  firstTaxon = smallTree->start->number;
 
-    //Saves the number of taxa in the tree
-    taxaPerTree[numberOfTreesAnalyzed] = smallTree->ntips; 
+      //Saves the number of taxa in the tree (for RF-OPT)
+      taxaPerTree[numberOfTreesAnalyzed] = smallTree->ntips; 
 	  
 	  /***********************************************************************************/
 	  /* Reconstruction Step */
@@ -3407,8 +3440,8 @@ void plausibilityChecker(tree *tr, analdef *adef)
 	  int 
 	    rec_bips = rec_findAddBipartitions(bitVectors, seq,(2*smallTree->ntips - 1), labelToTaxon, tr->mxtips, vectorLength, smallTree->ntips, firstTaxon, s_hash, ind_hash, taxonToReduction);
 	  
-    /* calculates all bipartitions of the reference small tree and put them into ind_hash*/
-    // rec_extractBipartitionsMulti(bitVectors, seq2, (2*smallTree->ntips - 1),tr->mxtips, vectorLength, smallTree->ntips, 
+      /* calculates all bipartitions of the reference small tree and put them into ind_hash*/
+      // rec_extractBipartitionsMulti(bitVectors, seq2, (2*smallTree->ntips - 1),tr->mxtips, vectorLength, smallTree->ntips, 
              // firstTaxon, s_hash, taxonToReduction, taxonHasDeg, numberOfSplits);
 
 
@@ -3424,50 +3457,23 @@ void plausibilityChecker(tree *tr, analdef *adef)
 	  */
 	  
 	  /* compute the relative RF */
+
+      /***********************************************************************************/
+	  /* RF OPT Small tree processing step */
 	  
       //copy array taxonToReduction because it is originally defined in preprocessing step
       int * taxonToReductionCopy = (int *)rax_malloc((tr->mxtips)*sizeof(int));
       memcpy(taxonToReductionCopy,taxonToReduction,(tr->mxtips)*sizeof(int));
 
-   //    printf("taxonToReduction: ");
-   //    for(int gr = 0; gr < (tr->mxtips); gr++) {
-
-   //      printf("%i ",taxonToReduction[gr]);
-
-   //    }
-   //    printf("\n");
-
-   //    printf("taxonToReductionCopy: ");
-   //    for(int gr = 0; gr < (tr->mxtips); gr++) {
-
-   //      printf("%i ",taxonToReductionCopy[gr]);
-
-   //    }
-   //    printf("\n");
-
-   //    printf("smallTreeTaxa: ");
-   //    for(int gr = 0; gr < (smallTree->ntips); gr++) {
-   //      printf("%i ",smallTreeTaxa[gr]);
-   //    }
-   //    printf("\n");
-	
-	// printf("currentTree %i \n", numberOfTreesAnalyzed);
-
-	//storing smallTree and taxonToReduction Arrays for further usage
-	smallTreeTaxaList[numberOfTreesAnalyzed] = smallTreeTaxa;
-    taxonToReductionList[numberOfTreesAnalyzed] = taxonToReductionCopy;	  
-
-    // printf("smallTreeTaxa Names: ");
-    // for(int gr = 0; gr < (smallTree->ntips); gr++) {
-    //   printf("%s ",smallTree->nameList[smallTreeTaxa[gr]]);
-    // }
-    // printf("\n");
+	  //storing smallTree and taxonToReduction Arrays for further usage
+	  smallTreeTaxaList[numberOfTreesAnalyzed] = smallTreeTaxa;
+      taxonToReductionList[numberOfTreesAnalyzed] = taxonToReductionCopy;	  
 
 
-    int this_currentSmallBips = 0; //Variable resets everytime for each tree analyzed
-    //TODO ! This function iterates through induced hash table and compares everything with the bitvectors in the smalltree hashtable
-    printf("==> Set Calculation: \n");
-    for (int k=0,entryCount=0;k < ind_hash->tableSize; k++) {
+      int this_currentSmallBips = 0; //Variable resets everytime for each tree analyzed
+      //This function iterates through induced hash table and compares everything with the bitvectors in the smalltree hashtable
+      printf("==> Set Calculation: \n");
+      for (int k=0,entryCount=0;k < ind_hash->tableSize; k++) {
 		if (ind_hash->table[k] != NULL) {
 			entry *e = ind_hash->table[k];
 			do {
@@ -3480,7 +3486,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
 				currentBips++;
 
 
-        //Iterate through all bips and calculate the dropsets
+        		//Iterate through all bips and calculate the dropsets
 				for (int _k=0; _k < s_hash->tableSize; _k++) {
 					if (s_hash->table[_k] != NULL) {
 						entry *s_e = s_hash->table[_k];
@@ -3488,90 +3494,88 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
 							unsigned int s_bitvector = *(s_e->bitVector);
 
-              //Include the small bipartitions if they are not yet present
-              if (bipsPerTree[numberOfTreesAnalyzed] > this_currentSmallBips) {
+              				//Include the small bipartitions if they are not yet present
+              				if (bipsPerTree[numberOfTreesAnalyzed] > this_currentSmallBips) {
                 
-                s_bips[currentSmallBips] = s_bitvector;
+                			s_bips[currentSmallBips] = s_bitvector;
                 
-                this_currentSmallBips++;
-                currentSmallBips++;
-              } 
+                			this_currentSmallBips++;
+
+                			currentSmallBips++;
+              				
+              				} 
 
 							printf("==> Now we compare %i with %i \n", ind_bitvector, s_bitvector);
 
 							char buffer[33];
-								buffer[32] = '\0';
+							buffer[32] = '\0';
 
-								int2bin(ind_bitvector, buffer, 32);
+							int2bin(ind_bitvector, buffer, 32);
 
-								//printf("ind (a) = %s \n", buffer);
+							//printf("ind (a) = %s \n", buffer);
 
-								int2bin(s_bitvector, buffer, 32);
-								//printf("smalltree (b) = %s \n", buffer);
+							int2bin(s_bitvector, buffer, 32);
 
+							//printf("smalltree (b) = %s \n", buffer);
 
-              
-            //Use a Mask to get off the Offset ones that might resulted from the logical operations (i.e. for 5 taxa the mask is 000000...11111)							
-            unsigned int mask = pow(2,smallTree->ntips) - 1; //this results in a unsigned bitvector with the first ntips bits as 1
+            				//Use a Mask to get off the Offset ones that might resulted from the logical operations (i.e. for 5 taxa the mask is 000000...11111)							
+            				unsigned int mask = pow(2,smallTree->ntips) - 1; //this results in a unsigned bitvector with the first ntips bits as 1
 
-            //calculate the dropsets by comparing two bipartitions
-            //Determine the smallest of two sets (xANDx*,yANDy* | xANDy*,yANDx*)
-            unsigned int set_calc = ind_bitvector & s_bitvector & mask; //a = x|y , b = x*|y* -> x AND x* 
-            unsigned int cset_calc2 = ~ind_bitvector & ~(s_bitvector) & mask; // y AND y*
-							
-            unsigned int cset_calc = ind_bitvector & ~(s_bitvector) & mask; // x AND y*
-            unsigned int set_calc2 = ~ind_bitvector & s_bitvector & mask; // y AND x* 
+				            //calculate the dropsets by comparing two bipartitions
+				            //Determine the smallest of two sets (xANDx*,yANDy* | xANDy*,yANDx*)
+				            unsigned int set_calc = ind_bitvector & s_bitvector & mask; //a = x|y , b = x*|y* -> x AND x* 
+				            unsigned int cset_calc2 = ~ind_bitvector & ~(s_bitvector) & mask; // y AND y*
+											
+				            unsigned int cset_calc = ind_bitvector & ~(s_bitvector) & mask; // x AND y*
+				            unsigned int set_calc2 = ~ind_bitvector & s_bitvector & mask; // y AND x* 
 
-			//Calculate number of bits of the resulting set calculations	
-			int count1 = __builtin_popcount(set_calc);
-            int count4 = __builtin_popcount(cset_calc2);
+							//Calculate number of bits of the resulting set calculations	
+							int count1 = __builtin_popcount(set_calc);
+				            int count4 = __builtin_popcount(cset_calc2);
 
-			int count2 = __builtin_popcount(cset_calc);	
-			int count3 = __builtin_popcount(set_calc2);
+							int count2 = __builtin_popcount(cset_calc);	
+							int count3 = __builtin_popcount(set_calc2);
 
-			int count1z = __builtin_ctz(set_calc);
-            int count4z = __builtin_ctz(cset_calc2);
+							int count1z = __builtin_ctz(set_calc);
+				            int count4z = __builtin_ctz(cset_calc2);
 
-			int count2z = __builtin_ctz(cset_calc);	
-			int count3z = __builtin_ctz(set_calc2);
+							int count2z = __builtin_ctz(cset_calc);	
+							int count3z = __builtin_ctz(set_calc2);
 
-			// //Print out debugging bitvectors
-			// int2bin(set_calc, buffer, 32);
-			// printf("a&b makes it %u : %s , c %i b %i \n", set_calc,  buffer, count1, count1z);
-       		// int2bin(cset_calc2, buffer, 32);
-       		// printf("~a&~b makes it %u : %s c %i b %i \n", cset_calc2 ,buffer, count4, count4z);
-			// int2bin(cset_calc, buffer, 32);
-			// printf("a&~b makes it %u : %s c %i b %i \n", cset_calc ,buffer, count2, count2z);
-			// int2bin(set_calc2, buffer, 32);
-			// printf("~a&b makes it %u : %s c %i b %i  \n", set_calc2,  buffer, count3, count3z);
+							// //Print out debugging bitvectors
+							// int2bin(set_calc, buffer, 32);
+							// printf("a&b makes it %u : %s , c %i b %i \n", set_calc,  buffer, count1, count1z);
+				       		// int2bin(cset_calc2, buffer, 32);
+				       		// printf("~a&~b makes it %u : %s c %i b %i \n", cset_calc2 ,buffer, count4, count4z);
+							// int2bin(cset_calc, buffer, 32);
+							// printf("a&~b makes it %u : %s c %i b %i \n", cset_calc ,buffer, count2, count2z);
+							// int2bin(set_calc2, buffer, 32);
+							// printf("~a&b makes it %u : %s c %i b %i  \n", set_calc2,  buffer, count3, count3z);
 
-			//printf("DEBUG ");
+				            //Bug fix, decides which dropset to take, there are only two choices
+				            int arr[2] = {0,0};
 
-							//int arr[4] = {count1, count2, count3, count4};
-						    //int arr[4] = {set_calc,cset_calc,set_calc2,cset_calc2};
-							
-              //Sort to get the lowest sets
-							//qsort(arr, 4, sizeof(int), sortBipartitions);
+				            if((count1+count4) < (count2+count3)){
 
-              //Bug fix, decides which dropset to take, there are only two choices
-              int arr[2] = {0,0};
-              if((count1+count4) < (count2+count3)){
-                arr[0] = set_calc;
-                arr[1] = cset_calc2;
-              } else {
-                arr[0] = cset_calc;
-                arr[1] = set_calc2;
-              }
+				              arr[0] = set_calc;
+				              arr[1] = cset_calc2;
+
+				            } else {
+
+				              arr[0] = cset_calc;
+				              arr[1] = set_calc2;
+
+				            }
+
 							qsort(arr,2,sizeof(int),sortBipartitions);
-
 
 							//printf("The lowest: %i and %i \n", arr[0], arr[1]);
 	
 							//TODO: When two 0, bipartition matches
 							if(arr[0] == 0 && arr[1] == 0) {
-                int set[] = {0,-1};
+                				int set[] = {0,-1};
 
-                sets[currentSets] = set;
+                				sets[currentSets] = set;
 								//printf("It matches!!! \n");
 								//Now we don't have to add any sets to this array
 								currentSets++;
@@ -3584,7 +3588,6 @@ void plausibilityChecker(tree *tr, analdef *adef)
 									currentSets++;
 								}
 
-                //BUG: 0,33 it extracts instead of 35 -> 45
 								if((arr[1] != 0) && (arr[0] == 0)){
 									int* set = extractSet(&arr[1], smallTreeTaxa);
 									sets[currentSets] = set;
@@ -3593,10 +3596,11 @@ void plausibilityChecker(tree *tr, analdef *adef)
 								}
 								
 								if((arr[0] != 0) && (arr[1] != 0)) {
-                  int* set = extractSets(&arr[0], &arr[1], smallTreeTaxa);    
+                  					int* set = extractSets(&arr[0], &arr[1], smallTreeTaxa);    
 									sets[currentSets] = set;
 									currentSets++;
 								}
+
 							}//END ELSE
 						
 							s_e = s_e->next;
@@ -3605,18 +3609,13 @@ void plausibilityChecker(tree *tr, analdef *adef)
 				}
 				e = e->next;
 			} while (e!=NULL);
+    	}
     }
-    }
-
-    //printf("address of s_hash %p \n", &s_hash);
-
-    //tables[hashcount] = &s_hash;
-    //hashcount = hashcount + 1;
-
-    //printf("inside tables[%i] %p \n",hashcount,tables[hashcount]);
 
 
-	  rec_rf = (double)(2 * (numberOfSplits - rec_bips)) / maxRF;
+
+
+	rec_rf = (double)(2 * (numberOfSplits - rec_bips)) / maxRF;
 	  
 	  assert(numberOfSplits >= rec_bips);	  	 
 
@@ -3666,6 +3665,9 @@ void plausibilityChecker(tree *tr, analdef *adef)
   int* setsToUniqSets = (int*) rax_malloc(sizeof(int) * numberOfSets);
   int numberOfUniqueSets = 0;
 
+  //stores the scores for each bips, we are using a bitvector approach (need to scale)
+  int scores = 0;
+
   //We use these variables to iterate through all sets and bips
   int countBips = 0;
   int dropSetCount = 0;
@@ -3704,9 +3706,11 @@ void plausibilityChecker(tree *tr, analdef *adef)
       }
 
       if (matching) {
-        scores[countBips] = 0; 
+      	//don't do a thing 
+        //scores[countBips] = 0; 
       } else {
-        scores[countBips] = 1;
+      	//Set BitVector on position of the bip
+        scores = setBit(scores, countBips);
       }
       
       dropSetCount = dropSetCount + dropSetsPerBip; //Index of starting DropSets in Sets for the next Bip 
@@ -3850,6 +3854,11 @@ void plausibilityChecker(tree *tr, analdef *adef)
   
   int* rf_score = (int*)rax_malloc(sizeof(int)*numberOfUniqueSets);
 
+  //Init the rf_score vector with 0s
+  for(int i = 0; i < numberOfUniqueSets; i++) {
+  	rf_score[i] = 0;
+  }
+
   printf("\n==> Calculating the score for the first iteration \n");
   //Iterate through all sets
   for(int i = 0; i < numberOfUniqueSets; i++) {
@@ -3865,6 +3874,15 @@ void plausibilityChecker(tree *tr, analdef *adef)
   	}
 
   	//Now iterate through the set
+  	//TODO: Bug counting the rf-score is incorrect. Following problem statement =>
+  	/*	
+		Merging bips doesn't include bips which merges when single taxa is pruned
+		Bips which matches when merged but get destroyed shouldn't be counted in
+
+		Therefore:
+			Fix including bipartition
+			Think about counting system	
+ 	*/
   	int j = 0;
   	while(set[j] != -1) {
 
@@ -3881,13 +3899,12 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
   			int bip = ind_bips[bipindex];
 
-  			// Printing for testing
-  			if(bipindex == 4) {
-  			char buffer[33];
-			buffer[32] = '\0';
-			int2bin(bip, buffer, 32);
-			printf("bip %i = %s \n", bipindex, buffer);
-			}
+  			// if(bipindex == 4) {
+  			// char buffer[33];
+			// buffer[32] = '\0';
+			// int2bin(bip, buffer, 32);
+			// printf("bip %i = %s \n", bipindex, buffer);
+			// }
 			// End Printing
 
 			//Now analyze this Bipartition
@@ -3906,76 +3923,133 @@ void plausibilityChecker(tree *tr, analdef *adef)
 			//Save the to toggle index into toggleBits vector
 			toggleBits[bipindex] |= 1 << translated_index;
 
-			//Sort for bits set on one side of the bip
+			//Sort for bits set on one side of the bip and on the other side
 			int leftBits = __builtin_popcount(toggleBits[bipindex] & bip);
 			int rightBits = __builtin_popcount(toggleBits[bipindex]) - leftBits;
 
+			//Check for the number of bits set in the original bip 
 			int leftBip = __builtin_popcount(bip);
 			int rightBip = taxaPerTree[treenumber] - leftBip;
 
-			//Check if bipartition now became trivial
-			printf("bits on the left side after deleting %i: %i \n",translated_index,leftBip - leftBits);
-			printf("bits on the right side after deleting %i: %i \n",translated_index,rightBip - rightBits);
+			//Subtract the total number of bits set on one side of the bip with the bits we have to toggle
+			int leftBip_after = leftBip - leftBits;
+			int rightBip_after = rightBip - rightBits;
+
+			//Check if bipartition gets trivial/destroyed due to pruning the taxa
+			if((leftBip_after <= 1) | (rightBip_after <=1)) {
+				printf("==> Bip %i is destroyed \n", bipindex);
+
+				//Check if the bip was matching before
+				if(checkBit(scores,bipindex) == 0) {
+					rf_score[i] = rf_score[i] - 1;
+				}
+
+			}
 			
 
   		}	
   		printf("\n \n");
 
   		j++;
-  	}
+  	}//End iterate through the set
+
+  	//Now iterate through bipsOfDropSet list
+  	//for(int l = 0; l < numberOfBipsPerSet[i]; l++) {
+
+  		//Get the index list of bips for this Drop Set
+  		//int* bips = bipsOfDropSet[i];
+
+  		//int b_index = bips[l];
+  		
+  		//Add the bip score to the dropset score
+  		//rf_score[i] = rf_score[i] + scores[b_index];
+  	//}
+
+
   }
 
-//Printing if
-if(1){
-  for(int i = 0; i < numberOfUniqueSets; i++) {
-    printf("Bips of Set %i: ", i);
-    for(int j = 0; j < numberOfBipsPerSet[i]; j++) {
-      int* bips = bipsOfDropSet[i];
-      printf("%i ", bips[j]);
+  //printf("======>  FINAL TEST!!!! \n");
+  //for(int i = 1; i < numberOfUniqueSets; i++) {
+  	//printf("RF Score for %i : %i \n", i, rf_score[i]);
+  //}
+
+  //Printing if
+  if(1){
+
+
+    for(int i = 0; i < numberOfUniqueSets; i++) {
+      printf("Bips of Set %i: ", i);
+        for(int j = 0; j < numberOfBipsPerSet[i]; j++) {
+          int* bips = bipsOfDropSet[i];
+          printf("%i ", bips[j]);
+        }
+      printf("\n");
     }
-    printf("\n");
-  }
 
 
     printf("Induced Bips! \n");
-  // Now checking which dropset would destroy which bipartition 
-  for(int i = 0 ; i < numberOfBips; i++) {
-    printf("Bip %i is %i \n",i,ind_bips[i]);
-  }
+    // Now checking which dropset would destroy which bipartition 
+    for(int i = 0 ; i < numberOfBips; i++) {
+      printf("Bip %i is %i \n",i,ind_bips[i]);
+    }
 
 
-  printf("Taxa Names : \n");
-  for(int i = 0; i < tr->mxtips + 1; i++) {
-    printf("%s ",tr->nameList[i]);
-  }
-  printf("\n");
-
-  printf("Number of DropSets extracted%i \n",dropSetCount);
-  printf("Number of Bips extracted %i \n",currentBips);
-
-  //Testing ...
-  printf("Number of Sets is %i \n",numberOfSets);
-  printf("Number of Unique Sets is %i \n",numberOfUniqueSets);
-
-  printf("==> Testing bips of unique sets \n");
-  for(int i = 0; i < numberOfUniqueSets; i++) {
-    printf("Bips of Set %i: ", i);
-    for(int j = 0; j < numberOfBipsPerSet[i]; j++) {
-      int* bips = bipsOfDropSet[i];
-      printf("%i ", bips[j]);
+    printf("Taxa Names : \n");
+    for(int i = 0; i < tr->mxtips + 1; i++) {
+      printf("%s ",tr->nameList[i]);
     }
     printf("\n");
-  }
 
-  printf("==> Testing bips of taxa \n");
-  for(int i = 1; i < tr->mxtips + 1; i++) {
-    printf("Bips of Taxa %i: ", i);
-    for(int j = 0; j < numberOfBipsPerTaxa[i]; j++) {
-      int* bips = bipsOfTaxa[i];
-      printf("%i ", bips[j]);
+    printf("Small Tree Taxa Names 0 : \n");
+    for(int i = 0; i < taxaPerTree[0]; i++) {
+      int* list = smallTreeTaxaList[0];
+      int taxa = list[i];	
+      printf("%s ",tr->nameList[taxa]);
     }
     printf("\n");
-  }
+
+    printf("Small Tree Taxa Names 1 : \n");
+    for(int i = 0; i < taxaPerTree[1]; i++) {
+      int* list = smallTreeTaxaList[1];
+      int taxa = list[i];	
+      printf("%s ",tr->nameList[taxa]);
+    }
+    printf("\n");
+
+    printf("Small Tree Taxa Names 2 : \n");
+    for(int i = 0; i < taxaPerTree[2]; i++) {
+      int* list = smallTreeTaxaList[2];
+      int taxa = list[i];	
+      printf("%s ",tr->nameList[taxa]);
+    }
+    printf("\n");
+
+    printf("Number of DropSets extracted%i \n",dropSetCount);
+    printf("Number of Bips extracted %i \n",currentBips);
+
+    //Testing ...
+    printf("Number of Sets is %i \n",numberOfSets);
+    printf("Number of Unique Sets is %i \n",numberOfUniqueSets);
+
+    printf("==> Testing bips of unique sets \n");
+    for(int i = 0; i < numberOfUniqueSets; i++) {
+      printf("Bips of Set %i: ", i);
+        for(int j = 0; j < numberOfBipsPerSet[i]; j++) {
+          int* bips = bipsOfDropSet[i];
+          printf("%i ", bips[j]);
+        }
+      printf("\n");
+    }
+
+    printf("==> Testing bips of taxa \n");
+    for(int i = 1; i < tr->mxtips + 1; i++) {
+      printf("Bips of Taxa %i: ", i);
+        for(int j = 0; j < numberOfBipsPerTaxa[i]; j++) {
+        int* bips = bipsOfTaxa[i];
+        printf("%i ", bips[j]);
+        }
+      printf("\n");
+    }
 
 
 
@@ -3997,39 +4071,21 @@ if(1){
   }
   printf("\n");
 
-
-  //int **orderedSets = (int **)rax_malloc(numberOfSets * sizeof(int*)); // Array representing an ordered representation of all sets to extract 
-
-  //memcpy(orderedSets,sets,numberOfSets*sizeof(int*));
-
-  //qsort(orderedSets,numberOfSets,sizeof(int*),sortSets);
-
-
-   // int d[] = {0,-1};
-
-   // int e[] = {0,-1};
-   // int a[] = {1,2,3,-1};
-   // int b[] = {1,2,3,-1};
-   // int c[] = {1,2,3,4,-1};
-
-   // int** test = (int**)rax_malloc(sizeof(int*)*3);
-
-   // test[0] = a;
-   // test[1] = a;
-   // test[2] = e;
-
-
-   // printf("CONTAINS %i \n",contains(d,test,3));
-
-
-  // printf("Bool Tests: %i %i \n",isSameDropSet(a,b),isSameDropSet(a,c));
-
-
   //=== TREE GRAPH CONSTRUCTION ENDS ===
   printf("Scores: ");
-  for(int foo = 0; foo < numberOfBips; foo++) {
-    printf("%i ",scores[foo]);
-  }
+  printBitVector(scores);
+
+  // printf("Bipartitions: ");
+
+  // printBitVector(ind_bips[0]);
+  // printBitVector(ind_bips[1]);
+  // printBitVector(ind_bips[2]);
+  // printBitVector(ind_bips[3]);
+  // printBitVector(ind_bips[4]);
+  // printBitVector(ind_bips[5]);
+  // printBitVector(ind_bips[6]);
+
+
 
   
   printf("\nnumber of bips are %i \n",countBips);
