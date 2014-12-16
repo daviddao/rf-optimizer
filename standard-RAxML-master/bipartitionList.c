@@ -3546,9 +3546,10 @@ void plausibilityChecker(tree *tr, analdef *adef)
               } 
             	
               //Use a Mask to get off the Offset ones that might resulted from the logical operations (i.e. for 5 taxa the mask is 000000...11111)							
-            	unsigned int mask = pow(2,smallTree->ntips) - 1; //this results in a unsigned bitvector with the first ntips bits as 1
-
-				      //calculate the dropsets by comparing two bipartitions
+              int mask = 0;
+              mask = setOffSet(mask, smallTree->ntips);
+				      
+              //calculate the dropsets by comparing two bipartitions
 				      //Determine the smallest of two sets (xANDx*,yANDy* | xANDy*,yANDx*)
 				      unsigned int set_calc = ind_bitvector & s_bitvector & mask; //a = x|y , b = x*|y* -> x AND x* 
 				      unsigned int cset_calc2 = ~ind_bitvector & ~(s_bitvector) & mask; // y AND y*
