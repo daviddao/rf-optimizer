@@ -3723,15 +3723,16 @@ void plausibilityChecker(tree *tr, analdef *adef)
     //Iterate through all bipartitions of each trees
     for(int j = 0; j < bipsPerTree[i]; j++) {
 
-      int dropSetsPerBip = bipsPerTree[i]; //Compare each bip with all bips
+      //Compare each bip with all bips
+      int dropSetsPerBip = bipsPerTree[i]; 
       
-      int matching = 0; //Will be set to one if dropset is matching, resulting in a score = 0
+      //Will be set to one if dropset is matching, resulting in a score = 0
+      int matching = 0; 
       
       //Check all dropsets of each bipartition
       for(int k = 0; k < dropSetsPerBip; k++){
         
         int* dropset = sets[dropSetCount + k];
-        //printf("dropset : %i \n", dropset[0]);
 
         //Add and filter uniq sets
         int containIndex = contains(dropset,uniqSets,numberOfUniqueSets);
@@ -3772,30 +3773,31 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
   }
 
-  //Now go through all sets and count, how many bips they are for each set
-  printf("==> before counting ... \n");
+
+  //Stores the number of bips per Set
   int* numberOfBipsPerSet = (int*)rax_malloc(sizeof(int)*numberOfUniqueSets);
-  for(int i = 0; i < numberOfUniqueSets; i++) {
-    numberOfBipsPerSet[i] = 0;
-    printf("%i ",numberOfBipsPerSet[i]);
-  }
-  printf("\n");
+
+  //Stores all sets which includes this taxa
+  int **setsOfTaxa = (int**)rax_malloc((tr->mxtips + 1) *sizeof(int*));
   
+  for(int i = 0; i < numberOfUniqueSets; i++) {
+    
+    numberOfBipsPerSet[i] = 0;
+  }
+  
+  //Now add bipartitions to the uniq set array
   for(int i = 0; i < numberOfSets; i++) {
+
     int setindex = setsToUniqSets[i];
+
     numberOfBipsPerSet[setindex]++;
   }
-
-  printf("==> After counting .. \n");
-  for(int i = 0; i < numberOfUniqueSets; i++) {
-    printf("%i ",numberOfBipsPerSet[i]);
-  }
-  printf("\n");
 
   //Now using the knowledge of how many bips there are per set, generate an array for each unique dropset containing all bips
   int** bipsOfDropSet = (int**)rax_malloc(sizeof(int*)*numberOfUniqueSets);
   
   for(int i = 0; i < numberOfUniqueSets; i++) {
+
     bipsOfDropSet[i] = (int*)rax_malloc(sizeof(int)*numberOfBipsPerSet[i]); 
   }
 
@@ -3803,9 +3805,9 @@ void plausibilityChecker(tree *tr, analdef *adef)
   printf("==> Initialize the Bips Of Taxa \n");
   //Stores the number of bips each taxa is included (ABC|DE is stored by A,B,C,D and E)
   //It can be calculated by iterating through all trees and adding the taxa 
-  int **bipsOfTaxa = (int**)rax_malloc(tr->mxtips *sizeof(int*) + 1);
-  int *numberOfBipsPerTaxa = (int*)rax_malloc(tr->mxtips * sizeof(int) + 1);
-  int *taxaBipsCounter = (int*)rax_malloc(tr->mxtips * sizeof(int) + 1);
+  int **bipsOfTaxa = (int**)rax_malloc((tr->mxtips + 1) *sizeof(int*));
+  int *numberOfBipsPerTaxa = (int*)rax_malloc((tr->mxtips + 1) * sizeof(int));
+  int *taxaBipsCounter = (int*)rax_malloc((tr->mxtips + 1) * sizeof(int));
 
   //Initialize and start it with 1 ... mxtips for easier processing
   for(int i = 1; i < tr->mxtips+1; i++){
@@ -3815,9 +3817,13 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
   //Now add up all
   for (int tree = 0; tree < tr->numberOfTrees; tree++) {
+
     int* list = smallTreeTaxaList[tree];
+
     for (int j = 0; j < taxaPerTree[tree]; j++) {
+
       int taxa = list[j];
+
       numberOfBipsPerTaxa[taxa] = numberOfBipsPerTaxa[taxa] + bipsPerTree[tree];
     } 
   }
@@ -3941,7 +3947,8 @@ void plausibilityChecker(tree *tr, analdef *adef)
   		int taxa = set[j]; //Get the taxa
   		printf("Taxa number is %i \n",taxa);
 
-  		int* listOfBips = bipsOfTaxa[taxa]; //Get all bips of this taxa
+      //Get all bips of this taxa to detect which one will be destroyed
+  		int* listOfBips = bipsOfTaxa[taxa]; 
 
   		//Go through all bipartitions containing this taxa
   		for(int k = 0; k < numberOfBipsPerTaxa[taxa]; k++){
@@ -3979,6 +3986,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
 			  //Check if bipartition gets trivial/destroyed due to pruning the taxa and set the bit (representing the bip) which is destroyed
 			  if((leftBip_after <= 1) | (rightBip_after <=1)) {
 
+        //Add bips to the bits which represent destroyed bipartitions
         bvec_destroyed = setBit(bvec_destroyed,bipindex);
 
 			  }
