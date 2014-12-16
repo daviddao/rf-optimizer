@@ -3040,9 +3040,9 @@ int contains(int* check, int** sets, int numberOfSets) {
 
 }
 
-/*
-	Bit vector functionality
-*/
+/******************************* Bitvector func ***********************************/
+
+
 int setBit(int bitVector, int pos) {
 	
 	bitVector |= 1 << pos;
@@ -3084,10 +3084,6 @@ void printBitVector(int bitVector) {
   printf("\n==> BitVector = %s \n", buffer);
 }
 
-/*
-  BitVector functionalities
-*/
-
 //Takes as input a bitvector and returns a new bitvector
 int getBipsOfDropSet(int bvec_bips, int dropsetNumber, int* numberOfBipsPerSet, int** bipsOfDropSet) {
     //Now iterate through bipsOfDropSet list
@@ -3102,6 +3098,64 @@ int getBipsOfDropSet(int bvec_bips, int dropsetNumber, int* numberOfBipsPerSet, 
     }
 
     return bvec_bips;
+}
+
+/**********************************************************************************/
+
+void getDropSet(int ind_bitvector, int s_bitvector, int mask, int* arr) {
+
+  //calculate the dropsets by comparing two bipartitions
+  //Determine the smallest of two sets (xANDx*,yANDy* | xANDy*,yANDx*)
+  unsigned int set_calc = ind_bitvector & s_bitvector & mask; //a = x|y , b = x*|y* -> x AND x* 
+  unsigned int cset_calc2 = ~ind_bitvector & ~(s_bitvector) & mask; // y AND y*
+                      
+  unsigned int cset_calc = ind_bitvector & ~(s_bitvector) & mask; // x AND y*
+  unsigned int set_calc2 = ~ind_bitvector & s_bitvector & mask; // y AND x* 
+
+  //Calculate number of bits of the resulting set calculations  
+  int count1 = __builtin_popcount(set_calc);
+  int count4 = __builtin_popcount(cset_calc2);
+
+  int count2 = __builtin_popcount(cset_calc); 
+  int count3 = __builtin_popcount(set_calc2);
+
+  int count1z = __builtin_ctz(set_calc);
+  int count4z = __builtin_ctz(cset_calc2);
+
+  int count2z = __builtin_ctz(cset_calc); 
+  int count3z = __builtin_ctz(set_calc2);
+
+              // //Print out debugging bitvectors
+              // int2bin(set_calc, buffer, 32);
+              // printf("a&b makes it %u : %s , c %i b %i \n", set_calc,  buffer, count1, count1z);
+              // int2bin(cset_calc2, buffer, 32);
+              // printf("~a&~b makes it %u : %s c %i b %i \n", cset_calc2 ,buffer, count4, count4z);
+              // int2bin(cset_calc, buffer, 32);
+              // printf("a&~b makes it %u : %s c %i b %i \n", cset_calc ,buffer, count2, count2z);
+              // int2bin(set_calc2, buffer, 32);
+              // printf("~a&b makes it %u : %s c %i b %i  \n", set_calc2,  buffer, count3, count3z);
+
+  //Bug fix, decides which dropset to take, there are only two choices
+  //int arr[2] = {0,0};
+
+  if((count1+count4) < (count2+count3)){
+
+    arr[0] = set_calc;
+
+    arr[1] = cset_calc2;
+
+  } else {
+
+    arr[0] = cset_calc;
+
+    arr[1] = set_calc2;
+
+  }
+  
+  //Sort to have a unique dropset representation
+  qsort(arr,2,sizeof(int),sortBipartitions);
+
+  //return arr;
 }
 
 
@@ -3548,56 +3602,11 @@ void plausibilityChecker(tree *tr, analdef *adef)
               //Use a Mask to get off the Offset ones that might resulted from the logical operations (i.e. for 5 taxa the mask is 000000...11111)							
               int mask = 0;
               mask = setOffSet(mask, smallTree->ntips);
-				      
-              //calculate the dropsets by comparing two bipartitions
-				      //Determine the smallest of two sets (xANDx*,yANDy* | xANDy*,yANDx*)
-				      unsigned int set_calc = ind_bitvector & s_bitvector & mask; //a = x|y , b = x*|y* -> x AND x* 
-				      unsigned int cset_calc2 = ~ind_bitvector & ~(s_bitvector) & mask; // y AND y*
-											
-				      unsigned int cset_calc = ind_bitvector & ~(s_bitvector) & mask; // x AND y*
-				      unsigned int set_calc2 = ~ind_bitvector & s_bitvector & mask; // y AND x* 
+				    
+              int arr[2] = {0,0};
 
-							//Calculate number of bits of the resulting set calculations	
-							int count1 = __builtin_popcount(set_calc);
-				      int count4 = __builtin_popcount(cset_calc2);
-
-							int count2 = __builtin_popcount(cset_calc);	
-							int count3 = __builtin_popcount(set_calc2);
-
-							int count1z = __builtin_ctz(set_calc);
-				      int count4z = __builtin_ctz(cset_calc2);
-
-							int count2z = __builtin_ctz(cset_calc);	
-							int count3z = __builtin_ctz(set_calc2);
-
-							// //Print out debugging bitvectors
-							// int2bin(set_calc, buffer, 32);
-							// printf("a&b makes it %u : %s , c %i b %i \n", set_calc,  buffer, count1, count1z);
-				      // int2bin(cset_calc2, buffer, 32);
-				      // printf("~a&~b makes it %u : %s c %i b %i \n", cset_calc2 ,buffer, count4, count4z);
-							// int2bin(cset_calc, buffer, 32);
-							// printf("a&~b makes it %u : %s c %i b %i \n", cset_calc ,buffer, count2, count2z);
-							// int2bin(set_calc2, buffer, 32);
-							// printf("~a&b makes it %u : %s c %i b %i  \n", set_calc2,  buffer, count3, count3z);
-
-				      //Bug fix, decides which dropset to take, there are only two choices
-				      int arr[2] = {0,0};
-
-				      if((count1+count4) < (count2+count3)){
-
-				        arr[0] = set_calc;
-
-				        arr[1] = cset_calc2;
-
-				      } else {
-
-				        arr[0] = cset_calc;
-
-				        arr[1] = set_calc2;
-
-				      }
-
-							qsort(arr,2,sizeof(int),sortBipartitions);
+              //Calculate the dropset and save it into array arr
+              getDropSet(ind_bitvector, s_bitvector, mask, arr);
 	
 							//TODO: When two 0, bipartition matches
 							if(arr[0] == 0 && arr[1] == 0) {
