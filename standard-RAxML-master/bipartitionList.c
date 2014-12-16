@@ -3119,25 +3119,8 @@ void getDropSet(int ind_bitvector, int s_bitvector, int mask, int* arr) {
   int count2 = __builtin_popcount(cset_calc); 
   int count3 = __builtin_popcount(set_calc2);
 
-  int count1z = __builtin_ctz(set_calc);
-  int count4z = __builtin_ctz(cset_calc2);
-
-  int count2z = __builtin_ctz(cset_calc); 
-  int count3z = __builtin_ctz(set_calc2);
-
-              // //Print out debugging bitvectors
-              // int2bin(set_calc, buffer, 32);
-              // printf("a&b makes it %u : %s , c %i b %i \n", set_calc,  buffer, count1, count1z);
-              // int2bin(cset_calc2, buffer, 32);
-              // printf("~a&~b makes it %u : %s c %i b %i \n", cset_calc2 ,buffer, count4, count4z);
-              // int2bin(cset_calc, buffer, 32);
-              // printf("a&~b makes it %u : %s c %i b %i \n", cset_calc ,buffer, count2, count2z);
-              // int2bin(set_calc2, buffer, 32);
-              // printf("~a&b makes it %u : %s c %i b %i  \n", set_calc2,  buffer, count3, count3z);
-
-  //Bug fix, decides which dropset to take, there are only two choices
-  //int arr[2] = {0,0};
-
+  //There are only two choices which dropSet to take, either dropset resulting from x,x*, y,y* OR x,y*, y,x*
+  //Take the dropset which has a smaller cardinality
   if((count1+count4) < (count2+count3)){
 
     arr[0] = set_calc;
@@ -3155,7 +3138,6 @@ void getDropSet(int ind_bitvector, int s_bitvector, int mask, int* arr) {
   //Sort to have a unique dropset representation
   qsort(arr,2,sizeof(int),sortBipartitions);
 
-  //return arr;
 }
 
 
@@ -3343,10 +3325,11 @@ void plausibilityChecker(tree *tr, analdef *adef)
   //For each tree, store a translation array from taxanumber largetree->smalltree
   int **taxonToReductionList = (int **)rax_malloc(tr->numberOfTrees * sizeof(int*));
 
-  //I use these variables to determine the max number of possible sets to generate a static array
+  //I use these variables as global variables for all trees to determine the max number of possible sets to generate a static array
   int currentBips = 0;
   int currentSmallBips = 0;
   int currentSets = 0;
+
   //int currentTree = 0; already there in number of trees analyzed
 	
   //Prefill sets with -1s
@@ -3544,21 +3527,24 @@ void plausibilityChecker(tree *tr, analdef *adef)
 	  
 	  /* compute the relative RF */
 
+
     /***********************************************************************************/
-	  /* RF OPT Small tree processing step */
-	  
-      //copy array taxonToReduction because it is originally defined in preprocessing step
+	  /* DropSet Calculation Step */
+    /***********************************************************************************/
+	    
+    //copy array taxonToReduction because it is originally defined in preprocessing step
     int * taxonToReductionCopy = (int *)rax_malloc((tr->mxtips)*sizeof(int));
+
     memcpy(taxonToReductionCopy,taxonToReduction,(tr->mxtips)*sizeof(int));
 
 	  //storing smallTree and taxonToReduction Arrays for further usage
 	  smallTreeTaxaList[numberOfTreesAnalyzed] = smallTreeTaxa;
-    taxonToReductionList[numberOfTreesAnalyzed] = taxonToReductionCopy;	  
 
+    taxonToReductionList[numberOfTreesAnalyzed] = taxonToReductionCopy;	  
 
     int this_currentSmallBips = 0; //Variable resets everytime for each tree analyzed
     
-    //This function iterates through induced hash table and compares everything with the bitvectors in the smalltree hashtable
+    //This function iterates through induced hash table and compares everything with the bitvectors in the smalltree hashtable and calculates the dropset
     
     printf("==> Set Calculation: \n");
     
@@ -3577,115 +3563,122 @@ void plausibilityChecker(tree *tr, analdef *adef)
         currentBips++;
 
 
-        //Iterate through all bips and calculate the dropsets
-				for (int _k=0; _k < s_hash->tableSize; _k++) {
+          //Iterate through all bips and calculate the dropsets
+				  for (int _k=0; _k < s_hash->tableSize; _k++) {
 					
-          if (s_hash->table[_k] != NULL) {
+            if (s_hash->table[_k] != NULL) {
 						
-            entry *s_e = s_hash->table[_k];
+              entry *s_e = s_hash->table[_k];
 						
-            do {
+              do {
 
-							unsigned int s_bitvector = *(s_e->bitVector);
+							  unsigned int s_bitvector = *(s_e->bitVector);
 
-              //Include the small bipartitions if they are not yet present
-              if (bipsPerTree[numberOfTreesAnalyzed] > this_currentSmallBips) {
+                //Include the small bipartitions if they are not yet present
+                if (bipsPerTree[numberOfTreesAnalyzed] > this_currentSmallBips) {
                 
-                s_bips[currentSmallBips] = s_bitvector;
+                  s_bips[currentSmallBips] = s_bitvector;
                 
-                this_currentSmallBips++;
+                  this_currentSmallBips++;
 
-                currentSmallBips++;
+                  currentSmallBips++;
               				
-              } 
+                } 
             	
-              //Use a Mask to get off the Offset ones that might resulted from the logical operations (i.e. for 5 taxa the mask is 000000...11111)							
-              int mask = 0;
-              mask = setOffSet(mask, smallTree->ntips);
+                //Use a Mask to get off the Offset ones that might resulted from the logical operations (i.e. for 5 taxa the mask is 000000...11111)							
+                int mask = 0;
+                mask = setOffSet(mask, smallTree->ntips);
 				    
-              int arr[2] = {0,0};
+                int arr[2] = {0,0};
 
-              //Calculate the dropset and save it into array arr
-              getDropSet(ind_bitvector, s_bitvector, mask, arr);
+                //Calculate the dropset between both bitvectors and save it into array arr
+                getDropSet(ind_bitvector, s_bitvector, mask, arr);
 	
-							//TODO: When two 0, bipartition matches
-							if(arr[0] == 0 && arr[1] == 0) {
+							  //TODO: When both dropsets are 0, bipartition matches
+							  if(arr[0] == 0 && arr[1] == 0) {
                 
-                int set[] = {0,-1};
+                  //We use -1 as ending 
+                  int set[] = {0,-1};
 
-                sets[currentSets] = set;
-								//Now we don't have to add any sets to this array because it matches
-								currentSets++;
+                  sets[currentSets] = set;
 
-							} else {
+								  //Now we don't have to add any sets to this array because it matches
+								  currentSets++;
 
-								if((arr[0] != 0) && (arr[1] == 0)){
+							  } else {
 
-									int* set = extractSet(&arr[0], smallTreeTaxa);	
+                  //When only one dropset is not zero, extract only sets of this dropset
+								  if((arr[0] != 0) && (arr[1] == 0)){
 
-									sets[currentSets] = set;
+									  int* set = extractSet(&arr[0], smallTreeTaxa);	
+
+									  sets[currentSets] = set;
 									
-									currentSets++;
-								}
+									  currentSets++;
+								  }
 
-								if((arr[1] != 0) && (arr[0] == 0)){
-									int* set = extractSet(&arr[1], smallTreeTaxa);
-									sets[currentSets] = set;
+								  if((arr[1] != 0) && (arr[0] == 0)){
+									  int* set = extractSet(&arr[1], smallTreeTaxa);
+									  sets[currentSets] = set;
 									
-									currentSets++;
-								}
+									  currentSets++;
+								  }
 								
-								if((arr[0] != 0) && (arr[1] != 0)) {
-                  					int* set = extractSets(&arr[0], &arr[1], smallTreeTaxa);    
-									sets[currentSets] = set;
-									currentSets++;
-								}
+                  //Both dropsets are non zero, merge them together
+								  if((arr[0] != 0) && (arr[1] != 0)) {
+                    int* set = extractSets(&arr[0], &arr[1], smallTreeTaxa);    
+									  sets[currentSets] = set;
+									  currentSets++;
+								  }
 
-							}//END ELSE
+							  }//END ELSE
 						
-							s_e = s_e->next;
-						} while (s_e!=NULL);
-					}
-				}
+							  s_e = s_e->next;
+					    } while (s_e!=NULL);
+					  }
+			    }
 				e = e->next;
-			} while (e!=NULL);
+			  } while (e!=NULL);
+      }
     }
-  }
 
+    /***********************************************************************************/
+    /* End DropSet Calculation */
+    /***********************************************************************************/
+  
 
+	  rec_rf = (double)(2 * (numberOfSplits - rec_bips)) / maxRF;
+	  
+	  assert(numberOfSplits >= rec_bips);	  	 
 
+	  avgRF += rec_rf;
+	  sumEffectivetime += effectivetime;
+	  
+	  //if(numberOfTreesAnalyzed % 100 == 0)
+	  printBothOpen("Relative RF tree %d: %f\n\n", i, rec_rf);
+	  
+	  fprintf(rfFile, "%d %f\n", i, rec_rf);
+	  
+	  /* free masks and hast table for this iteration */
+	  
+    // rec_freeBitVector(smallTree, bitVectors);
+	  // rax_free(bitVectors);
+	  
+	  // freeHashTable(s_hash);
+	  // rax_free(s_hash);
 
-	rec_rf = (double)(2 * (numberOfSplits - rec_bips)) / maxRF;
+    //  freeHashTable(ind_hash);
+    //  rax_free(ind_hash);
 	  
-	assert(numberOfSplits >= rec_bips);	  	 
+	  //rax_free(smallTreeTaxa); //Need it for calculating the SmallTreeTaxaList after all iterations!
+	  rax_free(seq);
+	  rax_free(seq2);
+	  rax_free(smallTreeTaxonToEulerIndex);
 
-	avgRF += rec_rf;
-	sumEffectivetime += effectivetime;
-	  
-	//if(numberOfTreesAnalyzed % 100 == 0)
-	printBothOpen("Relative RF tree %d: %f\n\n", i, rec_rf);
-	  
-	fprintf(rfFile, "%d %f\n", i, rec_rf);
-	  
-	/* free masks and hast table for this iteration */
-	  
-  // rec_freeBitVector(smallTree, bitVectors);
-	// rax_free(bitVectors);
-	  
-	// freeHashTable(s_hash);
-	// rax_free(s_hash);
+	  numberOfTreesAnalyzed++; //Counting the number of trees analyzed
+	  }
 
-  //  freeHashTable(ind_hash);
-  //  rax_free(ind_hash);
-	  
-	//rax_free(smallTreeTaxa); //Need it for calculating the SmallTreeTaxaList after all iterations!
-	rax_free(seq);
-	rax_free(seq2);
-	rax_free(smallTreeTaxonToEulerIndex);
-
-	numberOfTreesAnalyzed++; //Counting the number of trees analyzed
-	}
-}// End of Tree Iterations
+  }// End of Tree Iterations
   
 
   //=== TREE GRAPH CONSTRUCTION ===
