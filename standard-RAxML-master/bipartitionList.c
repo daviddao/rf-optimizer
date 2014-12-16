@@ -3040,6 +3040,22 @@ int contains(int* check, int** sets, int numberOfSets) {
 
 }
 
+//Get the index for which array arr is max
+int getMax(int* arr, int size) {
+
+  int max = 0;
+
+  for (int i = 1; i < size; i++) {
+
+    if(arr[i] > arr[max]) {
+      max = i;
+    }
+
+  }
+
+  return max;
+}
+
 /******************************* Bitvector func ***********************************/
 
 
@@ -3268,8 +3284,9 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
   fclose(treeFile);
   
-  /*************************************************************************************/
+  /***********************************************************************************/
   /* RF-OPT Preprocessing Step */
+  /***********************************************************************************/
 
   /* now see how many small trees we have */
   treeFile = getNumberOfTrees(tr, bootStrapFile, adef);
@@ -3338,8 +3355,10 @@ void plausibilityChecker(tree *tr, analdef *adef)
 	sets[it] = fill; 
   }
 
-  /* RF-Opt Preprocessing Step End */
-  /*************************************************************************************/
+  
+  /***********************************************************************************/
+  /* RF-OPT Preprocessing Step End */
+  /***********************************************************************************/
 
   /* loop over all small trees */
 
@@ -3529,7 +3548,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
 
     /***********************************************************************************/
-	  /* DropSet Calculation Step */
+	  /* RF-OPT DropSet Calculation Step */
     /***********************************************************************************/
 	    
     //copy array taxonToReduction because it is originally defined in preprocessing step
@@ -3643,7 +3662,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
     }
 
     /***********************************************************************************/
-    /* End DropSet Calculation */
+    /* End RF-OPT DropSet Calculation */
     /***********************************************************************************/
   
 
@@ -3681,16 +3700,9 @@ void plausibilityChecker(tree *tr, analdef *adef)
   }// End of Tree Iterations
   
 
-  //=== TREE GRAPH CONSTRUCTION ===
-
-  printf("===> Tree Numbers for each Bip \n");
-
-  for(int i = 0; i < numberOfBips; i++) {
-  	printf("%i ",treenumberOfBip[i]);
-  }
-
-  printf("\n");
-  
+  /***********************************************************************************/
+  /* RF-OPT Graph Construction */
+  /***********************************************************************************/
 
   printf("===> Now Unique Algorithm runs (naive)...\n");
   /* unique sets array data structures */
@@ -3712,21 +3724,28 @@ void plausibilityChecker(tree *tr, analdef *adef)
     for(int j = 0; j < bipsPerTree[i]; j++) {
 
       int dropSetsPerBip = bipsPerTree[i]; //Compare each bip with all bips
+      
       int matching = 0; //Will be set to one if dropset is matching, resulting in a score = 0
       
       //Check all dropsets of each bipartition
       for(int k = 0; k < dropSetsPerBip; k++){
+        
         int* dropset = sets[dropSetCount + k];
         //printf("dropset : %i \n", dropset[0]);
 
         //Add and filter uniq sets
         int containIndex = contains(dropset,uniqSets,numberOfUniqueSets);
+        
         if(!containIndex) {
           //If it is not inside uniqSet
           printf("==> Unique set %i added \n",(dropSetCount + k));
+
           uniqSets[numberOfUniqueSets] = dropset;
+
           setsToUniqSets[dropSetCount + k] = numberOfUniqueSets; //Add the new index to the translation array
+
           numberOfUniqueSets++;
+
         } else {
           //If it is already inside uniqSet
           setsToUniqSets[dropSetCount + k] = (containIndex - 1);
@@ -3752,7 +3771,6 @@ void plausibilityChecker(tree *tr, analdef *adef)
     }
 
   }
-
 
   //Now go through all sets and count, how many bips they are for each set
   printf("==> before counting ... \n");
@@ -3868,6 +3886,10 @@ void plausibilityChecker(tree *tr, analdef *adef)
     }
 
   }
+
+  /***********************************************************************************/
+  /* End RF-OPT Graph Construction */
+  /***********************************************************************************/
 
   /* Short summary :
     sets - array of all dropsets
@@ -4000,6 +4022,9 @@ void plausibilityChecker(tree *tr, analdef *adef)
   for(int i = 1; i < numberOfUniqueSets; i++) {
   	printf("RF Score for %i : %i \n", i, rf_score[i]);
   }
+
+  int maxDropSet = getMax(rf_score, numberOfUniqueSets);
+  printf("Max Element is %i \n", maxDropSet);
 
   //Printing if
   if(1){
