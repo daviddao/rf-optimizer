@@ -3457,10 +3457,10 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
   printf("numberOfBips: %i , numberOfSets: %i \n \n", numberOfBips, numberOfSets);	
 
-  //stores induced bips
+  //stores induced bips (OLD?)
   unsigned int *ind_bips = (unsigned int *)rax_malloc(numberOfBips * sizeof(unsigned int));
 
-  //stores smalltree bips
+  //stores smalltree bips (OLD?)
   unsigned int *s_bips = (unsigned int *)rax_malloc(numberOfBips * sizeof(unsigned int));
 
   //stores small bips per tree
@@ -3468,6 +3468,9 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
   //stores induced bips per tree
   unsigned int ***indBipsPerTree = (unsigned int ***)rax_malloc(tr->numberOfTrees * sizeof(unsigned int**));
+
+  //stores vLength of each tree for processing bitVectors
+  unsigned int *vectorLengthPerTree = (unsigned int *)rax_malloc(tr->numberOfTrees * sizeof(unsigned int*));
 
   //stores the corresponding tree number for each bip
   int *treenumberOfBip = (int *)rax_malloc(numberOfBips * sizeof(int));
@@ -3493,7 +3496,6 @@ void plausibilityChecker(tree *tr, analdef *adef)
 	int fill[1] = {-1};
 	sets[it] = fill; 
   }
-
   
   /***********************************************************************************/
   /* RF-OPT Preprocessing Step End */
@@ -3535,8 +3537,8 @@ void plausibilityChecker(tree *tr, analdef *adef)
 	  
 	  firstTaxon = smallTree->start->number;
 
-      //Saves the number of taxa in the tree (for RF-OPT)
-      taxaPerTree[numberOfTreesAnalyzed] = smallTree->ntips; 
+    //Saves the number of taxa in the tree (for RF-OPT)
+    taxaPerTree[numberOfTreesAnalyzed] = smallTree->ntips; 
 	  
 	  /***********************************************************************************/
 	  /* Reconstruction Step */
@@ -3596,6 +3598,13 @@ void plausibilityChecker(tree *tr, analdef *adef)
 	    vectorLength = smallTree->ntips / MASK_LENGTH;
 	  else
 	    vectorLength = 1 + (smallTree->ntips / MASK_LENGTH); 
+
+
+    /***********************************************************************************/
+    /* RF-OPT Additional Preprocessing storing Bipartitions */
+    /***********************************************************************************/    
+
+    vectorLengthPerTree[numberOfTreesAnalyzed] = vectorLength;
 	  
 	  unsigned int 
 	    **bitVectors = rec_initBitVector(smallTree, vectorLength);
@@ -3608,13 +3617,11 @@ void plausibilityChecker(tree *tr, analdef *adef)
 	  sBips = RFOPT_extractBipartitionsMulti(bitVectors, seq2, newcount,tr->mxtips, vectorLength, smallTree->ntips, 
 				       firstTaxon, s_hash, taxonToReduction, taxonHasDeg, numberOfSplits);
 
-    for(int testi = 0; testi < numberOfSplits; testi++) {
-      unsigned int* bip = sBips[testi];
-
-      printBitVector(bip[0]);
-    }
-
     sBipsPerTree[numberOfTreesAnalyzed] = sBips;
+
+    /***********************************************************************************/
+    /* End RF-OPT Additional Preprocessing storing Bipartitions */
+    /***********************************************************************************/  
 	  
 	  /* counter is set to 0 to be used for correctly storing all EulerIndices */
 	  newcount = 0; 
@@ -3721,7 +3728,6 @@ void plausibilityChecker(tree *tr, analdef *adef)
     int this_currentSmallBips = 0; //Variable resets everytime for each tree analyzed
     
     //This function iterates through induced hash table and compares everything with the bitvectors in the smalltree hashtable and calculates the dropset
-    
     printf("==> Set Calculation: \n");
     
     for (int k=0,entryCount=0;k < ind_hash->tableSize; k++) {
@@ -3856,6 +3862,16 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
   }// End of Tree Iterations
   
+
+  /***********************************************************************************/
+  /* RF-OPT DropSet Calculation */
+  /***********************************************************************************/
+
+  printf("===> BitVector Set Calculation \n");
+
+
+
+
 
   /***********************************************************************************/
   /* RF-OPT Graph Construction */
@@ -4287,132 +4303,10 @@ void plausibilityChecker(tree *tr, analdef *adef)
   */
 
   /***********************************************************************************/
-  /* RF-OPT Update function */
+  /* TODO RF-OPT Update function */
   /***********************************************************************************/
 
-  // //Iterate through all sets
-  // for(int i = 0; i < numberOfUniqueSets; i++) {
-
-  //   //Bitvectors of merged and destroyed
-  //   int bvec_destroyed = 0;
-
-  //   int* set = uniqSets[i]; //Get the dropset, first dropset is 0 (if something is matching)
-
-  //   //printf(" ==> Analyze Unique DropSet %i \n", i);
-
-  //   //We use this data structure to keep track of the to toggled bits
-  //   int* toggleBits = (int*)rax_malloc(sizeof(int)*numberOfBips);
-  //   for(int ix = 0; ix < numberOfBips; ix++) {
-  //     toggleBits[ix] = 0;
-  //   }
-
-  //   //Now iterate through the set
-  //   int j = 0;
-
-  //   //Stores the affected bips into a bitvector
-  //   int bvec_bips = 0;
-
-  //   while(set[j] != -1) {
-
-  //     int taxa = set[j]; //Get the taxa
-  //     //printf("  Taxa number is %i \n",taxa);
-
-  //     //Check if set[j] is itself already a set
-  //     int test[2] = {taxa,-1}; 
-
-  //     //0 if it is not a set, index + 1 otherwise
-  //     int test_index = contains(test, uniqSets, numberOfUniqueSets);
-
-  //     if(test_index){
-  //       //printf("  It also is in uniqSet %i \n", test_index - 1);
-  //       bvec_bips = getBipsOfDropSet(bvec_bips, (test_index - 1), numberOfBipsPerSet, bipsOfDropSet);
-
-  //     }
-
-  //     //Get all bips of this taxa to detect which one will be destroyed
-  //     int* listOfBips = bipsOfTaxa[taxa]; 
-
-  //     //Go through all bipartitions containing this taxa
-  //     for(int k = 0; k < numberOfBipsPerTaxa[taxa]; k++){
-
-  //       int bipindex = listOfBips[k]; //Get the index of the Bipartition
-
-  //       int bip = ind_bips[bipindex];
-
-  //       //Now analyze this Bipartition
-
-  //       //Which tree does this bipartition belongs too?
-  //       int treenumber = treenumberOfBip[bipindex];
-
-  //       //Get the taxonToSmallTree Array of this tree
-  //       int* stTaxa = taxonToReductionList[treenumber];
-
-  //       //Translate the global taxon number it into the local index used by our bips
-  //       int translated_index = stTaxa[taxa - 1]; //We use taxa - 1 because we start counting at taxa 1 = 0 !
-
-  //       //Save the to toggle index into toggleBits vector
-  //       toggleBits[bipindex] |= 1 << translated_index;
-
-  //       //Sort for bits set on one side of the bip and on the other side
-  //       int leftBits = __builtin_popcount(toggleBits[bipindex] & bip);
-  //       int rightBits = __builtin_popcount(toggleBits[bipindex]) - leftBits;
-
-  //       //Check for the number of bits set in the original bip 
-  //       int leftBip = __builtin_popcount(bip);
-  //       int rightBip = taxaPerTree[treenumber] - leftBip;
-
-  //       //Subtract the total number of bits set on one side of the bip with the bits we have to toggle
-  //       int leftBip_after = leftBip - leftBits;
-  //       int rightBip_after = rightBip - rightBits;
-
-  //       //Check if bipartition gets trivial/destroyed due to pruning the taxa and set the bit (representing the bip) which is destroyed
-  //       if((leftBip_after <= 1) | (rightBip_after <=1)) {
-
-  //       //Add bips to the bits which represent destroyed bipartitions
-  //       bvec_destroyed = setBit(bvec_destroyed,bipindex);
-
-  //       }
-      
-
-  //     } 
-
-  //     j++;
-
-  //   }//End iterate through the set
-
-  //   int penality = 0;
-  //   int score = 0;
-
-  //   int bvec_mask = 0;
-  //   bvec_mask = setOffSet(bvec_mask, numberOfBips);
-
-  //   //Bitvector of already matching bips
-  //   int bvec_tmp = 0;
-  //   bvec_tmp = ~bvec_scores & bvec_mask;
-
-  //   //Penality score are all bitvectors who were matching but is destroyed 
-  //   penality = __builtin_popcount(bvec_destroyed & bvec_tmp);
-
-  //   //Now iterate through bipsOfDropSet list and extract all bips which will merge into a bitVector
-  //   bvec_bips = getBipsOfDropSet(bvec_bips, i, numberOfBipsPerSet, bipsOfDropSet);
-
-  //   //Calculate the bitvectors which remains
-  //   bvec_tmp = ~bvec_destroyed & bvec_mask;
-
-  //   bvec_tmp = bvec_bips & bvec_tmp;
-
-  //   score = __builtin_popcount(bvec_scores & bvec_tmp);
-
-  //   rf_score[i] = score - penality;
-
-  //   //Save our results for convenience into an array
-  //   bvecs_bips[i] = bvec_bips;
-  //   bvecs_destroyed[i] = bvec_destroyed;
-
-
-  // }//End Score Calculation
-
-
+  
   /***********************************************************************************/
   /* End RF-OPT Update function */
   /***********************************************************************************/
@@ -4434,19 +4328,20 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
 
 
-  printf("Small Bipartitions?: ");
+  //printf("Small Bipartitions?: ");
 
   for(int i = 0; i < tr->numberOfTrees; i++) {
+    printf("vectorLength for Tree %i : %i \n", i, vectorLengthPerTree[i]);
     unsigned int **sBips = sBipsPerTree[i];
 
     for(int j = 0; j < bipsPerTree[i]; j++) {
       unsigned int *bip = sBips[j];
 
-      printBitVector(bip[0]);
+      //printBitVector(bip[0]);
     }
   }
 
-  printf("Ind Bipartitions?: ");
+  //printf("Ind Bipartitions?: ");
 
   for(int i = 0; i < tr->numberOfTrees; i++) {
     unsigned int **indBips = indBipsPerTree[i];
@@ -4454,19 +4349,19 @@ void plausibilityChecker(tree *tr, analdef *adef)
     for(int j = 0; j < bipsPerTree[i]; j++) {
       unsigned int *bip = indBips[j];
 
-      printBitVector(bip[0]);
+      //printBitVector(bip[0]);
     }
   }
 
-  printf("Induced Bipartitions: ");
+  // printf("Induced Bipartitions: ");
 
-  printBitVector(ind_bips[0]);
-  printBitVector(ind_bips[1]);
-  printBitVector(ind_bips[2]);
-  printBitVector(ind_bips[3]);
-  printBitVector(ind_bips[4]);
-  printBitVector(ind_bips[5]);
-  printBitVector(ind_bips[6]);
+  // printBitVector(ind_bips[0]);
+  // printBitVector(ind_bips[1]);
+  // printBitVector(ind_bips[2]);
+  // printBitVector(ind_bips[3]);
+  // printBitVector(ind_bips[4]);
+  // printBitVector(ind_bips[5]);
+  // printBitVector(ind_bips[6]);
 
 
   /***********************************************************************************/
