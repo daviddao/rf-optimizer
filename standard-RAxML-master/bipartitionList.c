@@ -3947,6 +3947,18 @@ void plausibilityChecker(tree *tr, analdef *adef)
   		int taxa = set[j]; //Get the taxa
   		printf("Taxa number is %i \n",taxa);
 
+      //Check if set[j] is itself already a set
+      int test[2] = {taxa,-1}; 
+
+      //0 if it is not a set, index + 1 otherwise
+      int test_index = contains(test, uniqSets, numberOfUniqueSets);
+
+      if(test_index){
+        printf("It also is in uniqSet %i \n", test_index - 1);
+        bvec_bips = getBipsOfDropSet(bvec_bips, (test_index - 1), numberOfBipsPerSet, bipsOfDropSet);
+
+      }
+
       //Get all bips of this taxa to detect which one will be destroyed
   		int* listOfBips = bipsOfTaxa[taxa]; 
 
@@ -4033,6 +4045,8 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
   int maxDropSet = getMax(rf_score, numberOfUniqueSets);
   printf("Max Element is %i \n", maxDropSet);
+
+
 
   //Printing if
   if(1){
