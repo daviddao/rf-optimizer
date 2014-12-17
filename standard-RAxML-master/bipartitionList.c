@@ -2825,7 +2825,7 @@ static unsigned int** RFOPT_extractBipartitionsMulti(unsigned int** bitvectors, 
 
 
 /* Additionally to the method above, rec_findAddBipartitions add the bipartitions into a second hashtable ind_hash */
-static int rec_findAddBipartitions(unsigned int ** bitvectors, int* seq, int arraysize, int* translate, int numsp, unsigned int vLength, int ntips, int first, hashtable* hash, hashtable* ind_hash, int* taxonToReduction)
+static unsigned int** RFOPT_findAddBipartitions(unsigned int ** bitvectors, int* seq, int arraysize, int* translate, int numsp, unsigned int vLength, int ntips, int first, hashtable* hash, hashtable* ind_hash, int* taxonToReduction)
 {
   int 
     i, 
@@ -2839,6 +2839,9 @@ static int rec_findAddBipartitions(unsigned int ** bitvectors, int* seq, int arr
     k, 
     *toInsert = (unsigned int*)NULL,
     *bipartition = (unsigned int*)NULL;
+
+  unsigned int
+    **returnInserts = (unsigned int**)rax_malloc((ntips-3)*sizeof(unsigned int*));
     
   hashNumberType 
     position;
@@ -2929,7 +2932,9 @@ static int rec_findAddBipartitions(unsigned int ** bitvectors, int* seq, int arr
       /* re-hash to the new hash table that contains the bips of the large tree, pruned down 
    to the taxa contained in the small tree
       */
-      insertHashPlausibility(toInsert, ind_hash, vLength, position);     
+      insertHashPlausibility(toInsert, ind_hash, vLength, position); 
+
+      returnInserts[i] = toInsert;    
 
       found = found + findHash(toInsert, hash, vLength, position);              
     }
@@ -2937,7 +2942,7 @@ static int rec_findAddBipartitions(unsigned int ** bitvectors, int* seq, int arr
   rax_free(V);
   rax_free(bipartitions);
   
-  return found;
+  return returnInserts;
 }
 
 
@@ -3458,6 +3463,9 @@ void plausibilityChecker(tree *tr, analdef *adef)
   //stores smalltree bips
   unsigned int *s_bips = (unsigned int *)rax_malloc(numberOfBips * sizeof(unsigned int));
 
+  //stores small bips per tree
+  unsigned int ***sBipsPerTree = (unsigned int ***)rax_malloc(tr->numberOfTrees * sizeof(unsigned int**));
+
   //stores induced bips per tree
   unsigned int ***indBipsPerTree = (unsigned int ***)rax_malloc(tr->numberOfTrees * sizeof(unsigned int**));
 
@@ -3593,20 +3601,20 @@ void plausibilityChecker(tree *tr, analdef *adef)
 	    **bitVectors = rec_initBitVector(smallTree, vectorLength);
 
     unsigned int
-      **indBips;
+      **sBips;
 
 	  /* store all non trivial bitvectors using an subtree approach for the reference subtree and 
 	     store it into a hashtable, this method was changed for multifurcation */
-	  indBips = RFOPT_extractBipartitionsMulti(bitVectors, seq2, newcount,tr->mxtips, vectorLength, smallTree->ntips, 
+	  sBips = RFOPT_extractBipartitionsMulti(bitVectors, seq2, newcount,tr->mxtips, vectorLength, smallTree->ntips, 
 				       firstTaxon, s_hash, taxonToReduction, taxonHasDeg, numberOfSplits);
 
     for(int testi = 0; testi < numberOfSplits; testi++) {
-      unsigned int* bip = indBips[testi];
+      unsigned int* bip = sBips[testi];
 
       printBitVector(bip[0]);
     }
 
-    indBipsPerTree[numberOfTreesAnalyzed] = indBips;
+    sBipsPerTree[numberOfTreesAnalyzed] = sBips;
 	  
 	  /* counter is set to 0 to be used for correctly storing all EulerIndices */
 	  newcount = 0; 
@@ -3668,8 +3676,15 @@ void plausibilityChecker(tree *tr, analdef *adef)
 	  /* calculates all bipartitions of the reference small tree and count how many bipartition it 
     shares with the induced small tree and stores those bipartitions in a additional hashtable called ind_hash */
 	  int 
-	    rec_bips = rec_findAddBipartitions(bitVectors, seq,(2*smallTree->ntips - 1), labelToTaxon, tr->mxtips, vectorLength, smallTree->ntips, firstTaxon, s_hash, ind_hash, taxonToReduction);
-	  
+	    rec_bips = 0;
+
+    unsigned int
+      **indBips;
+
+    indBips = RFOPT_findAddBipartitions(bitVectors, seq,(2*smallTree->ntips - 1), labelToTaxon, tr->mxtips, vectorLength, smallTree->ntips, firstTaxon, s_hash, ind_hash, taxonToReduction);
+      
+    indBipsPerTree[numberOfTreesAnalyzed] = indBips; 
+
       /* calculates all bipartitions of the reference small tree and put them into ind_hash*/
       // rec_extractBipartitionsMulti(bitVectors, seq2, (2*smallTree->ntips - 1),tr->mxtips, vectorLength, smallTree->ntips, 
              // firstTaxon, s_hash, taxonToReduction, taxonHasDeg, numberOfSplits);
@@ -4420,6 +4435,18 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
 
   printf("Small Bipartitions?: ");
+
+  for(int i = 0; i < tr->numberOfTrees; i++) {
+    unsigned int **sBips = sBipsPerTree[i];
+
+    for(int j = 0; j < bipsPerTree[i]; j++) {
+      unsigned int *bip = sBips[j];
+
+      printBitVector(bip[0]);
+    }
+  }
+
+  printf("Ind Bipartitions?: ");
 
   for(int i = 0; i < tr->numberOfTrees; i++) {
     unsigned int **indBips = indBipsPerTree[i];
