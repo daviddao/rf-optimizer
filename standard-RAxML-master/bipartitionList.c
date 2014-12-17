@@ -3178,7 +3178,7 @@ static int getMax(int* arr, int size) {
   return max;
 }
 
-/******************************* Bitvector func ***********************************/
+/******************************* Bit Manipulation functionality ***********************************/
 
 
 static int setBit(int bitVector, int pos) {
@@ -3223,8 +3223,6 @@ static int getExistingBips(int mask, int offset, int bvecs_deletedBips) {
 
   return mask;
 }
-
-
 
 static void printBitVector(int bitVector) {
   char buffer[33];
@@ -3286,6 +3284,31 @@ static void getDropSet(int ind_bitvector, int s_bitvector, int mask, int* arr) {
   
   //Sort to have a unique dropset representation
   qsort(arr,2,sizeof(int),sortBipartitions);
+
+}
+
+//Calculate the DropSet given two BitVectors of the same length
+static void getDropSetFromBitVectors(unsigned int* indBip, unsigned int* sBip, unsigned int vLength, int* arr) {
+
+  //Calculate the dropsets by comparing two bipartitions
+  //Determine the smallest of two sets (xANDx*,yANDy*) OR (xANDy*,yANDx*)
+  unsigned int* x1_x2 = (unsigned int*)rax_malloc(sizeof(int) * vLength);
+  unsigned int* y1_y2 = (unsigned int*)rax_malloc(sizeof(int) * vLength);
+
+  unsigned int* x1_y2 = (unsigned int*)rax_malloc(sizeof(int) * vLength);
+  unsigned int* y1_x2 = (unsigned int*)rax_malloc(sizeof(int) * vLength);
+
+  //Calculate a logical operation on BitVectors
+  for(int i = 0; i < vLength; i++) {
+
+
+
+  }
+
+  free(x1_x2);
+  free(y1_y2);
+  free(x1_y2);
+  free(y1_x2);
 
 }
 
@@ -3864,10 +3887,43 @@ void plausibilityChecker(tree *tr, analdef *adef)
   
 
   /***********************************************************************************/
-  /* RF-OPT DropSet Calculation */
+  /* RF-OPT DropSet Calculation using BitVectors */
   /***********************************************************************************/
 
   printf("===> BitVector Set Calculation \n");
+
+
+  //First iterate through all trees
+  for(int i = 0; i< tr->numberOfTrees; i++) {
+
+    //Get all induced Bips of this tree
+    unsigned int **indBips = indBipsPerTree[i];
+
+    //Get all small Bips of this tree
+    unsigned int **sBips = sBipsPerTree[i];
+
+    //Now go through all Bips of this tree
+    for(int j = 0; j < bipsPerTree[i]; j++) {
+
+      //Get the bitVector of this Bips
+      unsigned int *indBip = indBips[j];
+
+      //Now iterate through all small Bips in the tree
+      for(int k = 0; k < bipsPerTree[i]; k++) {
+        
+        //get small Bip
+        unsigned int *sBip = sBips[j];
+
+        //try logical operation
+        for(int l = 0; l < vectorLengthPerTree[i]; l++) {
+          //sBip[l] & indBip[l];
+        }
+
+      }
+      
+
+    }
+  }
 
 
 
@@ -4331,7 +4387,6 @@ void plausibilityChecker(tree *tr, analdef *adef)
   //printf("Small Bipartitions?: ");
 
   for(int i = 0; i < tr->numberOfTrees; i++) {
-    printf("vectorLength for Tree %i : %i \n", i, vectorLengthPerTree[i]);
     unsigned int **sBips = sBipsPerTree[i];
 
     for(int j = 0; j < bipsPerTree[i]; j++) {
@@ -4343,15 +4398,6 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
   //printf("Ind Bipartitions?: ");
 
-  for(int i = 0; i < tr->numberOfTrees; i++) {
-    unsigned int **indBips = indBipsPerTree[i];
-
-    for(int j = 0; j < bipsPerTree[i]; j++) {
-      unsigned int *bip = indBips[j];
-
-      //printBitVector(bip[0]);
-    }
-  }
 
   // printf("Induced Bipartitions: ");
 
