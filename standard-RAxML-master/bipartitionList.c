@@ -2707,6 +2707,123 @@ static int sortIntegers(const void *a, const void *b)
 
 /************************************* RF-OPT functions ***************************/
 
+/* method adapted for multifurcating trees, changes are: 
+we now need information about the degree of an inner node, because it is not 2 anymore 
+we also can have less than n-3 splits and therefore need a new parameter telling us the actual split number */
+static unsigned int** RFOPT_extractBipartitionsMulti(unsigned int** bitvectors, int* seq, int arraysize, int numsp, unsigned int vLength, int ntips, int first, hashtable* hash, int* taxonToReduction, int* taxonHasDegree, int maxSplits)
+{
+  int 
+    i,
+    j,
+    o,
+    taxon,
+    numberOfSplits = 0,
+    firstTaxon = taxonToReduction[first - 1] + 1,
+    *V = (int *)rax_malloc((arraysize) * sizeof(int)),
+    *bipartitions = (int*)rax_malloc((ntips - 3) * sizeof(int));
+
+  hashNumberType 
+    position;
+  
+
+  unsigned int 
+    k,
+    *toInsert = (unsigned int*)NULL,
+    *bipartition = (unsigned int*)NULL;
+
+  //Store the bipartition bitvector into a seperate array 
+  unsigned int
+    **returnInserts = (unsigned int**)rax_malloc(maxSplits*sizeof(unsigned int*));
+
+
+  for(i = arraysize - 1; i >= 0; i--) 
+    {
+      V[i] = 1;
+      /* instead of n-3 we stop after maxSplits */
+      if(!isTip(seq[i],numsp) && (numberOfSplits < maxSplits))
+  { 
+    /* instead of j < 2, for multifurcating trees, they can have an abitrarily degree. 
+       We save this information in an array called taxonHasDegree and look it up quickly*/
+    for(j = 0; j < taxonHasDegree[seq[i] - 1] ; j++)      
+      V[i] = V[i] + V[i + V[i]];              
+    
+    int 
+      index = taxonToReduction[seq[i] - 1];
+
+    bipartitions[numberOfSplits] = index;
+
+    toInsert = bitvectors[index];
+
+    /* Extract Bipartition */
+    for(j = 1; j < V[i]; j++) 
+      {
+        if(isTip(seq[i + j],numsp))
+    {
+      taxon = taxonToReduction[seq[i + j] - 1] + 1;
+      
+      toInsert[(taxon-1) / MASK_LENGTH] |= mask32[(taxon-1) % MASK_LENGTH];
+    }
+        else
+    {     
+      int 
+        before = taxonToReduction[seq[i+j] - 1];
+      
+      bipartition = bitvectors[before];
+      
+      for(k = 0; k < vLength; k++) 
+        toInsert[k] |= bipartition[k];
+      
+      /* jump to the next subtree */
+      j = j + V[i+j] - 1;
+    }        
+      }
+    
+    numberOfSplits += 1;          
+  }
+    }
+  /* we now iterate to maxSplits instead of n-3 */
+  for(i=0;i < maxSplits; i++) 
+    {
+      toInsert = bitvectors[bipartitions[i]];
+      
+      if(toInsert[(firstTaxon-1) / MASK_LENGTH] & mask32[(firstTaxon-1) % MASK_LENGTH]) 
+  {          
+    /* Padding the last bits! */
+    if(ntips % MASK_LENGTH != 0) 
+      {            
+        for(o = MASK_LENGTH; o > (ntips % MASK_LENGTH); o--)         
+    toInsert[vLength - 1] |= mask32[o-1];       
+      }
+
+    for(k=0;k < vLength; k++)         
+      toInsert[k] = ~toInsert[k];         
+  }
+        
+      assert(!(toInsert[(firstTaxon-1) / MASK_LENGTH] & mask32[(firstTaxon-1) % MASK_LENGTH]));
+
+      assert(vLength > 0);
+
+      for(k=0; k < vLength; k++)    
+  /* compute hash */
+  position = oat_hash((unsigned char *)toInsert, sizeof(unsigned int) * vLength);
+    
+      position = position % hash->tableSize;
+    
+      /* re-hash to the new hash table that contains the bips of the large tree, pruned down 
+   to the taxa contained in the small tree
+      */
+      insertHashPlausibility(toInsert, hash, vLength, position);
+
+      returnInserts[i] = toInsert;     
+    }
+
+  rax_free(V);
+  rax_free(bipartitions);
+
+  return returnInserts;  
+}
+
+
 /* Additionally to the method above, rec_findAddBipartitions add the bipartitions into a second hashtable ind_hash */
 static int rec_findAddBipartitions(unsigned int ** bitvectors, int* seq, int arraysize, int* translate, int numsp, unsigned int vLength, int ntips, int first, hashtable* hash, hashtable* ind_hash, int* taxonToReduction)
 {
@@ -3471,11 +3588,20 @@ void plausibilityChecker(tree *tr, analdef *adef)
 	  
 	  unsigned int 
 	    **bitVectors = rec_initBitVector(smallTree, vectorLength);
-	  
+
+    unsigned int
+      **indBips;
+
 	  /* store all non trivial bitvectors using an subtree approach for the reference subtree and 
 	     store it into a hashtable, this method was changed for multifurcation */
-	  rec_extractBipartitionsMulti(bitVectors, seq2, newcount,tr->mxtips, vectorLength, smallTree->ntips, 
+	  indBips = RFOPT_extractBipartitionsMulti(bitVectors, seq2, newcount,tr->mxtips, vectorLength, smallTree->ntips, 
 				       firstTaxon, s_hash, taxonToReduction, taxonHasDeg, numberOfSplits);
+
+    for(int testi = 0; testi < numberOfSplits; testi++) {
+      unsigned int* bip = indBips[testi];
+
+      printBitVector(bip[0]);
+    }
 	  
 	  /* counter is set to 0 to be used for correctly storing all EulerIndices */
 	  newcount = 0; 
