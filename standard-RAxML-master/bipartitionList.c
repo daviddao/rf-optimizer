@@ -3458,6 +3458,9 @@ void plausibilityChecker(tree *tr, analdef *adef)
   //stores smalltree bips
   unsigned int *s_bips = (unsigned int *)rax_malloc(numberOfBips * sizeof(unsigned int));
 
+  //stores induced bips per tree
+  unsigned int ***indBipsPerTree = (unsigned int ***)rax_malloc(tr->numberOfTrees * sizeof(unsigned int**));
+
   //stores the corresponding tree number for each bip
   int *treenumberOfBip = (int *)rax_malloc(numberOfBips * sizeof(int));
 
@@ -3602,6 +3605,8 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
       printBitVector(bip[0]);
     }
+
+    indBipsPerTree[numberOfTreesAnalyzed] = indBips;
 	  
 	  /* counter is set to 0 to be used for correctly storing all EulerIndices */
 	  newcount = 0; 
@@ -4413,6 +4418,30 @@ void plausibilityChecker(tree *tr, analdef *adef)
   printf("Number of total Bips %i \n", numberOfBips);
 
 
+
+  printf("Small Bipartitions?: ");
+
+  for(int i = 0; i < tr->numberOfTrees; i++) {
+    unsigned int **indBips = indBipsPerTree[i];
+
+    for(int j = 0; j < bipsPerTree[i]; j++) {
+      unsigned int *bip = indBips[j];
+
+      printBitVector(bip[0]);
+    }
+  }
+
+  printf("Induced Bipartitions: ");
+
+  printBitVector(ind_bips[0]);
+  printBitVector(ind_bips[1]);
+  printBitVector(ind_bips[2]);
+  printBitVector(ind_bips[3]);
+  printBitVector(ind_bips[4]);
+  printBitVector(ind_bips[5]);
+  printBitVector(ind_bips[6]);
+
+
   /***********************************************************************************/
   /* Console Logs for debugging */
   /***********************************************************************************/
@@ -4518,16 +4547,6 @@ void plausibilityChecker(tree *tr, analdef *adef)
   //=== TREE GRAPH CONSTRUCTION ENDS ===
   printf("Scores: ");
   printBitVector(bvec_scores);
-
-  // printf("Bipartitions: ");
-
-  // printBitVector(ind_bips[0]);
-  // printBitVector(ind_bips[1]);
-  // printBitVector(ind_bips[2]);
-  // printBitVector(ind_bips[3]);
-  // printBitVector(ind_bips[4]);
-  // printBitVector(ind_bips[5]);
-  // printBitVector(ind_bips[6]);
   
   printf("\nnumber of bips are %i \n",countBips);
 
