@@ -44,13 +44,13 @@ Average RF distance 0.388889
 
 Large Tree: 8, Number of SmallTrees analyzed: 3 
 
-Total execution time: 0.004696 secs
+Total execution time: 0.005022 secs
 
 File containing all 3 pair-wise RF distances written to file /Users/David/rf-optimizer/RAxML_RF-Distances.T1
 
 execution stats:
 
-Accumulated time Effective algorithm: 0.00004 sec 
-Average time for effective: 0.0000119209 sec 
-Preprocessingtime: 0.00002 sec 
+Accumulated time Effective algorithm: 0.00006 sec 
+Average time for effective: 0.0000209808 sec 
+Preprocessingtime: 0.00001 sec 
 

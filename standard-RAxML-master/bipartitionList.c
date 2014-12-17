@@ -2855,11 +2855,11 @@ static int* extractSet(int* bitvector, int* smallTreeTaxa){
     qsort(set, numberOfOnes, sizeof(int), sortIntegers);
 
 		
-		printf("\n ==>Extracted Set is ");
-		for (i = 0; i < (numberOfOnes + 1); i++) {
-			printf("%i ", set[i]);
-		}
-		printf("\n");
+		// printf("\n ==>Extracted Set is ");
+		// for (i = 0; i < (numberOfOnes + 1); i++) {
+		// 	printf("%i ", set[i]);
+		// }
+		// printf("\n");
 		return set;
 }
 
@@ -2915,11 +2915,11 @@ static int* extractSets(int* bitvector, int* bitvector2, int* smallTreeTaxa){
     //Sort to get a comparable sequence for steps to follow
     qsort(set, numberOfOnes, sizeof(int), sortIntegers);
     
-    printf("\n ==>Extracted Set for 2 Bips is ");
-    for (i = 0; i < (numberOfOnes + 1); i++) {
-      printf("%i ", set[i]);
-    }
-    printf("\n");
+    // printf("\n ==>Extracted Set for 2 Bips is ");
+    // for (i = 0; i < (numberOfOnes + 1); i++) {
+    //   printf("%i ", set[i]);
+    // }
+    // printf("\n");
     return set;
 }
 
@@ -2927,7 +2927,7 @@ static int* extractSets(int* bitvector, int* bitvector2, int* smallTreeTaxa){
 /************************************* helper functions ***************************/
 
 /* converts integer into binary representation */
-char *int2bin(int a, char *buffer, int buf_size) {
+static char *int2bin(int a, char *buffer, int buf_size) {
 	    buffer += (buf_size - 1);
 
 		    for (int i = 31; i >= 0; i--) {
@@ -2998,7 +2998,7 @@ static int sortSets(const void *a, const void *b)
 }
 
 /* Checks if two arrays are identical and returns 1 and 0 */
-int isSameDropSet(int* a, int* b) {
+static int isSameDropSet(int* a, int* b) {
   int j = 0;
 
   //while it is equal, we look for the first comparison which is not equal
@@ -3026,7 +3026,7 @@ int isSameDropSet(int* a, int* b) {
     returns 0 if its not containing
     returns index+1 if it contains the element 
 */
-int contains(int* check, int** sets, int numberOfSets) {
+static int contains(int* check, int** sets, int numberOfSets) {
   //printf("Now we check %i with ...\n",check[0]);
   for (int i = 0; i < numberOfSets; i++) {
     int* dropset = sets[i];
@@ -3041,7 +3041,7 @@ int contains(int* check, int** sets, int numberOfSets) {
 }
 
 //Get the index for which array arr is max
-int getMax(int* arr, int size) {
+static int getMax(int* arr, int size) {
 
   int max = 0;
 
@@ -3059,21 +3059,21 @@ int getMax(int* arr, int size) {
 /******************************* Bitvector func ***********************************/
 
 
-int setBit(int bitVector, int pos) {
+static int setBit(int bitVector, int pos) {
 	
 	bitVector |= 1 << pos;
 
 	return bitVector;
 }
 
-int clearBit(int bitVector, int pos) {
+static int clearBit(int bitVector, int pos) {
 	
 	bitVector &= ~(1 << pos);
 
 	return bitVector;
 }
 
-int checkBit(int bitVector, int pos) {
+static int checkBit(int bitVector, int pos) {
 	
 	int bit = 0;
 	
@@ -3083,17 +3083,28 @@ int checkBit(int bitVector, int pos) {
 }
 
 //Use to setup a mask to clear the offset bits
-int setOffSet(int mask, int offset) {
+static int setOffSet(int mask, int offset) {
   
   for(int i = 0; i < offset; i++) {
     mask = setBit(mask, i);
   }
 
   return mask; 
-
 }
 
-void printBitVector(int bitVector) {
+//Use to setup a mask of existing bipartitions
+static int getExistingBips(int mask, int offset, int bvecs_deletedBips) {
+
+  mask = setOffSet(mask, offset);
+
+  mask = mask & ~bvecs_deletedBips;
+
+  return mask;
+}
+
+
+
+static void printBitVector(int bitVector) {
   char buffer[33];
   buffer[32] = '\0';
   int2bin(bitVector, buffer, 32);
@@ -3101,7 +3112,7 @@ void printBitVector(int bitVector) {
 }
 
 //Takes as input a bitvector and returns a new bitvector
-int getBipsOfDropSet(int bvec_bips, int dropsetNumber, int* numberOfBipsPerSet, int** bipsOfDropSet) {
+static int getBipsOfDropSet(int bvec_bips, int dropsetNumber, int* numberOfBipsPerSet, int** bipsOfDropSet) {
     //Now iterate through bipsOfDropSet list
     for(int l = 0; l < numberOfBipsPerSet[dropsetNumber]; l++) {
 
@@ -3118,7 +3129,7 @@ int getBipsOfDropSet(int bvec_bips, int dropsetNumber, int* numberOfBipsPerSet, 
 
 /**********************************************************************************/
 
-void getDropSet(int ind_bitvector, int s_bitvector, int mask, int* arr) {
+static void getDropSet(int ind_bitvector, int s_bitvector, int mask, int* arr) {
 
   //calculate the dropsets by comparing two bipartitions
   //Determine the smallest of two sets (xANDx*,yANDy* | xANDy*,yANDx*)
@@ -3568,6 +3579,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
     printf("==> Set Calculation: \n");
     
     for (int k=0,entryCount=0;k < ind_hash->tableSize; k++) {
+
 		  if (ind_hash->table[k] != NULL) {
 			
         entry *e = ind_hash->table[k];
@@ -3581,10 +3593,9 @@ void plausibilityChecker(tree *tr, analdef *adef)
 				
         currentBips++;
 
-
           //Iterate through all bips and calculate the dropsets
 				  for (int _k=0; _k < s_hash->tableSize; _k++) {
-					
+					  
             if (s_hash->table[_k] != NULL) {
 						
               entry *s_e = s_hash->table[_k];
@@ -3739,7 +3750,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
         
         if(!containIndex) {
           //If it is not inside uniqSet
-          printf("==> Unique set %i added \n",(dropSetCount + k));
+          //printf("==> Unique set %i added \n",(dropSetCount + k));
 
           uniqSets[numberOfUniqueSets] = dropset;
 
@@ -3907,7 +3918,17 @@ void plausibilityChecker(tree *tr, analdef *adef)
   */
 
 
-  //Check if it destroys the bipartition
+  /***********************************************************************************/
+  /* RF-OPT Initial Score Calculation */
+  /***********************************************************************************/
+
+  unsigned int bipsVectorLength;
+
+  /* calculate the bitvector length for bips bitvector */
+  if(numberOfBips % MASK_LENGTH == 0)
+    bipsVectorLength = numberOfBips / MASK_LENGTH;
+  else
+    bipsVectorLength = 1 + (numberOfBips / MASK_LENGTH); 
 
   //Starting from index 1 (because 0 stands for all who already matches)
   //We need a score array saving the scores for each uniqset
@@ -3918,17 +3939,22 @@ void plausibilityChecker(tree *tr, analdef *adef)
   	rf_score[i] = 0;
   }
 
-  printf("\n==> Calculating the score for the first iteration \n");
+  printf("==> Calculating the score for the first iteration \n \n");
+
+  //Store all bvecs of all merged and destroyed bipartitions per DropSet 
+  int* bvecs_bips = (int*)rax_malloc(sizeof(int)*numberOfUniqueSets);
+  int* bvecs_destroyed = (int*)rax_malloc(sizeof(int)*numberOfUniqueSets);
+
+
   //Iterate through all sets
   for(int i = 0; i < numberOfUniqueSets; i++) {
 
   	//Bitvectors of merged and destroyed
-  	int bvec_merge = 0;
   	int bvec_destroyed = 0;
 
   	int* set = uniqSets[i]; //Get the dropset, first dropset is 0 (if something is matching)
 
-  	printf("==> Analyze Unique DropSet %i \n", i);
+  	//printf(" ==> Analyze Unique DropSet %i \n", i);
 
   	//We use this data structure to keep track of the to toggled bits
   	int* toggleBits = (int*)rax_malloc(sizeof(int)*numberOfBips);
@@ -3945,7 +3971,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
   	while(set[j] != -1) {
 
   		int taxa = set[j]; //Get the taxa
-  		printf("Taxa number is %i \n",taxa);
+  		//printf("  Taxa number is %i \n",taxa);
 
       //Check if set[j] is itself already a set
       int test[2] = {taxa,-1}; 
@@ -3954,7 +3980,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
       int test_index = contains(test, uniqSets, numberOfUniqueSets);
 
       if(test_index){
-        printf("It also is in uniqSet %i \n", test_index - 1);
+        //printf("  It also is in uniqSet %i \n", test_index - 1);
         bvec_bips = getBipsOfDropSet(bvec_bips, (test_index - 1), numberOfBipsPerSet, bipsOfDropSet);
 
       }
@@ -4003,9 +4029,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
 			  }
 			
-
   		}	
-  		printf("\n \n");
 
   		j++;
 
@@ -4036,20 +4060,239 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
     rf_score[i] = score - penality;
 
+    //Save our results for convenience into an array
+    bvecs_bips[i] = bvec_bips;
+    bvecs_destroyed[i] = bvec_destroyed;
+
+
   }//End Score Calculation
 
   printf("======> Scores:\n");
   for(int i = 1; i < numberOfUniqueSets; i++) {
   	printf("RF Score for %i : %i \n", i, rf_score[i]);
+    //printBitVector(bvecs_bips[i]);
+    //printBitVector(bvecs_destroyed[i]);
   }
 
   int maxDropSet = getMax(rf_score, numberOfUniqueSets);
   printf("Max Element is %i \n", maxDropSet);
 
 
+  /***********************************************************************************/
+  /* RF-OPT Create Update Data Structures */
+  /***********************************************************************************/
+
+
+  printf("====> Delete DropSet from all bips and update numbers \n");
+
+  //Create a bitVector to store all deleted taxa
+  int bvec_deletedTaxa = 0;
+
+  //Create a bitVector to store all still existing bips
+  int bvec_existingBips = 0;
+
+  //Create a bitvector to store deleted dropsets
+  int bvec_deletedDropSets = 0;
+
+  //Get the dropset
+  int* deleteDropSet = uniqSets[maxDropSet];
+
+  //Store it into a BitVector
+  bvec_deletedDropSets = setBit(bvec_deletedDropSets,maxDropSet);
+
+  //Select all bips destroyed by removing this dropset
+  int bvec_destroyedBips = bvecs_destroyed[maxDropSet];
+
+  //Select all bips that are now matching
+  int bvec_matchingBips = bvecs_bips[maxDropSet];
+
+  //Filter for existent bipartitions
+  bvec_existingBips = getExistingBips(bvec_existingBips, numberOfBips, bvec_destroyedBips);
+
+  //Iterate through its taxa
+  int iterSet = 0;
+  while(deleteDropSet[iterSet] != -1) {
+
+    //Get taxon
+    int taxon = deleteDropSet[iterSet];
+
+    //Store the taxon into deletedTaxa BitVector
+    bvec_deletedTaxa = setBit(bvec_deletedTaxa, taxon - 1);
+
+    //Check if taxon is inside
+    int test[2] = {taxon, -1};
+
+    int index = contains(test, uniqSets, numberOfUniqueSets);
+
+    iterSet++;
+  }
+
+  //printBitVector(bvec_existingBips);
+  //printBitVector(bvec_deletedTaxa);
+
+  //Update the scores with now matching bips
+  bvec_scores = bvec_scores & (~bvec_matchingBips);
+
+  //printBitVector(bvec_scores);
+
+  /* Short summary :
+    bvec_existingBips - bitVector of all still existing bips
+    bvec_deletedTaxa - bitVector to keep track of destroyed taxa
+  */
+
+  /***********************************************************************************/
+  /* RF-OPT Update function */
+  /***********************************************************************************/
+
+  // //Iterate through all sets
+  // for(int i = 0; i < numberOfUniqueSets; i++) {
+
+  //   //Bitvectors of merged and destroyed
+  //   int bvec_destroyed = 0;
+
+  //   int* set = uniqSets[i]; //Get the dropset, first dropset is 0 (if something is matching)
+
+  //   //printf(" ==> Analyze Unique DropSet %i \n", i);
+
+  //   //We use this data structure to keep track of the to toggled bits
+  //   int* toggleBits = (int*)rax_malloc(sizeof(int)*numberOfBips);
+  //   for(int ix = 0; ix < numberOfBips; ix++) {
+  //     toggleBits[ix] = 0;
+  //   }
+
+  //   //Now iterate through the set
+  //   int j = 0;
+
+  //   //Stores the affected bips into a bitvector
+  //   int bvec_bips = 0;
+
+  //   while(set[j] != -1) {
+
+  //     int taxa = set[j]; //Get the taxa
+  //     //printf("  Taxa number is %i \n",taxa);
+
+  //     //Check if set[j] is itself already a set
+  //     int test[2] = {taxa,-1}; 
+
+  //     //0 if it is not a set, index + 1 otherwise
+  //     int test_index = contains(test, uniqSets, numberOfUniqueSets);
+
+  //     if(test_index){
+  //       //printf("  It also is in uniqSet %i \n", test_index - 1);
+  //       bvec_bips = getBipsOfDropSet(bvec_bips, (test_index - 1), numberOfBipsPerSet, bipsOfDropSet);
+
+  //     }
+
+  //     //Get all bips of this taxa to detect which one will be destroyed
+  //     int* listOfBips = bipsOfTaxa[taxa]; 
+
+  //     //Go through all bipartitions containing this taxa
+  //     for(int k = 0; k < numberOfBipsPerTaxa[taxa]; k++){
+
+  //       int bipindex = listOfBips[k]; //Get the index of the Bipartition
+
+  //       int bip = ind_bips[bipindex];
+
+  //       //Now analyze this Bipartition
+
+  //       //Which tree does this bipartition belongs too?
+  //       int treenumber = treenumberOfBip[bipindex];
+
+  //       //Get the taxonToSmallTree Array of this tree
+  //       int* stTaxa = taxonToReductionList[treenumber];
+
+  //       //Translate the global taxon number it into the local index used by our bips
+  //       int translated_index = stTaxa[taxa - 1]; //We use taxa - 1 because we start counting at taxa 1 = 0 !
+
+  //       //Save the to toggle index into toggleBits vector
+  //       toggleBits[bipindex] |= 1 << translated_index;
+
+  //       //Sort for bits set on one side of the bip and on the other side
+  //       int leftBits = __builtin_popcount(toggleBits[bipindex] & bip);
+  //       int rightBits = __builtin_popcount(toggleBits[bipindex]) - leftBits;
+
+  //       //Check for the number of bits set in the original bip 
+  //       int leftBip = __builtin_popcount(bip);
+  //       int rightBip = taxaPerTree[treenumber] - leftBip;
+
+  //       //Subtract the total number of bits set on one side of the bip with the bits we have to toggle
+  //       int leftBip_after = leftBip - leftBits;
+  //       int rightBip_after = rightBip - rightBits;
+
+  //       //Check if bipartition gets trivial/destroyed due to pruning the taxa and set the bit (representing the bip) which is destroyed
+  //       if((leftBip_after <= 1) | (rightBip_after <=1)) {
+
+  //       //Add bips to the bits which represent destroyed bipartitions
+  //       bvec_destroyed = setBit(bvec_destroyed,bipindex);
+
+  //       }
+      
+
+  //     } 
+
+  //     j++;
+
+  //   }//End iterate through the set
+
+  //   int penality = 0;
+  //   int score = 0;
+
+  //   int bvec_mask = 0;
+  //   bvec_mask = setOffSet(bvec_mask, numberOfBips);
+
+  //   //Bitvector of already matching bips
+  //   int bvec_tmp = 0;
+  //   bvec_tmp = ~bvec_scores & bvec_mask;
+
+  //   //Penality score are all bitvectors who were matching but is destroyed 
+  //   penality = __builtin_popcount(bvec_destroyed & bvec_tmp);
+
+  //   //Now iterate through bipsOfDropSet list and extract all bips which will merge into a bitVector
+  //   bvec_bips = getBipsOfDropSet(bvec_bips, i, numberOfBipsPerSet, bipsOfDropSet);
+
+  //   //Calculate the bitvectors which remains
+  //   bvec_tmp = ~bvec_destroyed & bvec_mask;
+
+  //   bvec_tmp = bvec_bips & bvec_tmp;
+
+  //   score = __builtin_popcount(bvec_scores & bvec_tmp);
+
+  //   rf_score[i] = score - penality;
+
+  //   //Save our results for convenience into an array
+  //   bvecs_bips[i] = bvec_bips;
+  //   bvecs_destroyed[i] = bvec_destroyed;
+
+
+  // }//End Score Calculation
+
+
+  /***********************************************************************************/
+  /* End RF-OPT Update function */
+  /***********************************************************************************/
+
+
+  printf("==> Unique Sets: ");
+  for(int i = 0; i < numberOfUniqueSets; i++) {
+    int j = 0;
+    int* set = uniqSets[i];
+    while(set[j] > -1) {
+      printf("%i ",set[j]);
+      j++;
+    }
+    printf("; ");
+  }
+  printf("\n");
+
+  printf("Number of total Bips %i \n", numberOfBips);
+
+
+  /***********************************************************************************/
+  /* Console Logs for debugging */
+  /***********************************************************************************/
 
   //Printing if
-  if(1){
+  if(0){
 
 
     for(int i = 0; i < numberOfUniqueSets; i++) {
@@ -4159,14 +4402,8 @@ void plausibilityChecker(tree *tr, analdef *adef)
   // printBitVector(ind_bips[4]);
   // printBitVector(ind_bips[5]);
   // printBitVector(ind_bips[6]);
-
-
-
   
   printf("\nnumber of bips are %i \n",countBips);
-
-  
-    //Print hashtable s_hash TODO!
 
   printf("BipsPerTree: ");
   for(int foo = 0; foo < tr->numberOfTrees; foo++) {
