@@ -2703,9 +2703,8 @@ static int sortIntegers(const void *a, const void *b)
     return 1;
 }
 
-/**********************************************************************************/
-
-/************************************* RF-OPT functions ***************************/
+/************************************************************************************/
+/************************************* RF-OPT functions *****************************/
 
 /* method adapted for multifurcating trees, changes are: 
 we now need information about the degree of an inner node, because it is not 2 anymore 
@@ -2824,7 +2823,7 @@ static unsigned int** RFOPT_extractBipartitionsMulti(unsigned int** bitvectors, 
 }
 
 
-/* Additionally to the method above, rec_findAddBipartitions add the bipartitions into a second hashtable ind_hash */
+/* Additionally to the method above, rec_findAddBipartitions add the bipartitions into a second hashtable ind_hash and returns the bitVector of the induced tree */
 static unsigned int** RFOPT_findAddBipartitions(unsigned int ** bitvectors, int* seq, int arraysize, int* translate, int numsp, unsigned int vLength, int ntips, int first, hashtable* hash, hashtable* ind_hash, int* taxonToReduction)
 {
   int 
@@ -3036,12 +3035,7 @@ static int* extractSets(int* bitvector, int* bitvector2, int* smallTreeTaxa){
 
     //Sort to get a comparable sequence for steps to follow
     qsort(set, numberOfOnes, sizeof(int), sortIntegers);
-    
-    // printf("\n ==>Extracted Set for 2 Bips is ");
-    // for (i = 0; i < (numberOfOnes + 1); i++) {
-    //   printf("%i ", set[i]);
-    // }
-    // printf("\n");
+ 
     return set;
 }
 
@@ -3287,8 +3281,60 @@ static void getDropSet(int ind_bitvector, int s_bitvector, int mask, int* arr) {
 
 }
 
+static int* extractSetsFromBitVector(int* bitvector, int* bitvector2, int* smallTreeTaxa){
+    int numberOfOnesBip1 = __builtin_popcount(bitvector[0]);
+    int numberOfOnesBip2 = __builtin_popcount(bitvector2[0]);
+    int numberOfOnes = numberOfOnesBip1 + numberOfOnesBip2;
+
+    //plus one because of the terminal number -1 to determine the end of the array
+    int* set = rax_malloc((numberOfOnes + 1) * sizeof(int));
+    int i = 0;
+    int numberOfZerosBefore = 0;
+    int extract = bitvector[0];
+    while(i < numberOfOnesBip1) {
+
+      //Extract the first bit from extract and identify the related taxa number in SmallTree
+      numberOfZerosBefore = __builtin_ctz(extract) + numberOfZerosBefore;
+      //printf("Number of Zeros: %i \n", __builtin_ctz(extract));
+      set[i] = smallTreeTaxa[numberOfZerosBefore];
+
+      numberOfZerosBefore = numberOfZerosBefore + 1;
+      //Now move extract to the next significant bit
+      extract = extract >> numberOfZerosBefore;
+      i++;
+    }
+
+
+    //restart the whole process for bitvector 2
+    i = 0;
+    numberOfZerosBefore = 0;
+    extract = bitvector2[0];
+
+    while(i < numberOfOnesBip2) {
+
+      //Extract the first bit from extract and identify the related taxa number in SmallTree
+      numberOfZerosBefore = __builtin_ctz(extract) + numberOfZerosBefore;
+      //printf("Number of Zeros: %i \n", __builtin_ctz(extract));
+      set[i + numberOfOnesBip1] = smallTreeTaxa[numberOfZerosBefore];
+
+
+      numberOfZerosBefore = numberOfZerosBefore + 1;
+      //Now move extract to the next significant bit
+      extract = extract >> numberOfZerosBefore;
+      i++;
+    }
+    //Add a stop element in the array
+    set[numberOfOnes] = -1;
+
+    //Sort to get a comparable sequence for steps to follow
+    qsort(set, numberOfOnes, sizeof(int), sortIntegers);
+ 
+    return set;
+}
+
 //Calculate the DropSet given two BitVectors of the same length
-static void getDropSetFromBitVectors(unsigned int* indBip, unsigned int* sBip, unsigned int vLength, int* arr) {
+//TODO include getDropSet
+static void getDropSetFromBitVectors(unsigned int* indBip, unsigned int* sBip, unsigned int vLength, int treenumber, int* taxaPerTree){
 
   //Calculate the dropsets by comparing two bipartitions
   //Determine the smallest of two sets (xANDx*,yANDy*) OR (xANDy*,yANDx*)
@@ -3298,17 +3344,80 @@ static void getDropSetFromBitVectors(unsigned int* indBip, unsigned int* sBip, u
   unsigned int* x1_y2 = (unsigned int*)rax_malloc(sizeof(int) * vLength);
   unsigned int* y1_x2 = (unsigned int*)rax_malloc(sizeof(int) * vLength);
 
+  unsigned int* selectedSet1 = (unsigned int*)NULL;
+  unsigned int* selectedSet2 = (unsigned int*)NULL;
+  unsigned int selectedCount1;
+  unsigned int selectedCount2;
+
+  unsigned int count1 = 0;
+  unsigned int count2 = 0;
+  unsigned int count3 = 0;
+  unsigned int count4 = 0;
+
   //Calculate a logical operation on BitVectors
   for(int i = 0; i < vLength; i++) {
 
+    //Calculating the two different Bipartition choices
+    x1_x2[i] = indBip[i] & sBip[i];
+    y1_y2[i] = ~(indBip[i]) & ~(sBip[i]);
 
-
+    x1_y2[i] = indBip[i] & ~(sBip[i]);
+    y1_x2[i] = ~(indBip[i]) & sBip[i];
   }
 
-  free(x1_x2);
-  free(y1_y2);
-  free(x1_y2);
-  free(y1_x2);
+  //Toggle offset if required
+  int ntips = taxaPerTree[treenumber];
+
+  if(ntips % MASK_LENGTH != 0) 
+      {            
+        for(int o = MASK_LENGTH; o > (ntips % MASK_LENGTH); o--) {        
+          x1_x2[vLength - 1] &= ~mask32[o-1];  
+          y1_y2[vLength - 1] &= ~mask32[o-1];
+          x1_y2[vLength - 1] &= ~mask32[o-1];
+          y1_x2[vLength - 1] &= ~mask32[o-1];     
+        }
+      }
+
+  for(int i = 0; i < vLength; i++) {
+    //Calculate number of bits of the resulting set calculations  
+    count1 = count1 + __builtin_popcount(x1_x2[i]);
+    count2 = count2 + __builtin_popcount(y1_y2[i]);
+
+    count3 = count3 + __builtin_popcount(x1_y2[i]); 
+    count4 = count4 + __builtin_popcount(y1_x2[i]);
+  }
+
+  //Now choose which set we use for further processing
+  if((count1 + count2)<(count3 + count4)) {
+
+    selectedSet1 = x1_x2;
+    selectedSet2 = y1_y2; 
+
+    selectedCount1 = count1;
+    selectedCount2 = count2;   
+
+    free(x1_y2);
+    free(y1_x2);
+
+  } else {
+
+    selectedSet1 = x1_y2;
+    selectedSet2 = y1_x2;  
+
+    selectedCount1 = count3;
+    selectedCount2 = count4;  
+    
+    free(x1_x2);
+    free(y1_y2);
+  }
+
+  //Now we check how we extract the DropSets
+  if(selectedCount1 == 0 & selectedCount2 == 0) {
+    //This is matching!
+  } else {
+    //We have three different cases
+  }
+
 
 }
 
@@ -3892,7 +4001,6 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
   printf("===> BitVector Set Calculation \n");
 
-
   //First iterate through all trees
   for(int i = 0; i< tr->numberOfTrees; i++) {
 
@@ -3915,12 +4023,8 @@ void plausibilityChecker(tree *tr, analdef *adef)
         unsigned int *sBip = sBips[j];
 
         //try logical operation
-        for(int l = 0; l < vectorLengthPerTree[i]; l++) {
-          //sBip[l] & indBip[l];
-        }
-
+        getDropSetFromBitVectors(indBip, sBip, vectorLengthPerTree[i], i, taxaPerTree);
       }
-      
 
     }
   }
