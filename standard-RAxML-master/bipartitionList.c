@@ -3395,11 +3395,6 @@ static int* getDropSetFromBitVectors(unsigned int* indBip, unsigned int* sBip, u
   unsigned int count3 = 0;
   unsigned int count4 = 0;
 
-  //unsigned int set_calc = ind_bitvector & s_bitvector & mask; //a = x|y , b = x*|y* -> x AND x* 
-  //unsigned int cset_calc2 = ~ind_bitvector & ~(s_bitvector) & mask; // y AND y*                    
-  //unsigned int cset_calc = ind_bitvector & ~(s_bitvector) & mask; // x AND y*
-  //unsigned int set_calc2 = ~ind_bitvector & s_bitvector & mask; // y AND x* 
-
   //Calculate a logical operation on BitVectors
   for(int i = 0; i < vLength; i++) {
 
@@ -4044,17 +4039,6 @@ void plausibilityChecker(tree *tr, analdef *adef)
 	  
 	  fprintf(rfFile, "%d %f\n", i, rec_rf);
 	  
-	  /* free masks and hast table for this iteration */
-	  
-    // rec_freeBitVector(smallTree, bitVectors);
-	  // rax_free(bitVectors);
-	  
-	  // freeHashTable(s_hash);
-	  // rax_free(s_hash);
-
-    //  freeHashTable(ind_hash);
-    //  rax_free(ind_hash);
-	  
 	  //rax_free(smallTreeTaxa); //Need it for calculating the SmallTreeTaxaList after all iterations!
 	  rax_free(seq);
 	  rax_free(seq2);
@@ -4466,7 +4450,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
   }//End Score Calculation
 
   printf("======> Scores:\n");
-  for(int i = 1; i < numberOfUniqueSets; i++) {
+  for(int i = 0; i < numberOfUniqueSets; i++) {
   	printf("RF Score for %i : %i \n", i, rf_score[i]);
     //printBitVector(bvecs_bips[i]);
     //printBitVector(bvecs_destroyed[i]);
