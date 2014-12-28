@@ -4147,15 +4147,10 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
 
   //Stores the number of bips per Set
-  int* numberOfBipsPerSet = (int*)rax_malloc(sizeof(int)*numberOfUniqueSets);
+  int* numberOfBipsPerSet = (int*)rax_calloc(numberOfUniqueSets,sizeof(int));
 
   //Stores all sets which includes this taxa
   int **setsOfTaxa = (int**)rax_malloc((tr->mxtips + 1) *sizeof(int*));
-  
-  for(int i = 0; i < numberOfUniqueSets; i++) {
-    
-    numberOfBipsPerSet[i] = 0;
-  }
   
   //Now add bipartitions to the uniq set array
   for(int i = 0; i < numberOfSets; i++) {
