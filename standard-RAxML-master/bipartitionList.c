@@ -3193,6 +3193,22 @@ static int checkBit(int bitVector, int pos) {
 	return bit;
 }
 
+//Method for setting bits in bitvectors
+static int* setBitBV(int* bitVector, int pos, int vLength) {
+
+  int vectorIndex = pos / MASK_LENGTH;
+  int relativePos = pos % MASK_LENGTH;
+
+  if(vectorIndex > vLength) {
+    printf("setBITBV: Error! Position invalid \n");
+    return 0;
+  
+  } else {
+    bitVector[vectorIndex] = setBit(bitVector[vectorIndex], relativePos);
+    return bitVector;
+  } 
+}
+
 //Use to setup a mask to clear the offset bits
 static int setOffSet(int mask, int offset) {
   
@@ -3524,6 +3540,56 @@ static int getUniqueDropSets(int** sets, int** uniqSets, int* setsToUniqSets, in
   }
 
   return numberOfUniqueSets;
+}
+
+static void detectInitialMatchings(int** sets, int* matchingVector, int* bipsPerTree, int numberOfTrees,  int vLength) { 
+
+  //We use these variables to iterate through all sets and bips
+  int countBips = 0;
+  int dropSetCount = 0;
+  //Now generate Graph and calculate the Scores for each bipartitions
+
+  //First iterate through all trees 
+  for(int i = 0; i < numberOfTrees; i++ ) {
+
+    //Iterate through all bipartitions of each trees
+    for(int j = 0; j < bipsPerTree[i]; j++) {
+
+      //Compare each bip with all bips
+      int dropSetsPerBip = bipsPerTree[i]; 
+      
+      //Will be set to one if dropset is matching, resulting in a score = 0
+      int matching = 0; 
+      
+      //Check all dropsets of each bipartition
+      for(int k = 0; k < dropSetsPerBip; k++){
+        
+        int* dropset = sets[dropSetCount + k];
+
+        //Test if matching
+        if(dropset[0] == 0){
+          matching = 1;
+        }
+      }
+
+      if (matching) {
+        //don't do a thing 
+        //bvec_scores[countBips] = 0; 
+      } else {
+        //Set BitVector on position of the bip
+        matchingVector = setBitBV(matchingVector, countBips, vLength);
+      }
+      
+      //Index of starting DropSets in Sets for the next Bip 
+      dropSetCount = dropSetCount + dropSetsPerBip; 
+
+      countBips++;
+    }
+
+  }
+
+  printf("dropSetCount : %i \n", dropSetCount);
+  printf("bipsCount : %i \n", countBips);
 }
 
 
@@ -4006,8 +4072,6 @@ void plausibilityChecker(tree *tr, analdef *adef)
   //First iterate through all trees
   for(int i = 0; i< tr->numberOfTrees; i++) {
 
-    printf("New Tree : \n");
-
     //Get all induced Bips of this tree
     unsigned int **indBips = indBipsPerTree[i];
 
@@ -4041,105 +4105,45 @@ void plausibilityChecker(tree *tr, analdef *adef)
   /***********************************************************************************/
 
 
-  printf("===> Now Unique Algorithm runs (naive)...\n");
+  /*
+    Filter for unique sets
+  */
+  printf("===> Filter for unique Sets (naive)...\n");
   /* unique sets array data structures */
   int** uniqSets = (int **) rax_malloc(sizeof(int*) * numberOfSets);
   int* setsToUniqSets = (int*) rax_malloc(sizeof(int) * numberOfSets);
   int numberOfUniqueSets = 0;
+  int dropSetCount = 0;
 
   //stores the scores for each bips, we are using a bitvector approach (need to scale)
-  
+    
+  //Legacy Code 
   int bvec_scores = 0;
-  //unsigned int* bvec_scores = (unsigned int*)rax_malloc(sizeof(int)*vectorLength);
-
-  //We use these variables to iterate through all sets and bips
-  int countBips = 0;
-  int dropSetCount = 0;
-  //Now generate Graph and calculate the Scores for each bipartitions
-
-  //First iterate through all trees 
-  for(int i = 0; i < numberOfTreesAnalyzed; i++ ) {
-    //Iterate through all bipartitions of each trees
-    for(int j = 0; j < bipsPerTree[i]; j++) {
-
-      //Compare each bip with all bips
-      int dropSetsPerBip = bipsPerTree[i]; 
-      
-      //Will be set to one if dropset is matching, resulting in a score = 0
-      int matching = 0; 
-      
-      //Check all dropsets of each bipartition
-      for(int k = 0; k < dropSetsPerBip; k++){
-        
-        int* dropset = sets[dropSetCount + k];
-
-        //Add and filter uniq sets
-        int containIndex = contains(dropset,uniqSets,numberOfUniqueSets);
-        
-        if(!containIndex) {
-          //If it is not inside uniqSet
-          //printf("==> Unique set %i added \n",(dropSetCount + k));
-
-          uniqSets[numberOfUniqueSets] = dropset;
-
-          setsToUniqSets[dropSetCount + k] = numberOfUniqueSets; //Add the new index to the translation array
-
-          numberOfUniqueSets++;
-
-        } else {
-          //If it is already inside uniqSet
-          setsToUniqSets[dropSetCount + k] = (containIndex - 1);
-        }
-
-        //Test if matching
-        if(dropset[0] == 0){
-          matching = 1;
-        }
-      }
-
-      if (matching) {
-      	//don't do a thing 
-        //bvec_scores[countBips] = 0; 
-      } else {
-      	//Set BitVector on position of the bip
-        bvec_scores = setBit(bvec_scores, countBips);
-      }
-      
-      dropSetCount = dropSetCount + dropSetsPerBip; //Index of starting DropSets in Sets for the next Bip 
-
-      countBips++;
-    }
-
-  }
-
-  /* 
-    UNDER CONSTRUCTION
-  */
-
-  int** uniqSets2 = (int **) rax_malloc(sizeof(int*) * numberOfSets);
-  int* setsToUniqSets2 = (int*) rax_malloc(sizeof(int) * numberOfSets);
- 
-  int uniqueSets = 0;
   
-  uniqueSets = getUniqueDropSets(sets, uniqSets2, setsToUniqSets2, numberOfSets);
+  
+  numberOfUniqueSets = getUniqueDropSets(sets, uniqSets, setsToUniqSets, numberOfSets);
 
-
-  printf("==> Unique Sets 2: ");
-  for(int i = 0; i < uniqueSets; i++) {
-    int j = 0;
-    int* set = uniqSets2[i];
-    while(set[j] > -1) {
-      printf("%i ",set[j]);
-      j++;
-    }
-    printf("; ");
-  }
-  printf("\n");
 
   /*
-   UNDER CONTRUCTION
+    Detect initial matchings
   */
+  printf("===> Detect initial matchings...\n");
+  int vLengthBip = 0;
 
+  //determine the bitVector Length of our bitVector
+  if(numberOfBips % MASK_LENGTH == 0)
+    vLengthBip = numberOfBips / MASK_LENGTH; 
+  else 
+    vLengthBip = numberOfBips / MASK_LENGTH + 1;
+
+  //Initialize a bvecScore vector with 0s
+  int* bvecScores = (int*)rax_calloc(vLengthBip,sizeof(int));
+
+  //Calculate Initial Matchings and use the score bitVector to calculate a possible gain
+  detectInitialMatchings(sets, bvecScores, bipsPerTree, numberOfTreesAnalyzed, vLengthBip);
+
+ 
+  //========= 28.12
 
 
   //Stores the number of bips per Set
@@ -4653,8 +4657,6 @@ void plausibilityChecker(tree *tr, analdef *adef)
   printf("Scores: ");
   printBitVector(bvec_scores);
   
-  printf("\nnumber of bips are %i \n",countBips);
-
   printf("BipsPerTree: ");
   for(int foo = 0; foo < tr->numberOfTrees; foo++) {
 
