@@ -3137,11 +3137,10 @@ static int isSameDropSet(int* a, int* b) {
     returns index+1 if it contains the element 
 */
 static int contains(int* check, int** sets, int numberOfSets) {
-
+  //printf("Now we check %i with ...\n",check[0]);
   for (int i = 0; i < numberOfSets; i++) {
-    
     int* dropset = sets[i];
-    
+    //printf("%i .) %i \n",i,dropset[0]);
     if(isSameDropSet(sets[i],check)){
       return (i+1);
     }
@@ -3489,41 +3488,6 @@ static int* getDropSetFromBitVectors(unsigned int* indBip, unsigned int* sBip, u
   }
 
   return set;
-}
-
-//Filter for unique dropsets and return number of unique sets
-static int getUniqueDropSets(int** sets, int** uniqSets, int* setsToUniqSets, int numberOfSets) {
-  
-  int numberOfUniqueSets = 0;
-
-  int dropSetCount = 0;
-
-  //Now generate Graph and calculate the Scores for each bipartitions
-  for(int k = 0; k < numberOfSets; k++){
-    
-    //Get the dropset at position k
-    int* dropset = sets[k];
-
-    //Check if set is already in uniqSets
-    int containIndex = contains(dropset,uniqSets,numberOfUniqueSets);
-        
-    if(!containIndex) {
-
-      uniqSets[numberOfUniqueSets] = dropset;
-
-      //Add the new index to the translation array
-      setsToUniqSets[k] = numberOfUniqueSets; 
-
-      numberOfUniqueSets++;
-
-    } else {
-      
-      //If it is already inside uniqSet
-      setsToUniqSets[k] = (containIndex - 1);
-    }
-  }
-
-  return numberOfUniqueSets;
 }
 
 
@@ -3949,7 +3913,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
 
     /***********************************************************************************/
-	  /* RF-OPT Save Translation Vectors */
+	  /* RF-OPT DropSet Calculation Step */
     /***********************************************************************************/
 	    
     //copy array taxonToReduction because it is originally defined in preprocessing step
@@ -3964,9 +3928,106 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
     int this_currentSmallBips = 0; //Variable resets everytime for each tree analyzed
     
+    // //This function iterates through induced hash table and compares everything with the bitvectors in the smalltree hashtable and calculates the dropset
+    printf("==> Set Calculation: \n");
     
+    for (int k=0,entryCount=0;k < ind_hash->tableSize; k++) {
+
+		  if (ind_hash->table[k] != NULL) {
+			
+        entry *e = ind_hash->table[k];
+			
+        do {
+				unsigned int ind_bitvector = *(e->bitVector);
+				
+				ind_bips[currentBips] = ind_bitvector;
+				
+        treenumberOfBip[currentBips] = numberOfTreesAnalyzed;  
+				
+        currentBips++;
+
+          //Iterate through all bips and calculate the dropsets
+				  for (int _k=0; _k < s_hash->tableSize; _k++) {
+					  
+            if (s_hash->table[_k] != NULL) {
+						
+              entry *s_e = s_hash->table[_k];
+						
+              do {
+
+							  unsigned int s_bitvector = *(s_e->bitVector);
+
+                //Include the small bipartitions if they are not yet present
+                if (bipsPerTree[numberOfTreesAnalyzed] > this_currentSmallBips) {
+                
+                  s_bips[currentSmallBips] = s_bitvector;
+                
+                  this_currentSmallBips++;
+
+                  currentSmallBips++;
+              				
+                } 
+            	
+                //Use a Mask to get off the Offset ones that might resulted from the logical operations (i.e. for 5 taxa the mask is 000000...11111)							
+                int mask = 0;
+                mask = setOffSet(mask, smallTree->ntips);
+				    
+                int arr[2] = {0,0};
+
+                //Calculate the dropset between both bitvectors and save it into array arr
+                getDropSet(ind_bitvector, s_bitvector, mask, arr);
+	
+							  //TODO: When both dropsets are 0, bipartition matches
+							  if(arr[0] == 0 && arr[1] == 0) {
+                
+                  //We use -1 as ending 
+                  int set[] = {0,-1};
+
+                  sets[currentSets] = set;
+
+								  //Now we don't have to add any sets to this array because it matches
+								  currentSets++;
+
+							  } else {
+
+                  //When only one dropset is not zero, extract only sets of this dropset
+								  if((arr[0] != 0) && (arr[1] == 0)){
+
+									  int* set = extractSet(&arr[0], smallTreeTaxa);
+
+									  sets[currentSets] = set;
+									
+									  currentSets++;
+								  }
+
+								  if((arr[1] != 0) && (arr[0] == 0)){
+									  int* set = extractSet(&arr[1], smallTreeTaxa);
+									  sets[currentSets] = set;
+									
+									  currentSets++;
+								  }
+								
+                  //Both dropsets are non zero, merge them together
+								  if((arr[0] != 0) && (arr[1] != 0)) {
+                    int* set = extractSets(&arr[0], &arr[1], smallTreeTaxa);    
+									  sets[currentSets] = set;
+
+									  currentSets++;
+								  }
+
+							  }//END ELSE
+						
+							  s_e = s_e->next;
+					    } while (s_e!=NULL);
+					  }
+			    }
+				e = e->next;
+			  } while (e!=NULL);
+      }
+    }
+
     /***********************************************************************************/
-    /* End RF-OPT Save Translation Vectors */
+    /* End RF-OPT DropSet Calculation */
     /***********************************************************************************/
   
 
@@ -4040,7 +4101,6 @@ void plausibilityChecker(tree *tr, analdef *adef)
   /* RF-OPT Graph Construction */
   /***********************************************************************************/
 
-
   printf("===> Now Unique Algorithm runs (naive)...\n");
   /* unique sets array data structures */
   int** uniqSets = (int **) rax_malloc(sizeof(int*) * numberOfSets);
@@ -4048,9 +4108,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
   int numberOfUniqueSets = 0;
 
   //stores the scores for each bips, we are using a bitvector approach (need to scale)
-  
   int bvec_scores = 0;
-  //unsigned int* bvec_scores = (unsigned int*)rax_malloc(sizeof(int)*vectorLength);
 
   //We use these variables to iterate through all sets and bips
   int countBips = 0;
@@ -4111,35 +4169,6 @@ void plausibilityChecker(tree *tr, analdef *adef)
     }
 
   }
-
-  /* 
-    UNDER CONSTRUCTION
-  */
-
-  int** uniqSets2 = (int **) rax_malloc(sizeof(int*) * numberOfSets);
-  int* setsToUniqSets2 = (int*) rax_malloc(sizeof(int) * numberOfSets);
- 
-  int uniqueSets = 0;
-  
-  uniqueSets = getUniqueDropSets(sets, uniqSets2, setsToUniqSets2, numberOfSets);
-
-
-  printf("==> Unique Sets 2: ");
-  for(int i = 0; i < uniqueSets; i++) {
-    int j = 0;
-    int* set = uniqSets2[i];
-    while(set[j] > -1) {
-      printf("%i ",set[j]);
-      j++;
-    }
-    printf("; ");
-  }
-  printf("\n");
-
-  /*
-   UNDER CONTRUCTION
-  */
-
 
 
   //Stores the number of bips per Set
@@ -4530,6 +4559,8 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
     for(int j = 0; j < bipsPerTree[i]; j++) {
       unsigned int *bip = sBips[j];
+
+      //printBitVector(bip[0]);
     }
   }
 
