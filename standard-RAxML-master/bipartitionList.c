@@ -3264,45 +3264,6 @@ static int getBipsOfDropSet(int bvec_bips, int dropsetNumber, int* numberOfBipsP
 
 /**********************************************************************************/
 
-//old Method
-static void getDropSet(int ind_bitvector, int s_bitvector, int mask, int* arr) {
-
-  //calculate the dropsets by comparing two bipartitions
-  //Determine the smallest of two sets (xANDx*,yANDy* | xANDy*,yANDx*)
-  unsigned int set_calc = ind_bitvector & s_bitvector & mask; //a = x|y , b = x*|y* -> x AND x* 
-  unsigned int cset_calc2 = ~ind_bitvector & ~(s_bitvector) & mask; // y AND y*
-                      
-  unsigned int cset_calc = ind_bitvector & ~(s_bitvector) & mask; // x AND y*
-  unsigned int set_calc2 = ~ind_bitvector & s_bitvector & mask; // y AND x* 
-
-  //Calculate number of bits of the resulting set calculations  
-  int count1 = __builtin_popcount(set_calc);
-  int count4 = __builtin_popcount(cset_calc2);
-
-  int count2 = __builtin_popcount(cset_calc); 
-  int count3 = __builtin_popcount(set_calc2);
-
-  //There are only two choices which dropSet to take, either dropset resulting from x,x*, y,y* OR x,y*, y,x*
-  //Take the dropset which has a smaller cardinality
-  if((count1+count4) < (count2+count3)){
-
-    arr[0] = set_calc;
-
-    arr[1] = cset_calc2;
-
-  } else {
-
-    arr[0] = cset_calc;
-
-    arr[1] = set_calc2;
-
-  }
-  
-  //Sort to have a unique dropset representation
-  qsort(arr,2,sizeof(int),sortBipartitions);
-
-}
-
 //TODO: Edit it for bitvectors with more than MASK_Length taxa size 
 static int* extractSetFromBitVector(unsigned int* bitvector, int* smallTreeTaxa, unsigned int vLength){
 
@@ -3540,6 +3501,43 @@ static int getUniqueDropSets(int** sets, int** uniqSets, int* setsToUniqSets, in
   }
 
   return numberOfUniqueSets;
+}
+
+//Calculates all dropsets of two given bipartition lists
+static void calculateDropSets(unsigned int*** indBipsPerTree, unsigned int*** sBipsPerTree, int** sets, int** smallTreeTaxaList, int* bipsPerTree, 
+  int* taxaPerTree, unsigned int* vectorLengthPerTree, int numberOfTrees) {
+
+  int countSets = 0;
+
+  //First iterate through all trees
+  for(int i = 0; i< numberOfTrees; i++) {
+
+    //Get all induced Bips of this tree
+    unsigned int **indBips = indBipsPerTree[i];
+
+    //Get all small Bips of this tree
+    unsigned int **sBips = sBipsPerTree[i];
+
+    //Now go through all Bips of this tree
+    for(int j = 0; j < bipsPerTree[i]; j++) {
+
+      //Get the bitVector of this Bips
+      unsigned int *indBip = indBips[j];
+
+      //Now iterate through all small Bips in the tree
+      for(int k = 0; k < bipsPerTree[i]; k++) {
+        
+        //get small Bip
+        unsigned int *sBip = sBips[k];
+
+        //extract DropSets from the comparision
+        sets[countSets] = getDropSetFromBitVectors(indBip, sBip, vectorLengthPerTree[i], i, taxaPerTree, smallTreeTaxaList[i]);
+
+        countSets++;
+
+      }
+    }
+  }
 }
 
 static void detectInitialMatchings(int** sets, int* matchingVector, int* bipsPerTree, int numberOfTrees,  int vLength) { 
@@ -4056,49 +4054,19 @@ void plausibilityChecker(tree *tr, analdef *adef)
 	  numberOfTreesAnalyzed++; //Counting the number of trees analyzed
 	  }
 
-  }// End of Tree Iterations
+  }// End of Small Tree Iterations
   
 
   /***********************************************************************************/
   /* RF-OPT DropSet Calculation using BitVectors */
   /***********************************************************************************/
 
-  //int** newSets = (int**)rax_malloc(sizeof(int*) * numberOfSets);
-
-  int countSets = 0;
-
   printf("===> BitVector Set Calculation \n");
 
-  //First iterate through all trees
-  for(int i = 0; i< tr->numberOfTrees; i++) {
-
-    //Get all induced Bips of this tree
-    unsigned int **indBips = indBipsPerTree[i];
-
-    //Get all small Bips of this tree
-    unsigned int **sBips = sBipsPerTree[i];
-
-    //Now go through all Bips of this tree
-    for(int j = 0; j < bipsPerTree[i]; j++) {
-
-      //Get the bitVector of this Bips
-      unsigned int *indBip = indBips[j];
-
-      //Now iterate through all small Bips in the tree
-      for(int k = 0; k < bipsPerTree[i]; k++) {
-        
-        //get small Bip
-        unsigned int *sBip = sBips[k];
-
-        //extract DropSets from the comparision
-        sets[countSets] = getDropSetFromBitVectors(indBip, sBip, vectorLengthPerTree[i], i, taxaPerTree, smallTreeTaxaList[i]);
-
-        countSets++;
-
-      }
-    }
-  }
-
+  //Calculate dropsets of two given bips lists and extract all sets into array sets. Each set has following format
+  //dropset = {taxa_1,taxa_2,...,taxa_n,-1};
+  calculateDropSets(indBipsPerTree, sBipsPerTree, sets, smallTreeTaxaList, bipsPerTree, 
+  taxaPerTree, vectorLengthPerTree, tr->numberOfTrees);
 
   /***********************************************************************************/
   /* RF-OPT Graph Construction */
@@ -4119,7 +4087,6 @@ void plausibilityChecker(tree *tr, analdef *adef)
     
   //Legacy Code 
   int bvec_scores = 0;
-  
   
   numberOfUniqueSets = getUniqueDropSets(sets, uniqSets, setsToUniqSets, numberOfSets);
 
@@ -4142,17 +4109,17 @@ void plausibilityChecker(tree *tr, analdef *adef)
   //Calculate Initial Matchings and use the score bitVector to calculate a possible gain
   detectInitialMatchings(sets, bvecScores, bipsPerTree, numberOfTreesAnalyzed, vLengthBip);
 
- 
-  //========= 28.12
 
-
-  //Stores the number of bips per Set
+  /*
+    Generate useful data structures for calculating and updating scores
+  */
+  //Stores the number of bips per Set and initialize it with 0s
   int* numberOfBipsPerSet = (int*)rax_calloc(numberOfUniqueSets,sizeof(int));
 
   //Stores all sets which includes this taxa
   int **setsOfTaxa = (int**)rax_malloc((tr->mxtips + 1) *sizeof(int*));
   
-  //Now add bipartitions to the uniq set array
+  //Now calculate number of bipartitions affected by the unique set
   for(int i = 0; i < numberOfSets; i++) {
 
     int setindex = setsToUniqSets[i];
@@ -4163,24 +4130,18 @@ void plausibilityChecker(tree *tr, analdef *adef)
   //Now using the knowledge of how many bips there are per set, generate an array for each unique dropset containing all bips
   int** bipsOfDropSet = (int**)rax_malloc(sizeof(int*)*numberOfUniqueSets);
   
+  //Allocate the space needed for storing all bips
   for(int i = 0; i < numberOfUniqueSets; i++) {
 
     bipsOfDropSet[i] = (int*)rax_malloc(sizeof(int)*numberOfBipsPerSet[i]); 
   }
-
   
   printf("==> Initialize the Bips Of Taxa \n");
   //Stores the number of bips each taxa is included (ABC|DE is stored by A,B,C,D and E)
   //It can be calculated by iterating through all trees and adding the taxa 
-  int **bipsOfTaxa = (int**)rax_malloc((tr->mxtips + 1) *sizeof(int*));
-  int *numberOfBipsPerTaxa = (int*)rax_malloc((tr->mxtips + 1) * sizeof(int));
-  int *taxaBipsCounter = (int*)rax_malloc((tr->mxtips + 1) * sizeof(int));
-
-  //Initialize and start it with 1 ... mxtips for easier processing
-  for(int i = 1; i < tr->mxtips+1; i++){
-    numberOfBipsPerTaxa[i] = 0;
-    taxaBipsCounter[i] = 0;
-  }
+  int **bipsOfTaxa = (int**)rax_malloc((tr->mxtips + 1) * sizeof(int*));
+  int *numberOfBipsPerTaxa = (int*)rax_calloc((tr->mxtips + 1), sizeof(int));
+  int *taxaBipsCounter = (int*)rax_calloc((tr->mxtips + 1), sizeof(int));
 
   //Now add up all
   for (int tree = 0; tree < tr->numberOfTrees; tree++) {
@@ -4288,12 +4249,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
   //Starting from index 1 (because 0 stands for all who already matches)
   //We need a score array saving the scores for each uniqset
-  int* rf_score = (int*)rax_malloc(sizeof(int)*numberOfUniqueSets);
-
-  //Init the rf_score vector with 0s
-  for(int i = 0; i < numberOfUniqueSets; i++) {
-  	rf_score[i] = 0;
-  }
+  int* rf_score = (int*)rax_calloc(numberOfUniqueSets,sizeof(int));
 
   printf("==> Calculating the score for the first iteration \n \n");
 
@@ -4313,10 +4269,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
   	//printf(" ==> Analyze Unique DropSet %i \n", i);
 
   	//We use this data structure to keep track of the to toggled bits
-  	int* toggleBits = (int*)rax_malloc(sizeof(int)*numberOfBips);
-  	for(int ix = 0; ix < numberOfBips; ix++) {
-  		toggleBits[ix] = 0;
-  	}
+  	int* toggleBits = (int*)rax_calloc(numberOfBips, sizeof(int));
 
   	//Now iterate through the set
   	int j = 0;
