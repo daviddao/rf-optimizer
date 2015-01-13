@@ -3280,20 +3280,39 @@ static int* extractSetFromBitVector(unsigned int* bitvector, int* smallTreeTaxa,
 
     int numberOfZerosBefore = 0;
 
-    unsigned int extract = bitvector[0];
+    int startVector = 0;
+
+    unsigned int extract = bitvector[startVector];
 
     while(i < numberOfOnes) {
 
-      //Extract the first bit from extract and identify the related taxa number in SmallTree
-      numberOfZerosBefore = __builtin_ctz(extract) + numberOfZerosBefore;
-      //printf("Number of Zeros: %i \n", __builtin_ctz(extract));
+      if(extract != 0) {
 
-      set[i] = smallTreeTaxa[numberOfZerosBefore];
+        //Extract the first bit from extract and identify the related taxa number in SmallTree
+        numberOfZerosBefore = __builtin_ctz(extract) + numberOfZerosBefore;
+        //printf("Number of Zeros: %i \n", __builtin_ctz(extract));
 
-      //Now move extract to the next significant bit
-      numberOfZerosBefore = numberOfZerosBefore + 1;
-      extract = extract >> numberOfZerosBefore;
-      i++;
+        //Consider all bitvectors before this vector. I.e. MASK_Length = 32 , 
+        //this is the third index of the second bitvector, we have 3 + 2 * 32 as real taxon index
+        int pastVectors = startVector * MASK_LENGTH;
+
+        set[i] = smallTreeTaxa[numberOfZerosBefore + pastVectors];
+
+        //Now move extract to the next significant bit
+        numberOfZerosBefore = numberOfZerosBefore + 1;
+        extract = extract >> numberOfZerosBefore;
+        i++;
+
+      } else {
+
+        //if bitvector has no 1s anymore, go to the next one
+        startVector++;
+        extract = bitvector[startVector];
+
+        assert(startVector <= vLength);
+
+      }
+
     }
 
     //Add a stop element in the array
@@ -3305,54 +3324,53 @@ static int* extractSetFromBitVector(unsigned int* bitvector, int* smallTreeTaxa,
     return set;
 }
 
-static int* extractSetsFromBitVector(unsigned int* bitvector, unsigned int* bitvector2, int* smallTreeTaxa){
+//Merge two dropsets into one set (ending element is -1)
+static int* mergeSets(int* set1, int* set2) {
 
-    int numberOfOnesBip1 = __builtin_popcount(bitvector[0]);
-    int numberOfOnesBip2 = __builtin_popcount(bitvector2[0]);
-    int numberOfOnes = numberOfOnesBip1 + numberOfOnesBip2;
+  int i = 0;
+  int j = 0;
+  while(set1[i] != -1) {
+    i++;
+  }
+  while(set2[j] != -1) {
+    j++;
+  }
 
-    //plus one because of the terminal number -1 to determine the end of the array
-    int* set = rax_malloc((numberOfOnes + 1) * sizeof(int));
-    int i = 0;
-    int numberOfZerosBefore = 0;
-    unsigned int extract = bitvector[0];
-    while(i < numberOfOnesBip1) {
+  int sizeOfSet = i + j;
+  int* set = rax_malloc((sizeOfSet + 1) * sizeof(int));
 
-      //Extract the first bit from extract and identify the related taxa number in SmallTree
-      numberOfZerosBefore = __builtin_ctz(extract) + numberOfZerosBefore;
-      //printf("Number of Zeros: %i \n", __builtin_ctz(extract));
-      set[i] = smallTreeTaxa[numberOfZerosBefore];
+  //Now copy both sets into set
+  i = 0;
+  j = 0;
+  while(set1[i] != -1) {
+    set[i] = set1[i];
+    i++;
+  }
 
-      numberOfZerosBefore = numberOfZerosBefore + 1;
-      //Now move extract to the next significant bit
-      extract = extract >> numberOfZerosBefore;
-      i++;
-    }
+  while(set2[j] != -1) {
+    set[j + i] = set2[j];
+    j++;
+  }
 
-    //restart the whole process for bitvector 2
-    i = 0;
-    numberOfZerosBefore = 0;
-    extract = bitvector2[0];
+  set[j+i] = -1;
 
-    while(i < numberOfOnesBip2) {
+  qsort(set, sizeOfSet, sizeof(int), sortIntegers);
 
-      //Extract the first bit from extract and identify the related taxa number in SmallTree
-      numberOfZerosBefore = __builtin_ctz(extract) + numberOfZerosBefore;
-      //printf("Number of Zeros: %i \n", __builtin_ctz(extract));
-      set[i + numberOfOnesBip1] = smallTreeTaxa[numberOfZerosBefore];
+  return set;
 
+}
 
-      numberOfZerosBefore = numberOfZerosBefore + 1;
-      //Now move extract to the next significant bit
-      extract = extract >> numberOfZerosBefore;
-      i++;
-    }
-    //Add a stop element in the array
-    set[numberOfOnes] = -1;
+static int* extractSetsFromBitVector(unsigned int* bitvector, unsigned int* bitvector2, int* smallTreeTaxa, unsigned int vLength){
 
-    //Sort to get a comparable sequence for steps to follow
-    qsort(set, numberOfOnes, sizeof(int), sortIntegers);
- 
+    int* set1; 
+    int* set2; 
+    int* set;
+
+    set1 = extractSetFromBitVector(bitvector, smallTreeTaxa, vLength);
+    set2 = extractSetFromBitVector(bitvector2, smallTreeTaxa, vLength);
+
+    set = mergeSets(set1, set2);
+
     return set;
 }
 
@@ -3460,7 +3478,7 @@ static int* getDropSetFromBitVectors(unsigned int* indBip, unsigned int* sBip, u
     } else {
       //Both dropsets are non empty
 
-      set = extractSetsFromBitVector(selectedSet1, selectedSet2, smallTreeTaxa);
+      set = extractSetsFromBitVector(selectedSet1, selectedSet2, smallTreeTaxa, vLength);
 
     }
   }
@@ -3993,8 +4011,8 @@ void plausibilityChecker(tree *tr, analdef *adef)
       
     indBipsPerTree[numberOfTreesAnalyzed] = indBips; 
 
-      /* calculates all bipartitions of the reference small tree and put them into ind_hash*/
-      // rec_extractBipartitionsMulti(bitVectors, seq2, (2*smallTree->ntips - 1),tr->mxtips, vectorLength, smallTree->ntips, 
+    /* calculates all bipartitions of the reference small tree and put them into ind_hash*/
+    // rec_extractBipartitionsMulti(bitVectors, seq2, (2*smallTree->ntips - 1),tr->mxtips, vectorLength, smallTree->ntips, 
              // firstTaxon, s_hash, taxonToReduction, taxonHasDeg, numberOfSplits);
 
 
@@ -4083,6 +4101,8 @@ void plausibilityChecker(tree *tr, analdef *adef)
   int numberOfUniqueSets = 0;
   int dropSetCount = 0;
 
+
+
   //stores the scores for each bips, we are using a bitvector approach (need to scale)
     
   //Legacy Code 
@@ -4092,7 +4112,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
 
   /*
-    Detect initial matchings
+    Detect initial matchings, we calculate them using bitvectors to represent our bipartitions
   */
   printf("===> Detect initial matchings...\n");
   int vLengthBip = 0;
@@ -4106,20 +4126,28 @@ void plausibilityChecker(tree *tr, analdef *adef)
   //Initialize a bvecScore vector with 0s
   int* bvecScores = (int*)rax_calloc(vLengthBip,sizeof(int));
 
-  //Calculate Initial Matchings and use the score bitVector to calculate a possible gain
+  //Calculate Initial Matchings and save the result in bvecScores
   detectInitialMatchings(sets, bvecScores, bipsPerTree, numberOfTreesAnalyzed, vLengthBip);
+
+  //Short summary until now:
+  // - bipsPerTree consists of all bipartitions per tree
+  // - bvecScores is the bitvector setting 1 to all bipartition indices which can score 
+  // - taxaPerTree number of taxa per tree
+  // - smallTreeTaxaList list of all smalltree->largetree translation arrays
+
 
 
   /*
     Generate useful data structures for calculating and updating scores
   */
+  printf("===> Create data structures...\n");  
   //Stores the number of bips per Set and initialize it with 0s
   int* numberOfBipsPerSet = (int*)rax_calloc(numberOfUniqueSets,sizeof(int));
 
   //Stores all sets which includes this taxa
   int **setsOfTaxa = (int**)rax_malloc((tr->mxtips + 1) *sizeof(int*));
   
-  //Now calculate number of bipartitions affected by the unique set
+  //Now calculate number of bipartitions affected by each unique set
   for(int i = 0; i < numberOfSets; i++) {
 
     int setindex = setsToUniqSets[i];
