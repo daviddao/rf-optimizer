@@ -10,7 +10,7 @@ LIBRARIES = -lm
 
 RM = rm -f
 
-objs    = axml.o  optimizeModel.o multiple.o searchAlgo.o topologies.o parsePartitions.o treeIO.o models.o bipartitionList.o rapidBootstrap.o evaluatePartialGenericSpecial.o evaluateGenericSpecial.o newviewGenericSpecial.o makenewzGenericSpecial.o   classify.o fastDNAparsimony.o fastSearch.o leaveDropping.o rmqs.o rogueEPA.o ancestralStates.o  mem_alloc.o  eigen.o plausibility.o
+objs    = axml.o  optimizeModel.o multiple.o searchAlgo.o topologies.o parsePartitions.o treeIO.o models.o bipartitionList.o rapidBootstrap.o evaluatePartialGenericSpecial.o evaluateGenericSpecial.o newviewGenericSpecial.o makenewzGenericSpecial.o   classify.o fastDNAparsimony.o fastSearch.o leaveDropping.o rmqs.o rogueEPA.o ancestralStates.o  mem_alloc.o  eigen.o    plausibility.o plausibilityFast.o rfoptMethods.o rfoptAlgo.o
 
 all : raxmlHPC
 
@@ -19,7 +19,11 @@ GLOBAL_DEPS = axml.h globalVariables.h rmq.h rmqs.h #mem_alloc.h
 raxmlHPC : $(objs)
 	$(CC) -o raxmlHPC $(objs) $(LIBRARIES) $(LDFLAGS) 
 
+rfoptAlgo: rfoptAlgo.c $(GLOBAL_DEPS)
+rfoptMethods.o: rfoptMethods.c $(GLOBAL_DEPS)
+plausibilityFast.o: plausibilityFast.c $(GLOBAL_DEPS)
 plausibility.o: plausibility.c $(GLOBAL_DEPS)
+
 rmqs.o : rmqs.c $(GLOBAL_DEPS)
 classify.o : classify.c $(GLOBAL_DEPS)
 evaluatePartialSpecialGeneric.o : evaluatePartialSpecialGeneric.c $(GLOBAL_DEPS)
