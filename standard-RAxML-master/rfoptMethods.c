@@ -841,11 +841,15 @@ Edit compared to extractSet: for bitvector 2 we restart the loop at position set
   //-1 is the stop element
   int* set;
 
+  //for matching bipartitons we store them like this, we need to allocate memory so the variable exists after function scope
+  int* matching = (int*)rax_malloc(2*sizeof(int));
+  matching[0] = 0;
+  matching[1] = -1;
+
   //Now we check how we extract the DropSets
   if(selectedCount1 == 0 & selectedCount2 == 0) {
     //This is a matching bipartition!
-    int res[2] = {0,-1};
-    set = res;
+    set = matching;
 
   } else {
 
@@ -936,11 +940,28 @@ Edit compared to extractSet: for bitvector 2 we restart the loop at position set
         //extract DropSets from the comparision
         sets[countSets] = getDropSetFromBitVectors(indBip, sBip, vectorLengthPerTree[i], i, taxaPerTree, smallTreeTaxaList[i]);
 
+        //For debug purposes
+        printf("Set of %i : %i %i \n", countSets, sets[countSets][0], sets[countSets][1]);
+
         countSets++;
 
       }
     }
   }
+
+
+  printf("\n == Sets inside == \n");
+  for(int fooo = 0; fooo < 17; fooo++){
+    printf("Set %i: ", fooo);
+    int i = 0;
+    while(i < 2) {
+     printf("%i ",sets[fooo][i]);
+     i++;
+    }
+    printf("\n");
+  }
+  printf("\n");
+
 }
 
  void detectInitialMatchings(int** sets, int* matchingVector, int* bipsPerTree, int numberOfTrees,  int vLength) { 
@@ -989,6 +1010,6 @@ Edit compared to extractSet: for bitvector 2 we restart the loop at position set
 
   }
 
-  printf("dropSetCount : %i \n", dropSetCount);
-  printf("bipsCount : %i \n", countBips);
+  //printf("dropSetCount : %i \n", dropSetCount);
+  //printf("bipsCount : %i \n", countBips);
 }

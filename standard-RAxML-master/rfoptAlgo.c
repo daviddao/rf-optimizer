@@ -272,7 +272,8 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
   //Stores all dropsets of all trees 
   int **sets = (int **)rax_malloc(numberOfSets * sizeof(int*)); 
-  
+  //int **sets = NULL;
+
   //For each tree, stores a translation array from taxanumber smalltree->largetree
   int **smallTreeTaxaList = (int **)rax_malloc(tr->numberOfTrees * sizeof(int*)); 
 
@@ -549,7 +550,6 @@ void plausibilityChecker(tree *tr, analdef *adef)
     }
 
   }// End of Small Tree Iterations
-  
 
   /***********************************************************************************/
   /* RF-OPT DropSet Calculation using BitVectors */
@@ -565,7 +565,6 @@ void plausibilityChecker(tree *tr, analdef *adef)
   /***********************************************************************************/
   /* RF-OPT Graph Construction */
   /***********************************************************************************/
-
 
   /*
     Filter for unique sets
@@ -603,7 +602,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
   int* bvecScores = (int*)rax_calloc(vLengthBip,sizeof(int));
 
   //Calculate Initial Matchings and save the result in bvecScores
-  detectInitialMatchings(sets, bvecScores, bipsPerTree, numberOfTreesAnalyzed, vLengthBip);
+  detectInitialMatchings(sets, bvecScores, bipsPerTree, numberOfTreesAnalyzed, vLengthBip); //TODO:Buggy
 
   //Short summary until now:
   // - bipsPerTree consists of all bipartitions per tree
@@ -742,6 +741,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
   /* RF-OPT Initial Score Calculation */
   /***********************************************************************************/
 
+
   unsigned int bipsVectorLength;
 
   /* calculate the bitvector length for bips bitvector */
@@ -759,6 +759,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
   //Store all bvecs of all merged and destroyed bipartitions per DropSet 
   int* bvecs_bips = (int*)rax_malloc(sizeof(int)*numberOfUniqueSets);
   int* bvecs_destroyed = (int*)rax_malloc(sizeof(int)*numberOfUniqueSets);
+
 
 
   //Iterate through all sets
@@ -847,6 +848,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
     }//End iterate through the set
 
+
     int penality = 0;
     int score = 0;
 
@@ -879,6 +881,9 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
   }//End Score Calculation
 
+
+
+
   printf("======> Scores:\n");
   for(int i = 0; i < numberOfUniqueSets; i++) {
     printf("RF Score for %i : %i \n", i, rf_score[i]);
@@ -888,6 +893,8 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
   int maxDropSet = getMax(rf_score, numberOfUniqueSets);
   printf("Max Element is %i \n", maxDropSet);
+
+
 
 
   /***********************************************************************************/
@@ -962,32 +969,6 @@ void plausibilityChecker(tree *tr, analdef *adef)
   /***********************************************************************************/
 
 
-  printf("==> Unique Sets: ");
-  for(int i = 0; i < numberOfUniqueSets; i++) {
-    int j = 0;
-    int* set = uniqSets[i];
-    while(set[j] > -1) {
-      printf("%i ",set[j]);
-      j++;
-    }
-    printf("; ");
-  }
-  printf("\n");
-
-  printf("Number of total Bips %i \n", numberOfBips);
-
-
-
-  //printf("Small Bipartitions?: ");
-
-  for(int i = 0; i < tr->numberOfTrees; i++) {
-    unsigned int **sBips = sBipsPerTree[i];
-
-    for(int j = 0; j < bipsPerTree[i]; j++) {
-      unsigned int *bip = sBips[j];
-    }
-  }
-
   //printf("Ind Bipartitions?: ");
 
 
@@ -1007,8 +988,35 @@ void plausibilityChecker(tree *tr, analdef *adef)
   /***********************************************************************************/
 
   //Printing if
-  if(0){
 
+  printf("==> Unique Sets: ");
+  for(int i = 0; i < numberOfUniqueSets; i++) {
+    int j = 0;
+    int* set = uniqSets[i];
+    while(set[j] > -1) {
+      printf("%i ",set[j]);
+      j++;
+    }
+    printf("; ");
+  }
+  printf("\n");
+
+  printf("\n == Sets == \n");
+  for(int fooo = 0; fooo < numberOfSets; fooo++){
+    printf("Set %i: ", fooo);
+    int i = 0;
+    while(sets[fooo][i] > -1) {
+     printf("%i ",sets[fooo][i]);
+     i++;
+    }
+    printf("\n");
+  }
+  printf("\n");
+
+      
+    //#define _PRINT_
+      
+    #ifdef _PRINT_
 
     for(int i = 0; i < numberOfUniqueSets; i++) {
       printf("Bips of Set %i: ", i);
@@ -1141,8 +1149,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
   }
   printf("\n");
 
-}//End Printif
-
+  #endif
 
   printBothOpen("Number of small trees skipped: %d\n\n", tr->numberOfTrees - numberOfTreesAnalyzed);
   
@@ -1175,7 +1182,3 @@ void plausibilityChecker(tree *tr, analdef *adef)
   rax_free(taxonToReduction);
   rax_free(taxonHasDeg);
 }
-
-
-/**********************************************************************************/
-/**********************************************************************************/

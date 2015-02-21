@@ -537,7 +537,6 @@ void unrootedEulerTour(nodeptr p, int numsp, int* array, int* reference, int* po
 }
 
 //function for built-in quicksort
-
 int sortIntegers(const void *a, const void *b)
 {
   int 
