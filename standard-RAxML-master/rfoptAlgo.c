@@ -566,6 +566,19 @@ void plausibilityChecker(tree *tr, analdef *adef)
   /* RF-OPT Graph Construction */
   /***********************************************************************************/
 
+  printf("\n == Sets == \n");
+  for(int fooo = 0; fooo < numberOfSets; fooo++){
+    printf("Set %i: ", fooo);
+    int i = 0;
+    while(sets[fooo][i] > -1) {
+     printf("%i ",sets[fooo][i]);
+     i++;
+    }
+    printf("\n");
+  }
+  printf("\n");
+
+
   /*
     Filter for unique sets
   */
@@ -602,14 +615,13 @@ void plausibilityChecker(tree *tr, analdef *adef)
   int* bvecScores = (int*)rax_calloc(vLengthBip,sizeof(int));
 
   //Calculate Initial Matchings and save the result in bvecScores
-  detectInitialMatchings(sets, bvecScores, bipsPerTree, numberOfTreesAnalyzed, vLengthBip); //TODO:Buggy
+  detectInitialMatchings(sets, bvecScores, bipsPerTree, numberOfTreesAnalyzed, vLengthBip); 
 
   //Short summary until now:
   // - bipsPerTree consists of all bipartitions per tree
   // - bvecScores is the bitvector setting 1 to all bipartition indices which can score 
   // - taxaPerTree number of taxa per tree
   // - smallTreeTaxaList list of all smalltree->largetree translation arrays
-
 
   /*
     Generate useful data structures for calculating and updating scores
@@ -878,10 +890,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
     bvecs_bips[i] = bvec_bips;
     bvecs_destroyed[i] = bvec_destroyed;
 
-
   }//End Score Calculation
-
-
 
 
   printf("======> Scores:\n");

@@ -656,7 +656,7 @@ Edit compared to extractSet: for bitvector 2 we restart the loop at position set
 
     for(int i = 0; i < vLength; i++) {
       numberOfOnes = numberOfOnes + __builtin_popcount(bitvector[i]);
-      printf("%i - %i ones \n", i, __builtin_popcount(bitvector[i]));
+      //printf("%i - %i ones \n", i, __builtin_popcount(bitvector[i]));
     }
 
     //plus one because of the terminal number -1 to determine the end of the array
@@ -670,37 +670,35 @@ Edit compared to extractSet: for bitvector 2 we restart the loop at position set
 
     unsigned int extract = bitvector[startVector];
 
+    int countBits = 0; //to count seen taxa
+
     while(i < numberOfOnes) {
 
       if(extract != 0) {
 
-        printBitVector(extract);
+        if(checkBit(extract,0)) {
 
-        //Extract the first bit from extract and identify the related taxa number in SmallTree
-        numberOfZerosBefore = __builtin_ctz(extract) + numberOfZerosBefore;
-        //printf("Number of Zeros: %i \n", __builtin_ctz(extract));
+          //Consider all bitvectors before this vector. I.e. MASK_Length = 32 , 
+          //this is the third index of the second bitvector, we have 3 + 2 * 32 as real taxon index
+          int pastBits = startVector * MASK_LENGTH;
+          set[i] = smallTreeTaxa[pastBits + countBits];
+          i++;
 
-        //Consider all bitvectors before this vector. I.e. MASK_Length = 32 , 
-        //this is the third index of the second bitvector, we have 3 + 2 * 32 as real taxon index
-        int pastVectors = startVector * MASK_LENGTH;
+        }
 
-        set[i] = smallTreeTaxa[numberOfZerosBefore + pastVectors];
+        extract = extract >> 1;
 
-        //Now move extract to the next significant bit
-        numberOfZerosBefore = numberOfZerosBefore + 1;
-        extract = extract >> numberOfZerosBefore;
-
-        printBitVector(extract);
-
-        i++;
+        countBits++;
 
       } else {
+
+        countBits = 0; //reset count bit
 
         //if bitvector has no 1s anymore, go to the next one
         startVector++;
         extract = bitvector[startVector];
 
-        printf("numberOfOnes: %i, vL: %i sV: %i i: %i \n", numberOfOnes, vLength, startVector, i);
+        //printf("numberOfOnes: %i, vL: %i sV: %i i: %i \n", numberOfOnes, vLength, startVector, i);
         assert(startVector <= vLength);
 
       }
