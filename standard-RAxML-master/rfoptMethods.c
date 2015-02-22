@@ -656,6 +656,7 @@ Edit compared to extractSet: for bitvector 2 we restart the loop at position set
 
     for(int i = 0; i < vLength; i++) {
       numberOfOnes = numberOfOnes + __builtin_popcount(bitvector[i]);
+      printf("%i - %i ones \n", i, __builtin_popcount(bitvector[i]));
     }
 
     //plus one because of the terminal number -1 to determine the end of the array
@@ -673,6 +674,8 @@ Edit compared to extractSet: for bitvector 2 we restart the loop at position set
 
       if(extract != 0) {
 
+        printBitVector(extract);
+
         //Extract the first bit from extract and identify the related taxa number in SmallTree
         numberOfZerosBefore = __builtin_ctz(extract) + numberOfZerosBefore;
         //printf("Number of Zeros: %i \n", __builtin_ctz(extract));
@@ -686,6 +689,9 @@ Edit compared to extractSet: for bitvector 2 we restart the loop at position set
         //Now move extract to the next significant bit
         numberOfZerosBefore = numberOfZerosBefore + 1;
         extract = extract >> numberOfZerosBefore;
+
+        printBitVector(extract);
+
         i++;
 
       } else {
@@ -694,6 +700,7 @@ Edit compared to extractSet: for bitvector 2 we restart the loop at position set
         startVector++;
         extract = bitvector[startVector];
 
+        printf("numberOfOnes: %i, vL: %i sV: %i i: %i \n", numberOfOnes, vLength, startVector, i);
         assert(startVector <= vLength);
 
       }
@@ -941,27 +948,13 @@ Edit compared to extractSet: for bitvector 2 we restart the loop at position set
         sets[countSets] = getDropSetFromBitVectors(indBip, sBip, vectorLengthPerTree[i], i, taxaPerTree, smallTreeTaxaList[i]);
 
         //For debug purposes
-        printf("Set of %i : %i %i \n", countSets, sets[countSets][0], sets[countSets][1]);
+        //printf("Set of %i : %i %i \n", countSets, sets[countSets][0], sets[countSets][1]);
 
         countSets++;
 
       }
     }
   }
-
-
-  printf("\n == Sets inside == \n");
-  for(int fooo = 0; fooo < 17; fooo++){
-    printf("Set %i: ", fooo);
-    int i = 0;
-    while(i < 2) {
-     printf("%i ",sets[fooo][i]);
-     i++;
-    }
-    printf("\n");
-  }
-  printf("\n");
-
 }
 
  void detectInitialMatchings(int** sets, int* matchingVector, int* bipsPerTree, int numberOfTrees,  int vLength) { 
