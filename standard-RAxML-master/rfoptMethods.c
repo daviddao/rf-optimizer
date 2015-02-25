@@ -45,7 +45,7 @@
 #include "axml.h"
 #include "rmq.h" //include range minimum queries for fast plausibility checker
 
-
+#include "dbg.h" //debug stuff
 #include "bipartitionList.h" //legacy code
 
 
@@ -87,7 +87,6 @@ extern volatile int NumberOfJobs;
 
 //used for including sortInteger in qsort
 #include "plausibilityFast.h"
-
 
 /************************************  rf-opt functions *****************************************************************************/
 
@@ -329,96 +328,6 @@ unsigned int** RFOPT_extractBipartitionsMulti(unsigned int** bitvectors, int* se
   
   return returnInserts;
 }
-
-
-/* 
-Extract the set of the bitvector and stores the taxa into an array called set which it returns
-TODO only for one bitvector! Stop Element is -1 
-*/
- int* extractSet(int* bitvector, int* smallTreeTaxa){
-    int numberOfOnes = __builtin_popcount(bitvector[0]);
-    //plus one because of the terminal number -1 to determine the end of the array
-    int* set = rax_malloc((numberOfOnes + 1) * sizeof(int));
-    int i = 0;
-    int numberOfZerosBefore = 0;
-    int extract = bitvector[0];
-    while(i < numberOfOnes) {
-
-      //Extract the first bit from extract and identify the related taxa number in SmallTree
-      numberOfZerosBefore = __builtin_ctz(extract) + numberOfZerosBefore;
-      //printf("Number of Zeros: %i \n", __builtin_ctz(extract));
-
-      set[i] = smallTreeTaxa[numberOfZerosBefore];
-
-      //Now move extract to the next significant bit
-      numberOfZerosBefore = numberOfZerosBefore + 1;
-      extract = extract >> numberOfZerosBefore; //Never moved!
-      i++;
-    }
-    //Add a stop element in the array
-    set[numberOfOnes] = -1;
-
-    //Sort to get a comparable sequence for steps to follow
-    qsort(set, numberOfOnes, sizeof(int), sortIntegers);
-
-    return set;
-}
-
-/* 
-Can extract two bipartitons and merge their sets
-Edit compared to extractSet: for bitvector 2 we restart the loop at position set[i + numberOfOnesBip1]
-*/
- int* extractSets(int* bitvector, int* bitvector2, int* smallTreeTaxa){
-    int numberOfOnesBip1 = __builtin_popcount(bitvector[0]);
-    int numberOfOnesBip2 = __builtin_popcount(bitvector2[0]);
-    int numberOfOnes = numberOfOnesBip1 + numberOfOnesBip2;
-
-    //plus one because of the terminal number -1 to determine the end of the array
-    int* set = rax_malloc((numberOfOnes + 1) * sizeof(int));
-    int i = 0;
-    int numberOfZerosBefore = 0;
-    int extract = bitvector[0];
-    while(i < numberOfOnesBip1) {
-
-      //Extract the first bit from extract and identify the related taxa number in SmallTree
-      numberOfZerosBefore = __builtin_ctz(extract) + numberOfZerosBefore;
-      //printf("Number of Zeros: %i \n", __builtin_ctz(extract));
-      set[i] = smallTreeTaxa[numberOfZerosBefore];
-
-      numberOfZerosBefore = numberOfZerosBefore + 1;
-      //Now move extract to the next significant bit
-      extract = extract >> numberOfZerosBefore;
-      i++;
-    }
-
-
-    //restart the whole process for bitvector 2
-    i = 0;
-    numberOfZerosBefore = 0;
-    extract = bitvector2[0];
-
-    while(i < numberOfOnesBip2) {
-
-      //Extract the first bit from extract and identify the related taxa number in SmallTree
-      numberOfZerosBefore = __builtin_ctz(extract) + numberOfZerosBefore;
-      //printf("Number of Zeros: %i \n", __builtin_ctz(extract));
-      set[i + numberOfOnesBip1] = smallTreeTaxa[numberOfZerosBefore];
-
-
-      numberOfZerosBefore = numberOfZerosBefore + 1;
-      //Now move extract to the next significant bit
-      extract = extract >> numberOfZerosBefore;
-      i++;
-    }
-    //Add a stop element in the array
-    set[numberOfOnes] = -1;
-
-    //Sort to get a comparable sequence for steps to follow
-    qsort(set, numberOfOnes, sizeof(int), sortIntegers);
- 
-    return set;
-}
-
 
 /************************************* helper functions ***************************/
 
@@ -889,6 +798,8 @@ Edit compared to extractSet: for bitvector 2 we restart the loop at position set
 
   //Now generate Graph and calculate the Scores for each bipartitions
   for(int k = 0; k < numberOfSets; k++){
+
+    //printf("processing set %i \n", k);
     
     //Get the dropset at position k
     int* dropset = sets[k];

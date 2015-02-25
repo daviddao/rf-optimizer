@@ -357,7 +357,9 @@ struct _ent
 
 
 struct ent
-{
+{ 
+
+  //added to the entry for rfopt
   int *translate;
   int *set;
 

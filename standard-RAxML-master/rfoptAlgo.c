@@ -45,8 +45,8 @@
 #include "axml.h"
 #include "rmq.h" //include range minimum queries for fast plausibility checker
 
-
 #include "bipartitionList.h" //legacy code
+#include "hashmap.h"
 
 
 #ifdef __SIM_SSE3
@@ -88,6 +88,22 @@ extern volatile int NumberOfJobs;
 //Helper methods
 #include "plausibilityFast.h"
 #include "rfoptMethods.h"
+
+//useful methods for hashmap.c
+static int traverse_called = 0;
+
+static int traverse_cb(HashmapNode *node)
+{
+    printf("KEY: %i", (int*)node->key);
+    traverse_called++;
+    return 0;
+}
+
+static int compareDropSet(void *a, void *b)
+{
+    return !(isSameDropSet((int*)a, (int*)b));
+}
+
 
 //Use the plausibility checker overhead
 void plausibilityChecker(tree *tr, analdef *adef)
@@ -566,23 +582,52 @@ void plausibilityChecker(tree *tr, analdef *adef)
   /* RF-OPT Graph Construction */
   /***********************************************************************************/
 
-  printf("\n == Sets == \n");
-  for(int fooo = 0; fooo < numberOfSets; fooo++){
-    printf("Set %i: ", fooo);
-    int i = 0;
-    while(sets[fooo][i] > -1) {
-     printf("%i ",sets[fooo][i]);
-     i++;
-    }
-    printf("\n");
-  }
-  printf("\n");
+  // printf("\n == Sets == \n");
+  // for(int fooo = 0; fooo < numberOfSets; fooo++){
+  //   printf("Set %i: ", fooo);
+  //   int i = 0;
+  //   while(sets[fooo][i] > -1) {
+  //    printf("%i ",sets[fooo][i]);
+  //    i++;
+  //   }
+  //   printf("\n");
+  // }
+  // printf("\n");
+
 
 
   /*
     Filter for unique sets
   */
-  printf("===> Filter for unique Sets (naive)...\n");
+  printf("===> Create and fill hashmap...\n");
+  
+  //Create a hashmap
+  Hashmap* map = NULL;
+  map = Hashmap_create(compareDropSet,NULL);
+
+  char stringBuffer[20];
+  char* key = NULL;
+
+  for(int i = 0; i < numberOfSets; i++){
+
+    //printf("processing set %i \n",i);
+
+    int res = Hashmap_set(map,sets[i],sets[i]);
+    
+    if(res) {
+      printf("detected already setted set %i \n", i);
+    }
+
+  };
+
+  Hashmap_traverse(map, traverse_cb);
+
+
+
+
+
+  printf("===> Filter for unique sets (naive)...\n");
+
   /* unique sets array data structures */
   int** uniqSets = (int **) rax_malloc(sizeof(int*) * numberOfSets);
   int* setsToUniqSets = (int*) rax_malloc(sizeof(int) * numberOfSets);

@@ -111,8 +111,6 @@ entry *initEntry(void)
 } 
 
 
-
-
 hashtable *initHashTable(hashNumberType n)
 {
   /* 
