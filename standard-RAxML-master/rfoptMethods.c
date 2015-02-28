@@ -46,8 +46,9 @@
 #include "rmq.h" //include range minimum queries for fast plausibility checker
 
 #include "dbg.h" //debug stuff
+#include "hashmap.h" //include darray and hashmaps
 #include "bipartitionList.h" //legacy code
-
+#include "rfoptMethods.h" //include structures
 
 #ifdef __SIM_SSE3
 
@@ -87,6 +88,53 @@ extern volatile int NumberOfJobs;
 
 //used for including sortInteger in qsort
 #include "plausibilityFast.h"
+
+
+
+
+
+/********************************** Init functions ******************************/
+
+Bipartition* Bipartition_create(unsigned int* bitvector, int matching, int treenumber) {
+
+    Bipartition *bip = calloc(1, sizeof(Bipartition));
+    check_mem(bip);
+
+    bip->bitvector = bitvector;
+    bip->matching = matching;
+    bip->treenumber = treenumber;
+
+    return bip;
+
+error:
+    if(bip) {
+        free(bip);
+    }
+
+    return NULL;
+};
+
+
+
+Dropset* Dropset_create(int* dropset) {
+
+    Dropset *drop = calloc(1, sizeof(Dropset));
+    check_mem(drop);
+
+    drop->set = dropset;
+    //Create pointer list pointing to bipartitions in the tree
+    drop->bipartitions = DArray_create(sizeof(Bipartition*), DEFAULT_NUMBER_OF_BUCKETS);;
+
+    return drop;
+
+error:
+    if(drop) {
+        free(drop);
+    }
+
+    return NULL;
+
+};
 
 /************************************  rf-opt functions *****************************************************************************/
 
@@ -827,7 +875,7 @@ unsigned int** RFOPT_extractBipartitionsMulti(unsigned int** bitvectors, int* se
 }
 
 //Calculates all dropsets of two given bipartition lists
- void calculateDropSets(unsigned int*** indBipsPerTree, unsigned int*** sBipsPerTree, int** sets, int** smallTreeTaxaList, int* bipsPerTree, 
+void calculateDropSets(Hashmap* map, unsigned int*** indBipsPerTree, unsigned int*** sBipsPerTree, int** sets, int** smallTreeTaxaList, int* bipsPerTree, 
   int* taxaPerTree, unsigned int* vectorLengthPerTree, int numberOfTrees) {
 
   int countSets = 0;
@@ -858,6 +906,45 @@ unsigned int** RFOPT_extractBipartitionsMulti(unsigned int** bitvectors, int* se
 
         //For debug purposes
         //printf("Set of %i : %i %i \n", countSets, sets[countSets][0], sets[countSets][1]);
+
+
+        //Create Datastructures
+
+        //Create Dropset for Hashtable
+        Dropset* drop = Dropset_create(sets[countSets]);
+
+        //Create an DArray which is able to store bips structures
+        DArray* bips = DArray_create(sizeof(Bipartition),taxaPerTree[i]);
+
+        //Dropset now saves a darray of bips
+        drop->bipartitions = bips;
+
+        int matching = 0; //matching initally 0
+        if(sets[countSets][0] == 0){
+          matching = 1;
+        } 
+
+        //Create bipartition
+        Bipartition* bip = Bipartition_create(sBip,matching,i);
+
+        //Push bipartition into array
+        assert(0 == DArray_push(bips,bip));
+
+        int rc = Hashmap_set(map, drop->set, drop);
+        
+        //if dropset already stored
+        if(rc) {
+          Dropset* hashed_drop = Hashmap_get(map, drop->set);
+          DArray* hashed_bips = hashed_drop->bipartitions;
+          DArray_push(hashed_bips,bip);
+
+          printf("Count: %i \n",DArray_count(hashed_bips));
+
+        } else {
+          //free(drop);
+          //DArray_destroy(bips);
+
+        }
 
         countSets++;
 

@@ -7,7 +7,7 @@
 
 
 //shutoff the debug messages
-#define NDEBUG
+//#define NDEBUG
 
 #ifdef NDEBUG
 #define debug(M, ...)

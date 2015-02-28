@@ -1,3 +1,30 @@
+/************************************ data structs ************************************/
+
+typedef struct Dropset {
+	int* set; //dropset
+	DArray *bipartitions; //Affected bipartitions
+
+} Dropset;
+
+//Each tree has a own hashmap 
+//structure to store bipartitions
+//key: deleted set DArray 
+//if bipartition - deleted 
+typedef struct Bipartition {
+
+	unsigned int* bitvector; //stores bitvector of smalltree
+	int matching; //matching 1, not matching 0
+	int treenumber; //stores number of tree where bip is from
+
+} Bipartition;
+
+
+/********************************** Init functions ******************************/
+
+Bipartition* Bipartition_create(unsigned int* bitvector, int matching, int treenumber);
+
+Dropset* Dropset_create(int* dropset);
+
 /************************************  rf-opt functions *****************************************************************************/
 
 /* method adapted for multifurcating trees, changes are: 
@@ -85,7 +112,7 @@ int* getDropSetFromBitVectors(unsigned int* indBip, unsigned int* sBip, unsigned
 int getUniqueDropSets(int** sets, int** uniqSets, int* setsToUniqSets, int numberOfSets);
 
 //Calculates all dropsets of two given bipartition lists
-void calculateDropSets(unsigned int*** indBipsPerTree, unsigned int*** sBipsPerTree, int** sets, int** smallTreeTaxaList, int* bipsPerTree, 
+void calculateDropSets(Hashmap* map, unsigned int*** indBipsPerTree, unsigned int*** sBipsPerTree, int** sets, int** smallTreeTaxaList, int* bipsPerTree, 
   int* taxaPerTree, unsigned int* vectorLengthPerTree, int numberOfTrees);
 
 void detectInitialMatchings(int** sets, int* matchingVector, int* bipsPerTree, int numberOfTrees,  int vLength);

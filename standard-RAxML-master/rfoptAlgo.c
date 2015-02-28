@@ -94,7 +94,7 @@ static int traverse_called = 0;
 
 static int traverse_cb(HashmapNode *node)
 {
-    printf("KEY: %i", (int*)node->key);
+    printf("KEY: %i %i \n", ((int*)node->key)[0], ((int*)node->key)[1]);
     traverse_called++;
     return 0;
 }
@@ -506,7 +506,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
     /* calculates all bipartitions of the reference small tree and put them into ind_hash*/
     // rec_extractBipartitionsMulti(bitVectors, seq2, (2*smallTree->ntips - 1),tr->mxtips, vectorLength, smallTree->ntips, 
-             // firstTaxon, s_hash, taxonToReduction, taxonHasDeg, numberOfSplits);
+    // firstTaxon, s_hash, taxonToReduction, taxonHasDeg, numberOfSplits);
 
 
     /* Reconstruction Step End */
@@ -571,11 +571,22 @@ void plausibilityChecker(tree *tr, analdef *adef)
   /* RF-OPT DropSet Calculation using BitVectors */
   /***********************************************************************************/
 
+  
+  log_info("===> Create DropSet Datastructure \n");
+
+  static Hashmap* map = NULL;
+  //Set a hashmap for dropsets with a dropset comparision and standard hash
+  map = Hashmap_create(compareDropSet, NULL);
+
+  static (Hashmap*)* mapArray = NULL;
+  
+
+
   printf("===> BitVector Set Calculation \n");
 
-  //Calculate dropsets of two given bips lists and extract all sets into array sets. Each set has following format
+  //Calculate dropsets of two given bips lists and extract all sets into array sets and into a hashmap map. Each set has following format
   //dropset = {taxa_1,taxa_2,...,taxa_n,-1};
-  calculateDropSets(indBipsPerTree, sBipsPerTree, sets, smallTreeTaxaList, bipsPerTree, 
+  calculateDropSets(map, indBipsPerTree, sBipsPerTree, sets, smallTreeTaxaList, bipsPerTree, 
   taxaPerTree, vectorLengthPerTree, tr->numberOfTrees);
 
   /***********************************************************************************/
@@ -593,37 +604,24 @@ void plausibilityChecker(tree *tr, analdef *adef)
   //   printf("\n");
   // }
   // printf("\n");
-
-
-
   /*
     Filter for unique sets
   */
-  printf("===> Create and fill hashmap...\n");
+  log_info("===> Hashmap tests...\n");
   
-  //Create a hashmap
-  Hashmap* map = NULL;
-  map = Hashmap_create(compareDropSet,NULL);
-
-  char stringBuffer[20];
-  char* key = NULL;
-
-  for(int i = 0; i < numberOfSets; i++){
-
-    //printf("processing set %i \n",i);
-
-    int res = Hashmap_set(map,sets[i],sets[i]);
-    
-    if(res) {
-      printf("detected already setted set %i \n", i);
-    }
-
-  };
-
   Hashmap_traverse(map, traverse_cb);
 
+  int key[2] = {0,-1};
 
+  Dropset* drop = Hashmap_get(map,key);
+  DArray* bips = drop->bipartitions;
 
+  for(int i = 0; i < DArray_count(bips); i++) {
+    Bipartition* bip = DArray_get(bips,i);
+    printBitVector(bip->bitvector[0]);
+    printf("matching: %i \n", bip->matching);
+    printf("tree: %i \n", bip->treenumber);
+  }
 
 
   printf("===> Filter for unique sets (naive)...\n");
