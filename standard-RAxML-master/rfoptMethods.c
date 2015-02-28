@@ -97,7 +97,7 @@ extern volatile int NumberOfJobs;
 
 Bipartition* Bipartition_create(unsigned int* bitvector, int matching, int treenumber) {
 
-    Bipartition *bip = calloc(1, sizeof(Bipartition));
+    Bipartition *bip = rax_malloc(sizeof(Bipartition));
     check_mem(bip);
 
     bip->bitvector = bitvector;
@@ -118,12 +118,12 @@ error:
 
 Dropset* Dropset_create(int* dropset) {
 
-    Dropset *drop = calloc(1, sizeof(Dropset));
+    Dropset *drop = rax_malloc(sizeof(Dropset));
     check_mem(drop);
 
     drop->set = dropset;
     //Create pointer list pointing to bipartitions in the tree
-    drop->bipartitions = DArray_create(sizeof(Bipartition*), DEFAULT_NUMBER_OF_BUCKETS);;
+    drop->bipartitions = NULL;
 
     return drop;
 
@@ -909,6 +909,7 @@ void calculateDropSets(Hashmap* map, unsigned int*** indBipsPerTree, unsigned in
 
 
         //Create Datastructures
+        printf("%i \n",countSets);
 
         //Create Dropset for Hashtable
         Dropset* drop = Dropset_create(sets[countSets]);
@@ -922,7 +923,9 @@ void calculateDropSets(Hashmap* map, unsigned int*** indBipsPerTree, unsigned in
         int matching = 0; //matching initally 0
         if(sets[countSets][0] == 0){
           matching = 1;
-        } 
+        }  
+
+        
 
         //Create bipartition
         Bipartition* bip = Bipartition_create(sBip,matching,i);
@@ -938,7 +941,7 @@ void calculateDropSets(Hashmap* map, unsigned int*** indBipsPerTree, unsigned in
           DArray* hashed_bips = hashed_drop->bipartitions;
           DArray_push(hashed_bips,bip);
 
-          printf("Count: %i \n",DArray_count(hashed_bips));
+          //printf("Count: %i \n",DArray_count(hashed_bips));
 
         } else {
           //free(drop);

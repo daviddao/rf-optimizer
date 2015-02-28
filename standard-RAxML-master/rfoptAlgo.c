@@ -578,8 +578,8 @@ void plausibilityChecker(tree *tr, analdef *adef)
   //Set a hashmap for dropsets with a dropset comparision and standard hash
   map = Hashmap_create(compareDropSet, NULL);
 
-  static (Hashmap*)* mapArray = NULL;
-  
+  static Hashmap** mapArray = NULL;
+
 
 
   printf("===> BitVector Set Calculation \n");
