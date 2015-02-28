@@ -875,7 +875,7 @@ unsigned int** RFOPT_extractBipartitionsMulti(unsigned int** bitvectors, int* se
 }
 
 //Calculates all dropsets of two given bipartition lists
-void calculateDropSets(Hashmap* map, unsigned int*** indBipsPerTree, unsigned int*** sBipsPerTree, int** sets, int** smallTreeTaxaList, int* bipsPerTree, 
+void calculateDropSets(Hashmap** mapArray, Hashmap* map, unsigned int*** indBipsPerTree, unsigned int*** sBipsPerTree, int** sets, int** smallTreeTaxaList, int* bipsPerTree, 
   int* taxaPerTree, unsigned int* vectorLengthPerTree, int numberOfTrees) {
 
   int countSets = 0;
@@ -908,46 +908,55 @@ void calculateDropSets(Hashmap* map, unsigned int*** indBipsPerTree, unsigned in
         //printf("Set of %i : %i %i \n", countSets, sets[countSets][0], sets[countSets][1]);
 
 
-        //Create Datastructures
         printf("%i \n",countSets);
 
-        //Create Dropset for Hashtable
-        Dropset* drop = Dropset_create(sets[countSets]);
+        //================== Dropset generation ============================//
 
-        //Create an DArray which is able to store bips structures
-        DArray* bips = DArray_create(sizeof(Bipartition),taxaPerTree[i]);
+        //Our key for the hashtable is the sorted dropset taxa for this bip
+        int* key = sets[countSets];
 
-        //Dropset now saves a darray of bips
-        drop->bipartitions = bips;
-
+        //If the dropset is 0, the bipartition is initally matching
         int matching = 0; //matching initally 0
-        if(sets[countSets][0] == 0){
+        if(key[0] == 0){
           matching = 1;
         }  
 
-        
-
-        //Create bipartition
+        //Create bipartition stuct - we always have to create bips
         Bipartition* bip = Bipartition_create(sBip,matching,i);
 
-        //Push bipartition into array
-        assert(0 == DArray_push(bips,bip));
+        //Get the existing dropset
+        Dropset* drop = Hashmap_get(map, key);
 
-        int rc = Hashmap_set(map, drop->set, drop);
-        
-        //if dropset already stored
-        if(rc) {
-          Dropset* hashed_drop = Hashmap_get(map, drop->set);
-          DArray* hashed_bips = hashed_drop->bipartitions;
-          DArray_push(hashed_bips,bip);
+        //If dropset doesn't exist we create a dropset struct 
+        //Else we just push another bip into the dropset bipartitions list
+        if(drop == NULL) {
 
-          //printf("Count: %i \n",DArray_count(hashed_bips));
+          drop = Dropset_create(key);
+
+          //Create an DArray which is able to store bips structures
+          DArray* bips = DArray_create(sizeof(Bipartition),taxaPerTree[i]);
+
+          //Dropset now saves a darray of bips
+          drop->bipartitions = bips;
+
+          assert(0 == Hashmap_set(map, drop->set, drop));
 
         } else {
-          //free(drop);
-          //DArray_destroy(bips);
+
+          //Get the existing dropset
+          drop = Hashmap_get(map, drop->set);
+
+          //Get the existing bipartitions list
+          DArray* bips = drop->bipartitions;
+          
+          //Push bipartition into array
+          assert(0 == DArray_push(bips,bip));
 
         }
+        
+        //================== Tree Hashtable generation =======================//
+
+
 
         countSets++;
 

@@ -579,14 +579,15 @@ void plausibilityChecker(tree *tr, analdef *adef)
   map = Hashmap_create(compareDropSet, NULL);
 
   static Hashmap** mapArray = NULL;
-
+  //Set an array to store the pointers to bitvector hashtables for each tree 
+  mapArray = rax_malloc(tr->numberOfTrees * sizeof(Hashmap*));
 
 
   printf("===> BitVector Set Calculation \n");
 
   //Calculate dropsets of two given bips lists and extract all sets into array sets and into a hashmap map. Each set has following format
   //dropset = {taxa_1,taxa_2,...,taxa_n,-1};
-  calculateDropSets(map, indBipsPerTree, sBipsPerTree, sets, smallTreeTaxaList, bipsPerTree, 
+  calculateDropSets(mapArray, map, indBipsPerTree, sBipsPerTree, sets, smallTreeTaxaList, bipsPerTree, 
   taxaPerTree, vectorLengthPerTree, tr->numberOfTrees);
 
   /***********************************************************************************/

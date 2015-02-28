@@ -124,13 +124,13 @@ error:
 int Hashmap_set(Hashmap *map, void *key, void *data)
 {   
     /* set unique keys */
-    if(Hashmap_get(map, key) != NULL) {
+    //if(Hashmap_get(map, key) != NULL) {
 
         //debug("Key %s has already been set", key);
 
-        return 1;
+        //return 1;
 
-    } else {
+    //} else {
     
         uint32_t hash = 0;
         DArray *bucket = Hashmap_find_bucket(map, key, 1, &hash);
@@ -142,7 +142,7 @@ int Hashmap_set(Hashmap *map, void *key, void *data)
         DArray_push(bucket, node);
 
         return 0;
-    }
+    //}
 
 error:
     return -1;
