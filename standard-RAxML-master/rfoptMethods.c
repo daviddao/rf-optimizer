@@ -97,7 +97,7 @@ extern volatile int NumberOfJobs;
 
 Bipartition* Bipartition_create(unsigned int* bitvector, int matching, int treenumber) {
 
-    Bipartition *bip = rax_malloc(sizeof(Bipartition));
+    Bipartition* bip = rax_malloc(sizeof(Bipartition));
     check_mem(bip);
 
     bip->bitvector = bitvector;
@@ -115,15 +115,15 @@ error:
 };
 
 
-
 Dropset* Dropset_create(int* dropset) {
 
-    Dropset *drop = rax_malloc(sizeof(Dropset));
+    Dropset* drop = rax_malloc(sizeof(Dropset));
     check_mem(drop);
 
     drop->set = dropset;
     //Create pointer list pointing to bipartitions in the tree
     drop->bipartitions = NULL;
+    drop->score = 0; 
 
     return drop;
 
@@ -133,8 +133,33 @@ error:
     }
 
     return NULL;
+};
+
+
+RTaxon* RTaxon_create(int taxonNumber) {
+
+    RTaxon* taxon = rax_malloc(sizeof(RTaxon));
+    check_mem(taxon);
+
+    taxon->taxonNumber = taxonNumber;
+    //Create pointer list pointing to bipartitions in the tree and the dropsets containing
+    //this taxon
+    taxon->dropsets = NULL;
+    taxon->trees = NULL;
+    taxon->deleted = 0; 
+
+    return taxon;
+
+error:
+    if(taxon) {
+        free(taxon);
+    }
+
+    return NULL;
 
 };
+
+
 
 /************************************  rf-opt functions *****************************************************************************/
 
@@ -451,7 +476,7 @@ unsigned int** RFOPT_extractBipartitionsMulti(unsigned int** bitvectors, int* se
 }
 
 /* Checks if two arrays are identical and returns 1 and 0 */
- int isSameDropSet(int* a, int* b) {
+int isSameDropSet(int* a, int* b) {
   int j = 0;
 
   //while it is equal, we look for the first comparison which is not equal
@@ -479,7 +504,7 @@ unsigned int** RFOPT_extractBipartitionsMulti(unsigned int** bitvectors, int* se
     returns 0 if its not containing
     returns index+1 if it contains the element 
 */
- int contains(int* check, int** sets, int numberOfSets) {
+int contains(int* check, int** sets, int numberOfSets) {
 
   for (int i = 0; i < numberOfSets; i++) {
     
@@ -495,7 +520,7 @@ unsigned int** RFOPT_extractBipartitionsMulti(unsigned int** bitvectors, int* se
 }
 
 //Get the index for which array arr is max
- int getMax(int* arr, int size) {
+int getMax(int* arr, int size) {
 
   int max = 0;
 
@@ -513,21 +538,21 @@ unsigned int** RFOPT_extractBipartitionsMulti(unsigned int** bitvectors, int* se
 /******************************* Bit Manipulation functionality ***********************************/
 
 
- int setBit(int bitVector, int pos) {
+int setBit(int bitVector, int pos) {
   
   bitVector |= 1 << pos;
 
   return bitVector;
 }
 
- int clearBit(int bitVector, int pos) {
+int clearBit(int bitVector, int pos) {
   
   bitVector &= ~(1 << pos);
 
   return bitVector;
 }
 
- int checkBit(int bitVector, int pos) {
+int checkBit(int bitVector, int pos) {
   
   int bit = 0;
   
@@ -537,7 +562,7 @@ unsigned int** RFOPT_extractBipartitionsMulti(unsigned int** bitvectors, int* se
 }
 
 //Method for setting bits in bitvectors
- int* setBitBV(int* bitVector, int pos, int vLength) {
+int* setBitBV(int* bitVector, int pos, int vLength) {
 
   int vectorIndex = pos / MASK_LENGTH;
   int relativePos = pos % MASK_LENGTH;
@@ -553,7 +578,7 @@ unsigned int** RFOPT_extractBipartitionsMulti(unsigned int** bitvectors, int* se
 }
 
 //Use to setup a mask to clear the offset bits
- int setOffSet(int mask, int offset) {
+int setOffSet(int mask, int offset) {
   
   for(int i = 0; i < offset; i++) {
     mask = setBit(mask, i);
@@ -563,7 +588,7 @@ unsigned int** RFOPT_extractBipartitionsMulti(unsigned int** bitvectors, int* se
 }
 
 //Use to setup a mask of existing bipartitions
- int getExistingBips(int mask, int offset, int bvecs_deletedBips) {
+int getExistingBips(int mask, int offset, int bvecs_deletedBips) {
 
   mask = setOffSet(mask, offset);
 
@@ -572,14 +597,14 @@ unsigned int** RFOPT_extractBipartitionsMulti(unsigned int** bitvectors, int* se
   return mask;
 }
 
- void printBitVector(int bitVector) {
+void printBitVector(int bitVector) {
   char buffer[33];
   buffer[32] = '\0';
   int2bin(bitVector, buffer, 32);
   printf("\n==> BitVector = %s \n", buffer);
 }
 
- void printSet(int* set) {
+void printSet(int* set) {
   int i = 0;
   printf("Set: ");
   while(set[i] != -1) {
@@ -672,7 +697,7 @@ unsigned int** RFOPT_extractBipartitionsMulti(unsigned int** bitvectors, int* se
 }
 
 //Merge two dropsets into one set (ending element is -1)
- int* mergeSets(int* set1, int* set2) {
+int* mergeSets(int* set1, int* set2) {
 
   int i = 0;
   int j = 0;
@@ -707,7 +732,7 @@ unsigned int** RFOPT_extractBipartitionsMulti(unsigned int** bitvectors, int* se
 
 }
 
- int* extractSetsFromBitVector(unsigned int* bitvector, unsigned int* bitvector2, int* smallTreeTaxa, unsigned int vLength){
+int* extractSetsFromBitVector(unsigned int* bitvector, unsigned int* bitvector2, int* smallTreeTaxa, unsigned int vLength){
 
     int* set1; 
     int* set2; 
@@ -722,7 +747,7 @@ unsigned int** RFOPT_extractBipartitionsMulti(unsigned int** bitvectors, int* se
 }
 
 //Calculate the DropSet given two BitVectors of the same length
- int* getDropSetFromBitVectors(unsigned int* indBip, unsigned int* sBip, unsigned int vLength, int treenumber, int* taxaPerTree, int* smallTreeTaxa){
+int* getDropSetFromBitVectors(unsigned int* indBip, unsigned int* sBip, unsigned int vLength, int treenumber, int* taxaPerTree, int* smallTreeTaxa){
 
   //Calculate the dropsets by comparing two bipartitions
   //Determine the smallest of two sets (xANDx*,yANDy*) OR (xANDy*,yANDx*)
@@ -838,7 +863,7 @@ unsigned int** RFOPT_extractBipartitionsMulti(unsigned int** bitvectors, int* se
 }
 
 //Filter for unique dropsets and return number of unique sets
- int getUniqueDropSets(int** sets, int** uniqSets, int* setsToUniqSets, int numberOfSets) {
+int getUniqueDropSets(int** sets, int** uniqSets, int* setsToUniqSets, int numberOfSets) {
   
   int numberOfUniqueSets = 0;
 
@@ -976,7 +1001,50 @@ void calculateDropSets(Hashmap** mapArray, Hashmap* map, unsigned int*** indBips
   }
 }
 
- void detectInitialMatchings(int** sets, int* matchingVector, int* bipsPerTree, int numberOfTrees,  int vLength) { 
+RTaxon** createRTaxonList(int numberOfTaxa) {
+
+  RTaxon** map = rax_malloc(sizeof(RTaxon*)*numberOfTaxa+1);
+  check_mem(map);
+  //TaxonList starts with 1
+  int i = 0;
+
+  for(i = 0; i < numberOfTaxa+1; i++) {
+    map[i] = RTaxon_create(i);
+    printf("taxamap %i \n",map[i]->taxonNumber);
+  }
+
+  return map;
+
+error:
+  
+  if(map) {
+    free(map);
+  }
+
+  return NULL;
+
+}
+
+//Set all RTaxon->trees for the beginning
+void initRTaxonList(RTaxon** map, int** smallTreeTaxaList, int numberOfTrees, int* taxaPerTree) {
+  //allocate space
+
+  int i = 0;
+  int j = 0;
+  //iterate through all trees
+  for(i = 0; i < numberOfTrees; i++) {
+    int* translationArray = smallTreeTaxaList[i];
+    printf("Tree: %i \n", i);
+
+    for(j = 0; j < taxaPerTree[i]; j++) {
+      int globalTaxonNumber = translationArray[j];
+      printf("Taxon: %i \n", globalTaxonNumber);
+
+    }
+  }
+}
+
+void detectInitialMatchings(int** sets, int* matchingVector, int* bipsPerTree, int numberOfTrees,  int vLength) { 
 
   //We use these variables to iterate through all sets and bips
   int countBips = 0;
@@ -1024,4 +1092,24 @@ void calculateDropSets(Hashmap** mapArray, Hashmap* map, unsigned int*** indBips
 
   //printf("dropSetCount : %i \n", dropSetCount);
   //printf("bipsCount : %i \n", countBips);
+}
+
+
+//Calculate the score
+int Dropset_score(Dropset* drop) {
+    int i = 0;
+    int scoreGain = 0;
+    int scorePenalty = 0;
+
+    //Iterate through all bips of this dropset
+    for(i = 0; i < DArray_count(drop->bipartitions); i++) {
+        Bipartition* bip = DArray_get(drop->bipartitions, i);
+        if(bip->matching == 0) {
+            scoreGain++;
+        } else {
+          return 0;
+        }
+    }
+
+    return scoreGain-scorePenalty;
 }

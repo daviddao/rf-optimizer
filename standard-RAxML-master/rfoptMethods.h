@@ -2,7 +2,8 @@
 
 typedef struct Dropset {
 	int* set; //dropset
-	DArray *bipartitions; //Affected bipartitions
+	int score; //score for this dropset
+	DArray* bipartitions; //Affected bipartitions
 
 } Dropset;
 
@@ -11,12 +12,21 @@ typedef struct Dropset {
 //key: deleted set DArray 
 //if bipartition - deleted 
 typedef struct Bipartition {
-
 	unsigned int* bitvector; //stores bitvector of smalltree
 	int matching; //matching 1, not matching 0
 	int treenumber; //stores number of tree where bip is from
 
 } Bipartition;
+
+//Struct storing information of dropsets and trees where this taxon occurs.
+//These datastructures have to be modified when deleting this taxon.
+typedef struct RTaxon {
+	int taxonNumber;
+	DArray* dropsets;
+	DArray* trees;
+	int deleted;
+
+} RTaxon;
 
 
 /********************************** Init functions ******************************/
@@ -24,6 +34,8 @@ typedef struct Bipartition {
 Bipartition* Bipartition_create(unsigned int* bitvector, int matching, int treenumber);
 
 Dropset* Dropset_create(int* dropset);
+
+RTaxon* RTaxon_create(int taxonNumber);
 
 /************************************  rf-opt functions *****************************************************************************/
 
@@ -34,7 +46,7 @@ unsigned int** RFOPT_extractBipartitionsMulti(unsigned int** bitvectors, int* se
 
 
 /* Additionally to the method above, rec_findAddBipartitions add the bipartitions into a second hashtable ind_hash and returns the bitVector of the induced tree */
-unsigned int** RFOPT_findAddBipartitions(unsigned int ** bitvectors, int* seq, int arraysize, int* translate, int numsp, unsigned int vLength, int ntips, int first, hashtable* hash, hashtable* ind_hash, int* taxonToReduction);
+unsigned int** RFOPT_findAddBipartitions(unsigned int** bitvectors, int* seq, int arraysize, int* translate, int numsp, unsigned int vLength, int ntips, int first, hashtable* hash, hashtable* ind_hash, int* taxonToReduction);
 
 
 /* 
@@ -114,5 +126,9 @@ int getUniqueDropSets(int** sets, int** uniqSets, int* setsToUniqSets, int numbe
 //Calculates all dropsets of two given bipartition lists
 void calculateDropSets(Hashmap** mapArray, Hashmap* map, unsigned int*** indBipsPerTree, unsigned int*** sBipsPerTree, int** sets, int** smallTreeTaxaList, int* bipsPerTree, 
   int* taxaPerTree, unsigned int* vectorLengthPerTree, int numberOfTrees);
+
+RTaxon** createRTaxonList(int numberOfTaxa);
+
+void initRTaxonList(RTaxon** map, int** smallTreeTaxaList, int numberOfTrees, int* taxaPerTree);
 
 void detectInitialMatchings(int** sets, int* matchingVector, int* bipsPerTree, int numberOfTrees,  int vLength);

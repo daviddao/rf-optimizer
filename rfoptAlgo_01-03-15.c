@@ -572,20 +572,6 @@ void plausibilityChecker(tree *tr, analdef *adef)
   /* RF-OPT DropSet Calculation using BitVectors */
   /***********************************************************************************/
 
-  log_info("===>Create RTaxon Array \n");
-
-  //An array storing pointers to RTaxon structs for all taxa
-  RTaxon** RTaxonList = NULL;
-  
-  RTaxonList = createRTaxonList(tr->mxtips);
-  
-  for(i = 0; i < tr->mxtips + 1; i++) {
-      int taxonNumber = (RTaxonList[i])->taxonNumber;
-      log_info("%i \n", taxonNumber);
-  }
-
-  //Initialize all RTaxon->trees 
-  initRTaxonList(RTaxonList, smallTreeTaxaList, tr->numberOfTrees, taxaPerTree);
   
   log_info("===> Create DropSet Datastructure \n");
 
@@ -651,17 +637,162 @@ void plausibilityChecker(tree *tr, analdef *adef)
   //   printf("matching: %i \n", bip->matching);
   //   printf("tree: %i \n", bip->treenumber);
   // }
+
+
+  printf("===> Filter for unique sets (naive)...\n");
+
+  /* unique sets array data structures */
+  int** uniqSets = (int **) rax_malloc(sizeof(int*) * numberOfSets);
+  int* setsToUniqSets = (int*) rax_malloc(sizeof(int) * numberOfSets);
+  int numberOfUniqueSets = 0;
+  int dropSetCount = 0;
+
+
+
+  //stores the scores for each bips, we are using a bitvector approach (need to scale)
+    
+  //Legacy Code 
+  int bvec_scores = 0;
   
-  log_info("initial scoring \n");
+  numberOfUniqueSets = getUniqueDropSets(sets, uniqSets, setsToUniqSets, numberOfSets);
 
+  printf("number of unique sets: %i \n", numberOfUniqueSets);
 
+  /*
+    Detect initial matchings, we calculate them using bitvectors to represent our bipartitions
+  */
+  printf("===> Detect initial matchings...\n");
+  int vLengthBip = 0;
 
+  //determine the bitVector Length of our bitVector
+  if(numberOfBips % MASK_LENGTH == 0)
+    vLengthBip = numberOfBips / MASK_LENGTH; 
+  else 
+    vLengthBip = numberOfBips / MASK_LENGTH + 1;
+
+  //Initialize a bvecScore vector with 0s
+  int* bvecScores = (int*)rax_calloc(vLengthBip,sizeof(int));
+
+  //Calculate Initial Matchings and save the result in bvecScores
+  detectInitialMatchings(sets, bvecScores, bipsPerTree, numberOfTreesAnalyzed, vLengthBip); 
+
+  //Short summary until now:
+  // - bipsPerTree consists of all bipartitions per tree
+  // - bvecScores is the bitvector setting 1 to all bipartition indices which can score 
+  // - taxaPerTree number of taxa per tree
+  // - smallTreeTaxaList list of all smalltree->largetree translation arrays
+
+  /*
+    Generate useful data structures for calculating and updating scores
+  */
+  printf("===> Create data structures...\n");  
+  //Stores the number of bips per Set and initialize it with 0s
+  int* numberOfBipsPerSet = (int*)rax_calloc(numberOfUniqueSets,sizeof(int));
+
+  //Stores all sets which includes this taxa
+  int **setsOfTaxa = (int**)rax_malloc((tr->mxtips + 1) *sizeof(int*));
+  
+  //Now calculate number of bipartitions affected by each unique set
+  for(int i = 0; i < numberOfSets; i++) {
+
+    int setindex = setsToUniqSets[i];
+
+    numberOfBipsPerSet[setindex]++;
+  }
+
+  //Now using the knowledge of how many bips there are per set, generate an array for each unique dropset containing all bips
+  int** bipsOfDropSet = (int**)rax_malloc(sizeof(int*)*numberOfUniqueSets);
+  
+  //Allocate the space needed for storing all bips
+  for(int i = 0; i < numberOfUniqueSets; i++) {
+
+    bipsOfDropSet[i] = (int*)rax_malloc(sizeof(int)*numberOfBipsPerSet[i]); 
+  }
+  
   printf("==> Initialize the Bips Of Taxa \n");
+  //Stores the number of bips each taxa is included (ABC|DE is stored by A,B,C,D and E)
+  //It can be calculated by iterating through all trees and adding the taxa 
+  int **bipsOfTaxa = (int**)rax_malloc((tr->mxtips + 1) * sizeof(int*));
+  int *numberOfBipsPerTaxa = (int*)rax_calloc((tr->mxtips + 1), sizeof(int));
+  int *taxaBipsCounter = (int*)rax_calloc((tr->mxtips + 1), sizeof(int));
 
-  //Each time we delete a dropset, we need to edit each bipartition
+  //Now add up all
+  for (int tree = 0; tree < tr->numberOfTrees; tree++) {
 
+    int* list = smallTreeTaxaList[tree];
+
+    for (int j = 0; j < taxaPerTree[tree]; j++) {
+
+      int taxa = list[j];
+
+      numberOfBipsPerTaxa[taxa] = numberOfBipsPerTaxa[taxa] + bipsPerTree[tree];
+    } 
+  }
+
+  //Now create dummy arrays inside bipsOfTaxa
+  for(int i = 1; i < tr->mxtips+1; i++) {
+    bipsOfTaxa[i] = (int*)rax_malloc(sizeof(int)*numberOfBipsPerTaxa[i]);
+  }
 
   printf("==> Storing all bip indices of a certain dropset into an array \n");
+  //For checking if all dropsets are iterated
+  dropSetCount = 0;
+  //Arrays of counter to keep in track
+  int* counterOfSet = (int*)rax_malloc(sizeof(int)*numberOfUniqueSets);
+  for(int i = 0; i < numberOfUniqueSets; i++) {
+    counterOfSet[i] = 0;
+  }
+
+  currentBips = 0; //Need to keep in track of the number of bips
+  //First iterate through all trees 
+  for(int i = 0; i < numberOfTreesAnalyzed; i++ ) {
+
+    //get the correct smallTreeTaxa List
+    int* list = smallTreeTaxaList[i];
+
+    //For each bipartition in the tree
+    for(int j = 0; j < bipsPerTree[i]; j++) {
+
+      //Look at all bips it is compared too
+      int dropSetsPerBip = bipsPerTree[i];
+
+      for(int k = 0; k < dropSetsPerBip; k++){
+
+        int indexOfUniqDropSet = setsToUniqSets[dropSetCount + k];
+
+        int* bips_array = bipsOfDropSet[indexOfUniqDropSet]; 
+
+        //add bipartition j into the bips array of its dropset
+        bips_array[counterOfSet[indexOfUniqDropSet]] = currentBips; 
+
+        //increment the internal array index 
+        counterOfSet[indexOfUniqDropSet]++;
+      }
+    //Jump to the next correct dropSetCount!
+    dropSetCount = dropSetCount + dropSetsPerBip;
+
+    //now insert the bip into bipsOfTaxa Array
+    for(int ix = 0; ix < taxaPerTree[i]; ix++) {
+
+      //get the taxa number
+      int stree_Taxa = list[ix];
+
+      //get the bips list of this taxa number
+      int* bipsList = bipsOfTaxa[stree_Taxa];
+
+      //now get the position of the biplist and put in our bip index
+      bipsList[taxaBipsCounter[stree_Taxa]] = currentBips;
+
+      //increment the counter 
+      taxaBipsCounter[stree_Taxa]++;
+
+    }
+
+    //increment currentBips
+    currentBips++; 
+    }
+
+  }
 
   /***********************************************************************************/
   /* End RF-OPT Graph Construction */
@@ -682,7 +813,156 @@ void plausibilityChecker(tree *tr, analdef *adef)
   /***********************************************************************************/
 
 
+  unsigned int bipsVectorLength;
+
+  /* calculate the bitvector length for bips bitvector */
+  if(numberOfBips % MASK_LENGTH == 0)
+    bipsVectorLength = numberOfBips / MASK_LENGTH;
+  else
+    bipsVectorLength = 1 + (numberOfBips / MASK_LENGTH); 
+
+  //Starting from index 1 (because 0 stands for all who already matches)
+  //We need a score array saving the scores for each uniqset
+  int* rf_score = (int*)rax_calloc(numberOfUniqueSets,sizeof(int));
+
   printf("==> Calculating the score for the first iteration \n \n");
+
+  //Store all bvecs of all merged and destroyed bipartitions per DropSet 
+  int* bvecs_bips = (int*)rax_malloc(sizeof(int)*numberOfUniqueSets);
+  int* bvecs_destroyed = (int*)rax_malloc(sizeof(int)*numberOfUniqueSets);
+
+
+
+  //Iterate through all sets
+  for(int i = 0; i < numberOfUniqueSets; i++) {
+
+    //Bitvectors of merged and destroyed
+    int bvec_destroyed = 0;
+
+    int* set = uniqSets[i]; //Get the dropset, first dropset is 0 (if something is matching)
+
+    //printf(" ==> Analyze Unique DropSet %i \n", i);
+
+    //We use this data structure to keep track of the to toggled bits
+    int* toggleBits = (int*)rax_calloc(numberOfBips, sizeof(int));
+
+    //Now iterate through the set
+    int j = 0;
+
+    //Stores the affected bips into a bitvector
+    int bvec_bips = 0;
+
+    while(set[j] != -1) {
+
+      int taxa = set[j]; //Get the taxa
+      //printf("  Taxa number is %i \n",taxa);
+
+      //Check if set[j] is itself already a set
+      int test[2] = {taxa,-1}; 
+
+      //0 if it is not a set, index + 1 otherwise
+      int test_index = contains(test, uniqSets, numberOfUniqueSets);
+
+      if(test_index){
+        //printf("  It also is in uniqSet %i \n", test_index - 1);
+        bvec_bips = getBipsOfDropSet(bvec_bips, (test_index - 1), numberOfBipsPerSet, bipsOfDropSet);
+
+      }
+
+      //Get all bips of this taxa to detect which one will be destroyed
+      int* listOfBips = bipsOfTaxa[taxa]; 
+
+      //Go through all bipartitions containing this taxa
+      for(int k = 0; k < numberOfBipsPerTaxa[taxa]; k++){
+
+        int bipindex = listOfBips[k]; //Get the index of the Bipartition
+
+        int bip = ind_bips[bipindex];
+
+        //Now analyze this Bipartition
+
+        //Which tree does this bipartition belongs too?
+        int treenumber = treenumberOfBip[bipindex];
+
+        //Get the taxonToSmallTree Array of this tree
+        int* stTaxa = taxonToReductionList[treenumber];
+
+        //Translate the global taxon number it into the local index used by our bips
+        int translated_index = stTaxa[taxa - 1]; //We use taxa - 1 because we start counting at taxa 1 = 0 !
+
+        //Save the to toggle index into toggleBits vector
+        toggleBits[bipindex] |= 1 << translated_index;
+
+        //Sort for bits set on one side of the bip and on the other side
+        int leftBits = __builtin_popcount(toggleBits[bipindex] & bip);
+        int rightBits = __builtin_popcount(toggleBits[bipindex]) - leftBits;
+
+        //Check for the number of bits set in the original bip 
+        int leftBip = __builtin_popcount(bip);
+        int rightBip = taxaPerTree[treenumber] - leftBip;
+
+        //Subtract the total number of bits set on one side of the bip with the bits we have to toggle
+        int leftBip_after = leftBip - leftBits;
+        int rightBip_after = rightBip - rightBits;
+
+        //Check if bipartition gets trivial/destroyed due to pruning the taxa and set the bit (representing the bip) which is destroyed
+        if((leftBip_after <= 1) | (rightBip_after <=1)) {
+
+        //Add bips to the bits which represent destroyed bipartitions
+        bvec_destroyed = setBit(bvec_destroyed,bipindex);
+
+        }
+      
+      } 
+
+      j++;
+
+    }//End iterate through the set
+
+
+    int penality = 0;
+    int score = 0;
+
+    int bvec_mask = 0;
+    bvec_mask = setOffSet(bvec_mask, numberOfBips);
+
+    //Bitvector of already matching bips
+    int bvec_tmp = 0;
+    bvec_tmp = ~bvec_scores & bvec_mask;
+
+    //Penality score are all bitvectors who were matching but is destroyed 
+    penality = __builtin_popcount(bvec_destroyed & bvec_tmp);
+
+    //Now iterate through bipsOfDropSet list and extract all bips which will merge into a bitVector
+    bvec_bips = getBipsOfDropSet(bvec_bips, i, numberOfBipsPerSet, bipsOfDropSet);
+
+    //Calculate the bitvectors which remains
+    bvec_tmp = ~bvec_destroyed & bvec_mask;
+
+    bvec_tmp = bvec_bips & bvec_tmp;
+
+    score = __builtin_popcount(bvec_scores & bvec_tmp);
+
+    rf_score[i] = score - penality;
+
+    //Save our results for convenience into an array
+    bvecs_bips[i] = bvec_bips;
+    bvecs_destroyed[i] = bvec_destroyed;
+
+  }//End Score Calculation
+
+
+  printf("======> Scores:\n");
+  for(int i = 0; i < numberOfUniqueSets; i++) {
+    printf("RF Score for %i : %i \n", i, rf_score[i]);
+    //printBitVector(bvecs_bips[i]);
+    //printBitVector(bvecs_destroyed[i]);
+  }
+
+  int maxDropSet = getMax(rf_score, numberOfUniqueSets);
+  printf("Max Element is %i \n", maxDropSet);
+
+
 
 
   /***********************************************************************************/
@@ -692,7 +972,60 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
   printf("====> Delete DropSet from all bips and update numbers \n");
 
-  
+  //Create a bitVector to store all deleted taxa
+  int bvec_deletedTaxa = 0;
+
+  //Create a bitVector to store all still existing bips
+  int bvec_existingBips = 0;
+
+  //Create a bitvector to store deleted dropsets
+  int bvec_deletedDropSets = 0;
+
+  //Get the dropset
+  int* deleteDropSet = uniqSets[maxDropSet];
+
+  //Store it into a BitVector
+  bvec_deletedDropSets = setBit(bvec_deletedDropSets,maxDropSet);
+
+  //Select all bips destroyed by removing this dropset
+  int bvec_destroyedBips = bvecs_destroyed[maxDropSet];
+
+  //Select all bips that are now matching
+  int bvec_matchingBips = bvecs_bips[maxDropSet];
+
+  //Filter for existent bipartitions
+  bvec_existingBips = getExistingBips(bvec_existingBips, numberOfBips, bvec_destroyedBips);
+
+  //Iterate through its taxa
+  int iterSet = 0;
+  while(deleteDropSet[iterSet] != -1) {
+
+    //Get taxon
+    int taxon = deleteDropSet[iterSet];
+
+    //Store the taxon into deletedTaxa BitVector
+    bvec_deletedTaxa = setBit(bvec_deletedTaxa, taxon - 1);
+
+    //Check if taxon is inside
+    int test[2] = {taxon, -1};
+
+    int index = contains(test, uniqSets, numberOfUniqueSets);
+
+    iterSet++;
+  }
+
+  //printBitVector(bvec_existingBips);
+  //printBitVector(bvec_deletedTaxa);
+
+  //Update the scores with now matching bips
+  bvec_scores = bvec_scores & (~bvec_matchingBips);
+
+  //printBitVector(bvec_scores);
+
+  /* Short summary :
+    bvec_existingBips - bitVector of all still existing bips
+    bvec_deletedTaxa - bitVector to keep track of destroyed taxa
+  */
 
   /***********************************************************************************/
   /* TODO RF-OPT Update function */
@@ -723,6 +1056,18 @@ void plausibilityChecker(tree *tr, analdef *adef)
   /***********************************************************************************/
 
   //Printing if
+
+  printf("==> Unique Sets: ");
+  for(int i = 0; i < numberOfUniqueSets; i++) {
+    int j = 0;
+    int* set = uniqSets[i];
+    while(set[j] > -1) {
+      printf("%i ",set[j]);
+      j++;
+    }
+    printf("; ");
+  }
+  printf("\n");
 
   printf("\n == Sets == \n");
   for(int fooo = 0; fooo < numberOfSets; fooo++){
