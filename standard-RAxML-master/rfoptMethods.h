@@ -124,7 +124,7 @@ int* getDropSetFromBitVectors(unsigned int* indBip, unsigned int* sBip, unsigned
 int getUniqueDropSets(int** sets, int** uniqSets, int* setsToUniqSets, int numberOfSets);
 
 //Calculates all dropsets of two given bipartition lists
-void calculateDropSets(Hashmap** mapArray, Hashmap* map, unsigned int*** indBipsPerTree, unsigned int*** sBipsPerTree, int** sets, int** smallTreeTaxaList, int* bipsPerTree, 
+void calculateDropSets(RTaxon** taxonList, Hashmap** mapArray, Hashmap* map, unsigned int*** indBipsPerTree, unsigned int*** sBipsPerTree, int** sets, int** smallTreeTaxaList, int* bipsPerTree, 
   int* taxaPerTree, unsigned int* vectorLengthPerTree, int numberOfTrees);
 
 RTaxon** createRTaxonList(int numberOfTaxa);

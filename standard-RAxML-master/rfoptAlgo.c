@@ -611,8 +611,22 @@ void plausibilityChecker(tree *tr, analdef *adef)
   //Calculate dropsets of two given bips lists and extract all sets into array sets and into a hashmap. Each set has following format
   //dropset = {taxa_1,taxa_2,...,taxa_n,-1};
   //Furtheremore calculate Dropset generates two data structures from type bips and dropsets which are pointing to each other in hashtables
-  calculateDropSets(mapArray, map, indBipsPerTree, sBipsPerTree, sets, smallTreeTaxaList, bipsPerTree, 
+  calculateDropSets(RTaxonList, mapArray, map, indBipsPerTree, sBipsPerTree, sets, smallTreeTaxaList, bipsPerTree, 
   taxaPerTree, vectorLengthPerTree, tr->numberOfTrees);
+
+  printf("===> Testing \n");
+
+  //Tests for using DArray on ints
+  for(i = 0; i < tr->mxtips + 1; i++) {
+      DArray* drops = (RTaxonList[i])->dropsets;
+      printf("Taxon %i \n", i);
+
+      Dropset* res = DArray_get(drops,0);
+      
+      if(res){
+        printf("Set %i, %i includes %i \n", (res->set)[0],(res->set)[1],i);
+      }
+  }
 
   /***********************************************************************************/
   /* RF-OPT Graph Construction */
@@ -661,12 +675,6 @@ void plausibilityChecker(tree *tr, analdef *adef)
   // }
   
   log_info("initial scoring \n");
-
-
-
-  printf("==> Initialize the Bips Of Taxa \n");
-
-  //Each time we delete a dropset, we need to edit each bipartition
 
 
   printf("==> Storing all bip indices of a certain dropset into an array \n");
