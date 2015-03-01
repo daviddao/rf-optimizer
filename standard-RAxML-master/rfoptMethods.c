@@ -889,6 +889,10 @@ void calculateDropSets(Hashmap** mapArray, Hashmap* map, unsigned int*** indBips
     //Get all small Bips of this tree
     unsigned int **sBips = sBipsPerTree[i];
 
+    //Create a Hashmap for each tree storing the smallBips
+    Hashmap* treeMap = Hashmap_create(NULL,NULL);
+    mapArray[i] = treeMap;
+
     //Now go through all Bips of this tree
     for(int j = 0; j < bipsPerTree[i]; j++) {
 
@@ -927,6 +931,9 @@ void calculateDropSets(Hashmap** mapArray, Hashmap* map, unsigned int*** indBips
         //Get the existing dropset
         Dropset* drop = Hashmap_get(map, key);
 
+        //Declare bips
+        DArray* bips = NULL;
+
         //If dropset doesn't exist we create a dropset struct 
         //Else we just push another bip into the dropset bipartitions list
         if(drop == NULL) {
@@ -934,7 +941,7 @@ void calculateDropSets(Hashmap** mapArray, Hashmap* map, unsigned int*** indBips
           drop = Dropset_create(key);
 
           //Create an DArray which is able to store bips structures
-          DArray* bips = DArray_create(sizeof(Bipartition),taxaPerTree[i]);
+          bips = DArray_create(sizeof(Bipartition),taxaPerTree[i]);
 
           //Dropset now saves a darray of bips
           drop->bipartitions = bips;
@@ -947,15 +954,19 @@ void calculateDropSets(Hashmap** mapArray, Hashmap* map, unsigned int*** indBips
           drop = Hashmap_get(map, drop->set);
 
           //Get the existing bipartitions list
-          DArray* bips = drop->bipartitions;
-          
-          //Push bipartition into array
-          assert(0 == DArray_push(bips,bip));
+          bips = drop->bipartitions;
+
+          //assert(DArray_count(bips) > 1);
 
         }
+
+        //Push bipartition into array
+        assert(0 == DArray_push(bips,bip));
         
         //================== Tree Hashtable generation =======================//
 
+        //In the beginning, each bipartition of a tree is unique, therefore we don't need to check
+        Hashmap_set(treeMap,bip->bitvector,bip);
 
 
         countSets++;

@@ -624,6 +624,18 @@ void plausibilityChecker(tree *tr, analdef *adef)
     printf("tree: %i \n", bip->treenumber);
   }
 
+  Bipartition* bipFromHash = DArray_get(bips,2);
+  Bipartition* testBip = Hashmap_get(mapArray[0],bipFromHash->bitvector);
+  assert(testBip != NULL);
+  testBip->matching = 999;
+
+  for(int i = 0; i < DArray_count(bips); i++) {
+    Bipartition* bip = DArray_get(bips,i);
+    printBitVector(bip->bitvector[0]);
+    printf("matching: %i \n", bip->matching);
+    printf("tree: %i \n", bip->treenumber);
+  }
+
 
   printf("===> Filter for unique sets (naive)...\n");
 
