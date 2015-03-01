@@ -576,16 +576,24 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
   //An array storing pointers to RTaxon structs for all taxa
   RTaxon** RTaxonList = NULL;
-  
   RTaxonList = createRTaxonList(tr->mxtips);
   
-  for(i = 0; i < tr->mxtips + 1; i++) {
-      int taxonNumber = (RTaxonList[i])->taxonNumber;
-      log_info("%i \n", taxonNumber);
-  }
 
+  log_info("===>Init RTaxon Array with tree list \n");
   //Initialize all RTaxon->trees 
   initRTaxonList(RTaxonList, smallTreeTaxaList, tr->numberOfTrees, taxaPerTree);
+
+  //Tests for using DArray on ints
+  // for(i = 0; i < tr->mxtips + 1; i++) {
+  //     DArray* trees = (RTaxonList[i])->trees;
+  //     printf("%i \n", DArray_count(trees));
+
+  //     int* res = DArray_get(trees,0);
+      
+  //     if(res){
+  //       printf("Tree[0] %i \n", *res);
+  //     }
+  // }
   
   log_info("===> Create DropSet Datastructure \n");
 

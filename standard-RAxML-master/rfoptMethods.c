@@ -1003,14 +1003,29 @@ void calculateDropSets(Hashmap** mapArray, Hashmap* map, unsigned int*** indBips
 
 RTaxon** createRTaxonList(int numberOfTaxa) {
 
+  //initial maxSize
+  int maxSize = 600;
+
   RTaxon** map = rax_malloc(sizeof(RTaxon*)*numberOfTaxa+1);
   check_mem(map);
   //TaxonList starts with 1
   int i = 0;
+  DArray* trees = NULL;
+  DArray* dropsets = NULL;
 
   for(i = 0; i < numberOfTaxa+1; i++) {
+
+    //Create an RTaxon struct
     map[i] = RTaxon_create(i);
-    printf("taxamap %i \n",map[i]->taxonNumber);
+
+    //Init Tree DArray in RTaxon
+    trees = DArray_create(sizeof(int),maxSize);
+    map[i]->trees = trees;
+
+    //Init Dropset DArray in RTaxon
+    dropsets = DArray_create(sizeof(Dropset),maxSize);
+    map[i]->dropsets = dropsets;
+
   }
 
   return map;
@@ -1025,10 +1040,10 @@ error:
 
 }
 
-//Set all RTaxon->trees for the beginning
+//Set all initial RTaxon->trees
 void initRTaxonList(RTaxon** map, int** smallTreeTaxaList, int numberOfTrees, int* taxaPerTree) {
-  //allocate space
 
+  RTaxon* taxon = NULL;
   int i = 0;
   int j = 0;
   //iterate through all trees
@@ -1039,6 +1054,14 @@ void initRTaxonList(RTaxon** map, int** smallTreeTaxaList, int numberOfTrees, in
     for(j = 0; j < taxaPerTree[i]; j++) {
       int globalTaxonNumber = translationArray[j];
       printf("Taxon: %i \n", globalTaxonNumber);
+
+      taxon = map[globalTaxonNumber];
+
+      int* val1 = DArray_new(taxon->trees);
+
+      *val1 = i;
+      
+      DArray_push(taxon->trees, val1);
 
     }
   }
