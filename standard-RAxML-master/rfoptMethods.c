@@ -562,19 +562,15 @@ int checkBit(int bitVector, int pos) {
 }
 
 //Method for setting bits in bitvectors
-int* setBitBV(int* bitVector, int pos, int vLength) {
+unsigned int* setBitBV(unsigned int* bitVector, int pos) {
 
   int vectorIndex = pos / MASK_LENGTH;
   int relativePos = pos % MASK_LENGTH;
-
-  if(vectorIndex > vLength) {
-    printf("setBITBV: Error! Position invalid \n");
-    return 0;
   
-  } else {
-    bitVector[vectorIndex] = setBit(bitVector[vectorIndex], relativePos);
-    return bitVector;
-  } 
+  bitVector[vectorIndex] = setBit(bitVector[vectorIndex], relativePos);
+  
+  return bitVector;
+   
 }
 
 //Use to setup a mask to clear the offset bits
@@ -632,7 +628,8 @@ void printSet(int* set) {
 
 /**********************************************************************************/
 
- int* extractSetFromBitVector(unsigned int* bitvector, int* smallTreeTaxa, unsigned int vLength){
+int* extractSetFromBitVector(unsigned int* bitvector, int* smallTreeTaxa, unsigned int vLength){
+
 
     int numberOfOnes = 0;
 
@@ -1126,7 +1123,7 @@ void detectInitialMatchings(int** sets, int* matchingVector, int* bipsPerTree, i
         //bvec_scores[countBips] = 0; 
       } else {
         //Set BitVector on position of the bip
-        matchingVector = setBitBV(matchingVector, countBips, vLength);
+        matchingVector = (int*)setBitBV((unsigned int*)matchingVector, countBips);
       }
       
       //Index of starting DropSets in Sets for the next Bip 
@@ -1141,25 +1138,15 @@ void detectInitialMatchings(int** sets, int* matchingVector, int* bipsPerTree, i
   //printf("bipsCount : %i \n", countBips);
 }
 
+//returns hashmap with newly hashed bipartitions
+Hashmap* removeTaxonFromTree(unsigned int** deletedTaxa, int treeNumber, Hashmap** mapArray) {
 
-//Calculate the score
-int Dropset_score(Dropset* drop) {
-    int i = 0;
-    int scoreGain = 0;
-    int scorePenalty = 0;
+  Hashmap* treeMap = mapArray[treeNumber];
+  unsigned int* deletedTaxaList = deletedTaxa[treeNumber];
 
-    //Iterate through all bips of this dropset
-    for(i = 0; i < DArray_count(drop->bipartitions); i++) {
-        Bipartition* bip = DArray_get(drop->bipartitions, i);
-        if(bip->matching == 0) {
-            scoreGain++;
-        } else {
-          return 0;
-        }
-    }
-
-    return scoreGain-scorePenalty;
+  return treeMap;
 }
+
 
 static int getLocalIndex(int** taxonToReductionList, int treeNumber, int globalTaxonNumber) {
   //Get the converter of the tree i  
@@ -1170,8 +1157,57 @@ static int getLocalIndex(int** taxonToReductionList, int treeNumber, int globalT
   int localIndex = localTaxa[globalTaxonNumber - 1];
 
   return localIndex; 
-
 }
+
+//Calculate the score
+int Dropset_score(Dropset* drop, RTaxon** RTaxonList, unsigned int** deletedTaxa, Hashmap** mapArray, int** taxonToReductionList) {
+
+  int i = 0;
+  int j = 0;
+  int scoreGain = 0;
+  int scorePenalty = 0;
+  int treeNumber = 0;
+  int localIndex = 0;
+
+  int globalIndex = 0;
+  RTaxon* rtaxon = NULL;
+
+  Hashmap* predict = NULL;
+  unsigned int* deletedTaxaTree = NULL;
+
+  //Get taxa
+  int* taxaList = drop->set;
+
+  //-1 is ending symbol for this array
+  while(taxaList[i] != -1) {
+    globalIndex = taxaList[i];
+    rtaxon = RTaxonList[globalIndex];
+
+    DArray* trees = rtaxon->trees;
+
+    for(j = 0; j < DArray_count(trees); j++) {
+
+      int* tree = DArray_get(trees,j);
+      treeNumber = *tree; 
+
+      localIndex = getLocalIndex(taxonToReductionList, treeNumber, globalIndex);
+
+      //Get the deleted taxa list for each tree
+      deletedTaxaTree = deletedTaxa[treeNumber];
+
+      //Set bit at position localIndex to 1
+      setBitBV(deletedTaxaTree, localIndex);
+
+    }
+
+    i++;
+  }
+
+  return scoreGain-scorePenalty;
+}
+
+
+
 
 
 

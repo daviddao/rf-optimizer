@@ -615,19 +615,17 @@ void plausibilityChecker(tree *tr, analdef *adef)
   calculateDropSets(RTaxonList, mapArray, map, indBipsPerTree, sBipsPerTree, sets, smallTreeTaxaList, bipsPerTree, 
   taxaPerTree, vectorLengthPerTree, tr->numberOfTrees);
 
-  printf("===> Testing \n");
-
   //Tests for using DArray on ints
-  for(i = 0; i < tr->mxtips + 1; i++) {
-      DArray* drops = (RTaxonList[i])->dropsets;
-      printf("Taxon %i \n", i);
+  // for(i = 0; i < tr->mxtips + 1; i++) {
+  //     DArray* drops = (RTaxonList[i])->dropsets;
+  //     printf("Taxon %i \n", i);
 
-      Dropset* res = DArray_get(drops,0);
+  //     Dropset* res = DArray_get(drops,0);
       
-      if(res){
-        printf("Set %i, %i includes %i \n", (res->set)[0],(res->set)[1],i);
-      }
-  }
+  //     if(res){
+  //       printf("Set %i, %i includes %i \n", (res->set)[0],(res->set)[1],i);
+  //     }
+  // }
 
   /***********************************************************************************/
   /* RF-OPT Graph Construction */
@@ -661,21 +659,14 @@ void plausibilityChecker(tree *tr, analdef *adef)
   //   printf("tree: %i \n", bip->treenumber);
   // }
   
-  log_info("initial scoring \n");
+  
 
-  //Create an bitvector for each tree which will store deleted taxa
-  unsigned int** RBitVectorsPerTree = createBitVectors(tr->numberOfTrees,vectorLengthPerTree);
+  // for(i = 0; i < tr->numberOfTrees; i++) {
+  //   //Saving an empty deletedBitVectors for each tree
+  //   unsigned int* RBitVector = RBitVectorsPerTree[i];
 
-  for(i = 0; i < tr->numberOfTrees; i++) {
-    //Saving an empty deletedBitVectors for each tree
-    unsigned int* RBitVector = RBitVectorsPerTree[i];
-
-    printBitVector(RBitVector[0]);
-  }
-
-
-
-  printf("==> Storing all bip indices of a certain dropset into an array \n");
+  //   printBitVector(RBitVector[0]);
+  // }
 
   /***********************************************************************************/
   /* End RF-OPT Graph Construction */
@@ -696,7 +687,10 @@ void plausibilityChecker(tree *tr, analdef *adef)
   /***********************************************************************************/
 
 
-  printf("==> Calculating the score for the first iteration \n \n");
+  //Create an bitvector for each tree which will store deleted taxa
+  unsigned int** RBitVectorsPerTree = createBitVectors(tr->numberOfTrees,vectorLengthPerTree);
+
+  
 
 
   /***********************************************************************************/
@@ -706,7 +700,6 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
   printf("====> Delete DropSet from all bips and update numbers \n");
 
-  
 
   /***********************************************************************************/
   /* TODO RF-OPT Update function */

@@ -95,7 +95,7 @@ int clearBit(int bitVector, int pos);
 int checkBit(int bitVector, int pos);
 
 //Method for setting bits in bitvectors
-int* setBitBV(int* bitVector, int pos, int vLength);
+unsigned int* setBitBV(unsigned int* bitVector, int pos);
 
 //Use to setup a mask to clear the offset bits
 int setOffSet(int mask, int offset);
