@@ -106,6 +106,7 @@ static int compareDropSet(void *a, void *b)
 }
 
 
+
 //Use the plausibility checker overhead
 void plausibilityChecker(tree *tr, analdef *adef)
 {
@@ -529,7 +530,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
     /***********************************************************************************/
       
     //copy array taxonToReduction because it is originally defined in preprocessing step
-    int * taxonToReductionCopy = (int *)rax_malloc((tr->mxtips)*sizeof(int));
+    int* taxonToReductionCopy = (int *)rax_malloc((tr->mxtips)*sizeof(int));
 
     memcpy(taxonToReductionCopy,taxonToReduction,(tr->mxtips)*sizeof(int));
 
@@ -606,7 +607,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
   mapArray = rax_malloc(tr->numberOfTrees * sizeof(Hashmap*));
 
 
-  printf("===> BitVector Set Calculation \n");
+  printf("===> Calculating and storing DropSets \n");
 
   //Calculate dropsets of two given bips lists and extract all sets into array sets and into a hashmap. Each set has following format
   //dropset = {taxa_1,taxa_2,...,taxa_n,-1};
@@ -632,23 +633,9 @@ void plausibilityChecker(tree *tr, analdef *adef)
   /* RF-OPT Graph Construction */
   /***********************************************************************************/
 
-  // printf("\n == Sets == \n");
-  // for(int fooo = 0; fooo < numberOfSets; fooo++){
-  //   printf("Set %i: ", fooo);
-  //   int i = 0;
-  //   while(sets[fooo][i] > -1) {
-  //    printf("%i ",sets[fooo][i]);
-  //    i++;
-  //   }
-  //   printf("\n");
-  // }
-  // printf("\n");
-  /*
-    Filter for unique sets
-  */
   log_info("===> Hashmap tests...\n");
   
-  Hashmap_traverse(map, traverse_cb);
+  //Hashmap_traverse(map, traverse_cb);
 
   // int key[2] = {0,-1};
 
@@ -675,6 +662,17 @@ void plausibilityChecker(tree *tr, analdef *adef)
   // }
   
   log_info("initial scoring \n");
+
+  //Create an bitvector for each tree which will store deleted taxa
+  unsigned int** RBitVectorsPerTree = createBitVectors(tr->numberOfTrees,vectorLengthPerTree);
+
+  for(i = 0; i < tr->numberOfTrees; i++) {
+    //Saving an empty deletedBitVectors for each tree
+    unsigned int* RBitVector = RBitVectorsPerTree[i];
+
+    printBitVector(RBitVector[0]);
+  }
+
 
 
   printf("==> Storing all bip indices of a certain dropset into an array \n");

@@ -108,7 +108,7 @@ Bipartition* Bipartition_create(unsigned int* bitvector, int matching, int treen
 
 error:
     if(bip) {
-        free(bip);
+        rax_free(bip);
     }
 
     return NULL;
@@ -129,7 +129,7 @@ Dropset* Dropset_create(int* dropset) {
 
 error:
     if(drop) {
-        free(drop);
+        rax_free(drop);
     }
 
     return NULL;
@@ -152,7 +152,7 @@ RTaxon* RTaxon_create(int taxonNumber) {
 
 error:
     if(taxon) {
-        free(taxon);
+        rax_free(taxon);
     }
 
     return NULL;
@@ -904,7 +904,7 @@ RTaxon** createRTaxonList(int numberOfTaxa) {
   //initial maxSize
   int maxSize = 600;
 
-  RTaxon** map = rax_malloc(sizeof(RTaxon*)*numberOfTaxa+1);
+  RTaxon** map = (RTaxon**)rax_malloc(sizeof(RTaxon*)*numberOfTaxa+1);
   check_mem(map);
   //TaxonList starts with 1
   int i = 0;
@@ -931,7 +931,7 @@ RTaxon** createRTaxonList(int numberOfTaxa) {
 error:
   
   if(map) {
-    free(map);
+    rax_free(map);
   }
 
   return NULL;
@@ -1077,6 +1077,20 @@ void calculateDropSets(RTaxon** taxonList, Hashmap** mapArray, Hashmap* map, uns
   }
 }
 
+//Create BitVectors
+unsigned int** createBitVectors(int numberOfTrees, unsigned int* vectorLengthPerTree) {
+  
+  unsigned int** bitVectors = (unsigned int**)rax_malloc(sizeof(unsigned int*) * numberOfTrees);
+  
+  int i = 0;
+  
+  for(i = 0; i < numberOfTrees; i++)    
+    bitVectors[i] = (unsigned int*)rax_calloc(vectorLengthPerTree[i], sizeof(unsigned int));
+        
+  return bitVectors;
+}
+
+
 void detectInitialMatchings(int** sets, int* matchingVector, int* bipsPerTree, int numberOfTrees,  int vLength) { 
 
   //We use these variables to iterate through all sets and bips
@@ -1146,3 +1160,24 @@ int Dropset_score(Dropset* drop) {
 
     return scoreGain-scorePenalty;
 }
+
+static int getLocalIndex(int** taxonToReductionList, int treeNumber, int globalTaxonNumber) {
+  //Get the converter of the tree i  
+  int* localTaxa = taxonToReductionList[treeNumber];
+
+  //Translate the global taxon number it into the local index used by our bips
+  //We use taxa - 1 because we start counting for localTaxa at taxa 1 = 0 !
+  int localIndex = localTaxa[globalTaxonNumber - 1];
+
+  return localIndex; 
+
+}
+
+
+
+
+
+
+
+
+

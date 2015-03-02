@@ -15,6 +15,8 @@ typedef struct Bipartition {
 	unsigned int* bitvector; //stores bitvector of smalltree
 	int matching; //matching 1, not matching 0
 	int treenumber; //stores number of tree where bip is from
+	int leftSize; 
+	int rightSize;
 
 } Bipartition;
 
@@ -128,6 +130,8 @@ void calculateDropSets(RTaxon** taxonList, Hashmap** mapArray, Hashmap* map, uns
   int* taxaPerTree, unsigned int* vectorLengthPerTree, int numberOfTrees);
 
 RTaxon** createRTaxonList(int numberOfTaxa);
+
+unsigned int** createBitVectors(int numberOfTrees, unsigned int* vectorLengthPerTree);
 
 void initRTaxonList(RTaxon** map, int** smallTreeTaxaList, int numberOfTrees, int* taxaPerTree);
 
