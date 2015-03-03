@@ -1114,8 +1114,6 @@ void calculateDropSets(RTaxon** taxonList, Hashmap** mapArray, Hashmap* map, uns
           //Get the existing bipartitions list
           bips = drop->bipartitions;
 
-          //assert(DArray_count(bips) > 1);
-
         }
 
         //Create a pointer which will be given to the dropset
@@ -1134,9 +1132,10 @@ void calculateDropSets(RTaxon** taxonList, Hashmap** mapArray, Hashmap* map, uns
           Hashmap_set(treeMap,bip->bitvector,bip);
 
         } else {
+          bip = res;
           //check if matching was set to 1 and set it
           if(matching) { 
-            res->matching = 1;
+            bip->matching = 1;
           }
         }
 
