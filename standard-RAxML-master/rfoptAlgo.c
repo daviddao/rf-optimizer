@@ -298,6 +298,9 @@ void plausibilityChecker(tree *tr, analdef *adef)
   //For each tree, store a translation array from taxanumber largetree->smalltree
   int **taxonToReductionList = (int **)rax_malloc(tr->numberOfTrees * sizeof(int*));
 
+  //Store all first taxons for checking purposes
+  int* firstTaxons = (int*)rax_malloc(tr->numberOfTrees * sizeof(int));
+
   //I use these variables as global variables for all trees to determine the max number of possible sets to generate a static array
   int currentBips = 0;
   int currentSmallBips = 0;
@@ -350,6 +353,9 @@ void plausibilityChecker(tree *tr, analdef *adef)
     */
     
     firstTaxon = smallTree->start->number;
+
+    //Saves the first taxon
+    firstTaxons[i] = firstTaxon;
 
     //Saves the number of taxa in the tree (for RF-OPT)
     taxaPerTree[numberOfTreesAnalyzed] = smallTree->ntips; 
@@ -626,6 +632,48 @@ void plausibilityChecker(tree *tr, analdef *adef)
         printf("Set %i, %i includes %i \n", (res->set)[0],(res->set)[1],i);
       }
   }
+
+  //Assertions 
+
+  int countx = 0;
+
+  for(i = 0; i < tr->numberOfTrees; i++) {
+    Hashmap* treeHash = mapArray[i];
+    int k = 0;
+    int j = 0;
+    for(k = 0; k < DArray_count(treeHash->buckets); k++) {
+      DArray* bucket = DArray_get(treeHash->buckets,k);
+      if(bucket) {
+            for(j = 0; j < DArray_count(bucket); j++) {
+                HashmapNode* node = DArray_get(bucket, j);
+
+                countx++;
+
+                Bipartition* bip = node->data;
+                unsigned int* bitVector = bip->bitvector;
+                int firstTaxon = firstTaxons[i];
+                int index = (firstTaxon-1) / MASK_LENGTH;
+                int localPosition = (firstTaxon-1) % MASK_LENGTH;
+                
+                if(1 == (bitVector[index] & mask32[localPosition])) {
+                  printf("test passed for tree %i \n",i);
+                  printBitVector(bitVector[index]);
+                  //printBitVector(mask32[localPosition]);
+
+                } else {
+                  printf("test failed for tree %i \n",i);
+                  printBitVector(bitVector[index]);
+                  //printBitVector(mask32[localPosition]);
+                }
+                
+
+            }
+        }
+    }
+   
+  }
+  printf("number Of Bips in mapArray : %i \n", countx);
+  //BUG: 17 bips stored in the tree instead of only 9!
 
   /***********************************************************************************/
   /* RF-OPT Graph Construction */
