@@ -1141,10 +1141,36 @@ void detectInitialMatchings(int** sets, int* matchingVector, int* bipsPerTree, i
 //returns hashmap with newly hashed bipartitions
 Hashmap* removeTaxonFromTree(unsigned int** deletedTaxa, int treeNumber, Hashmap** mapArray) {
 
-  Hashmap* treeMap = mapArray[treeNumber];
-  unsigned int* deletedTaxaList = deletedTaxa[treeNumber];
+  int i = 0;
+  int j = 0;
 
-  return treeMap;
+  //Create new hashtable to check for merging bips
+  Hashmap* testMap = NULL;
+  testMap = Hashmap_create(NULL,NULL);
+
+  //Get the tree hashmap
+  Hashmap* treeMap = mapArray[treeNumber];
+
+  //get the deleted taxons
+  unsigned int* deletedTaxaList = deletedTaxa[treeNumber];
+  
+  //iterate through bips in tree
+  for(i = 0; i < DArray_count(treeMap->buckets); i++) {
+        DArray* bucket = DArray_get(treeMap->buckets, i);
+        if(bucket) {
+            for(j = 0; j < DArray_count(bucket); j++) {
+                HashmapNode* node = DArray_get(bucket, j);
+
+                Bipartition* bip = node->data;
+
+            }
+        }
+    }
+
+  //check if destroyed
+  //check if merged
+
+  return testMap;
 }
 
 
@@ -1223,6 +1249,8 @@ int Dropset_score(Dropset* drop, RTaxon** RTaxonList, unsigned int** deletedTaxa
 
     i++;
   }
+
+  removeTaxonFromTree(deletedTaxaCopy, treeNumber, mapArray); 
 
   //TODO: We need to free copied bitvectors!
 
