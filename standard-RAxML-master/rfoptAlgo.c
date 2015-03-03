@@ -618,12 +618,12 @@ void plausibilityChecker(tree *tr, analdef *adef)
   //Tests for using DArray on ints
   for(i = 0; i < tr->mxtips + 1; i++) {
       DArray* drops = (RTaxonList[i])->dropsets;
-      printf("Taxon %i \n", i);
+      //printf("Taxon %i \n", i);
 
       Dropset* res = DArray_get(drops,0);
       
       if(res){
-        printf("Set %i, %i includes %i \n", (res->set)[0],(res->set)[1],i);
+        //printf("Set %i, %i includes %i \n", (res->set)[0],(res->set)[1],i);
       }
   }
 
@@ -646,7 +646,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
                 Bipartition* bip = node->data;
                 unsigned int* bitVector = bip->bitvector;
                 int matching = bip->matching;
-                printf("this bip is matching: %i \n",matching);
+                //printf("this bip is matching: %i \n",matching);
                 
                 printBitVector(bitVector[0]);
 
@@ -655,8 +655,8 @@ void plausibilityChecker(tree *tr, analdef *adef)
     }
    
   }
+
   printf("number Of Bips in mapArray : %i \n", countx);
-  //BUG: 17 bips stored in the tree instead of only 9!
 
   /***********************************************************************************/
   /* RF-OPT Graph Construction */
@@ -714,25 +714,25 @@ void plausibilityChecker(tree *tr, analdef *adef)
   unsigned int** RBitVectorsPerTree = createBitVectors(tr->numberOfTrees,vectorLengthPerTree);
 
   log_info("====> TEST \n");
-  DArray* drops = (RTaxonList[3])->dropsets;
-  printf("%i \n",RTaxonList[3]->taxonNumber);
+  // DArray* drops = (RTaxonList[3])->dropsets;
+  // printf("%i \n",RTaxonList[3]->taxonNumber);
   
-  Dropset* drop = DArray_get(drops,0);
-  int* set2 = drop->set;
+  // Dropset* drop = DArray_get(drops,0);
+  // int* set2 = drop->set;
 
-  printf("set[0]: %i %i \n",set2[0],set2[1]);
+  // printf("set[0]: %i %i \n",set2[0],set2[1]);
 
-  Dropset_score(drop, RTaxonList, RBitVectorsPerTree, mapArray, taxonToReductionList, tr->numberOfTrees, vectorLengthPerTree);
+  // Dropset_score(drop, RTaxonList, RBitVectorsPerTree, mapArray, taxonToReductionList, tr->numberOfTrees, vectorLengthPerTree);
   
-  unsigned int* testBV = RBitVectorsPerTree[0];
+  // unsigned int* testBV = RBitVectorsPerTree[0];
 
-  printBitVector(testBV[0]);
-  testBV = RBitVectorsPerTree[1];
+  // printBitVector(testBV[0]);
+  // testBV = RBitVectorsPerTree[1];
 
-  printBitVector(testBV[0]);
-  testBV = RBitVectorsPerTree[2];
+  // printBitVector(testBV[0]);
+  // testBV = RBitVectorsPerTree[2];
 
-  printBitVector(testBV[0]);
+  // printBitVector(testBV[0]);
 
 
   /***********************************************************************************/
@@ -773,17 +773,17 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
   //Printing if
 
-  printf("\n == Sets == \n");
-  for(int fooo = 0; fooo < numberOfSets; fooo++){
-    printf("Set %i: ", fooo);
-    int i = 0;
-    while(sets[fooo][i] > -1) {
-     printf("%i ",sets[fooo][i]);
-     i++;
-    }
-    printf("\n");
-  }
-  printf("\n");
+  // printf("\n == Sets == \n");
+  // for(int fooo = 0; fooo < numberOfSets; fooo++){
+  //   printf("Set %i: ", fooo);
+  //   int i = 0;
+  //   while(sets[fooo][i] > -1) {
+  //    printf("%i ",sets[fooo][i]);
+  //    i++;
+  //   }
+  //   printf("\n");
+  // }
+  // printf("\n");
 
       
     //#define _PRINT_
