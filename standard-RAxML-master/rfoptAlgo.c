@@ -298,9 +298,6 @@ void plausibilityChecker(tree *tr, analdef *adef)
   //For each tree, store a translation array from taxanumber largetree->smalltree
   int **taxonToReductionList = (int **)rax_malloc(tr->numberOfTrees * sizeof(int*));
 
-  //Store all first taxons for checking purposes
-  int* firstTaxons = (int*)rax_malloc(tr->numberOfTrees * sizeof(int));
-
   //I use these variables as global variables for all trees to determine the max number of possible sets to generate a static array
   int currentBips = 0;
   int currentSmallBips = 0;
@@ -353,9 +350,6 @@ void plausibilityChecker(tree *tr, analdef *adef)
     */
     
     firstTaxon = smallTree->start->number;
-
-    //Saves the first taxon
-    firstTaxons[i] = firstTaxon;
 
     //Saves the number of taxa in the tree (for RF-OPT)
     taxaPerTree[numberOfTreesAnalyzed] = smallTree->ntips; 
@@ -653,21 +647,8 @@ void plausibilityChecker(tree *tr, analdef *adef)
                 unsigned int* bitVector = bip->bitvector;
                 int matching = bip->matching;
                 printf("this bip is matching: %i \n",matching);
-                int firstTaxon = firstTaxons[i];
-                int index = (firstTaxon-1) / MASK_LENGTH;
-                int localPosition = (firstTaxon-1) % MASK_LENGTH;
                 
-                if(1 == (bitVector[index] & mask32[localPosition])) {
-                  printf("test passed for tree %i \n",i);
-                  printBitVector(bitVector[index]);
-                  //printBitVector(mask32[localPosition]);
-
-                } else {
-                  printf("test failed for tree %i \n",i);
-                  printBitVector(bitVector[index]);
-                  //printBitVector(mask32[localPosition]);
-                }
-                
+                printBitVector(bitVector[0]);
 
             }
         }
@@ -685,10 +666,22 @@ void plausibilityChecker(tree *tr, analdef *adef)
   
   //Hashmap_traverse(map, traverse_cb);
 
-  // int key[2] = {0,-1};
+  //int key[2] = {0,-1};
 
-  // Dropset* drop = Hashmap_get(map,key);
-  // DArray* bips = drop->bipartitions;
+  //Dropset* drop0 = Hashmap_get(map,key);
+  //DArray* bips = drop0->bipartitions;
+
+  // for(int i = 0; i < DArray_count(bips); i++) {
+  //   Bipartition* bip = DArray_get(bips,i);
+  //   printBitVector(bip->bitvector[0]);
+  //   printf("matching: %i \n", bip->matching);
+  //   printf("tree: %i \n", bip->treeNumber);
+  // }
+
+  //Bipartition* bipFromHash = DArray_first(bips);
+  //Bipartition* testBip = Hashmap_get(mapArray[0],bipFromHash->bitvector);
+  //printf("matching before: %i \n", testBip->matching);
+  //testBip->matching = 999;
 
   // for(int i = 0; i < DArray_count(bips); i++) {
   //   Bipartition* bip = DArray_get(bips,i);
@@ -697,26 +690,6 @@ void plausibilityChecker(tree *tr, analdef *adef)
   //   printf("tree: %i \n", bip->treeNumber);
   // }
 
-  // Bipartition* bipFromHash = DArray_first(bips);
-  // Bipartition* testBip = Hashmap_get(mapArray[0],bipFromHash->bitvector);
-  // printf("matching before: %i",testBip->matching);
-  // testBip->matching = 999;
-
-  // for(int i = 0; i < DArray_count(bips); i++) {
-  //   Bipartition* bip = DArray_get(bips,i);
-  //   printBitVector(bip->bitvector[0]);
-  //   printf("matching: %i \n", bip->matching);
-  //   printf("tree: %i \n", bip->treeNumber);
-  // }
-  
-  
-
-  // for(i = 0; i < tr->numberOfTrees; i++) {
-  //   //Saving an empty deletedBitVectors for each tree
-  //   unsigned int* RBitVector = RBitVectorsPerTree[i];
-
-  //   printBitVector(RBitVector[0]);
-  // }
 
   /***********************************************************************************/
   /* End RF-OPT Graph Construction */

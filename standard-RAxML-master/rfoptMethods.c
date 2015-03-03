@@ -963,59 +963,85 @@ void initRTaxonList(RTaxon** map, int** smallTreeTaxaList, int numberOfTrees, in
 }
 
 
+// void detectInitialMatchings(int** sets, int* matchingVector, int* bipsPerTree, int numberOfTrees,  int vLength) { 
 
-void detectInitialMatchings(int** sets, int* matchingVector, int* bipsPerTree, int numberOfTrees,  int vLength) { 
+//   //We use these variables to iterate through all sets and bips
+//   int countBips = 0;
+//   int dropSetCount = 0;
+//   //Now generate Graph and calculate the Scores for each bipartitions
 
-  //We use these variables to iterate through all sets and bips
-  int countBips = 0;
-  int dropSetCount = 0;
-  //Now generate Graph and calculate the Scores for each bipartitions
+//   //First iterate through all trees 
+//   for(int i = 0; i < numberOfTrees; i++ ) {
 
-  //First iterate through all trees 
-  for(int i = 0; i < numberOfTrees; i++ ) {
+//     //Iterate through all bipartitions of each trees
+//     for(int j = 0; j < bipsPerTree[i]; j++) {
 
-    //Iterate through all bipartitions of each trees
-    for(int j = 0; j < bipsPerTree[i]; j++) {
-
-      //Compare each bip with all bips
-      int dropSetsPerBip = bipsPerTree[i]; 
+//       //Compare each bip with all bips
+//       int dropSetsPerBip = bipsPerTree[i]; 
       
-      //Will be set to one if dropset is matching, resulting in a score = 0
-      int matching = 0; 
+//       //Will be set to one if dropset is matching, resulting in a score = 0
+//       int matching = 0; 
       
-      //Check all dropsets of each bipartition
-      for(int k = 0; k < dropSetsPerBip; k++){
+//       //Check all dropsets of each bipartition
+//       for(int k = 0; k < dropSetsPerBip; k++){
         
-        int* dropset = sets[dropSetCount + k];
+//         int* dropset = sets[dropSetCount + k];
 
-        //Test if matching
-        if(dropset[0] == 0){
-          matching = 1;
-        }
-      }
+//         //Test if matching
+//         if(dropset[0] == 0){
+//           matching = 1;
+//         }
+//       }
 
-      if (matching) {
-        //don't do a thing 
-        //bvec_scores[countBips] = 0; 
-      } else {
-        //Set BitVector on position of the bip
-        matchingVector = (int*)setBitBV((unsigned int*)matchingVector, countBips);
-      }
+//       if (matching) {
+//         //don't do a thing 
+//         //bvec_scores[countBips] = 0; 
+//       } else {
+//         //Set BitVector on position of the bip
+//         matchingVector = (int*)setBitBV((unsigned int*)matchingVector, countBips);
+//       }
       
-      //Index of starting DropSets in Sets for the next Bip 
-      dropSetCount = dropSetCount + dropSetsPerBip; 
+//       //Index of starting DropSets in Sets for the next Bip 
+//       dropSetCount = dropSetCount + dropSetsPerBip; 
 
-      countBips++;
+//       countBips++;
+//     }
+
+//   }
+
+//   //printf("dropSetCount : %i \n", dropSetCount);
+//   //printf("bipsCount : %i \n", countBips);
+// }
+
+//uses the first taxon to create unambiguous bitvectors. First taxon is set to 0.
+static unsigned int* createUniqueKey(unsigned int* bitVector, int* taxonToReduction, int first, int vLength, int ntips) { 
+  
+  int o = 0;
+  int k = 0;
+
+  //for checking purposes 
+  int firstTaxon = taxonToReduction[first - 1] + 1;   
+
+  /* if bitvector contains first taxon, use its complement */
+  if(bitVector[(firstTaxon-1) / MASK_LENGTH] & mask32[(firstTaxon-1) % MASK_LENGTH]) {                 
+    /* Padding the last bits! */
+    if(ntips % MASK_LENGTH != 0) {            
+      for(o = MASK_LENGTH; o > (ntips % MASK_LENGTH); o--) {        
+        bitVector[vLength - 1] |= mask32[o-1];       
+      }
     }
-
+    
+    for(k=0;k < vLength; k++) {         
+      bitVector[k] = ~bitVector[k];
+    }         
   }
 
-  //printf("dropSetCount : %i \n", dropSetCount);
-  //printf("bipsCount : %i \n", countBips);
+  return bitVector;
 }
 
 
-//Calculates all dropsets of two given bipartition lists
+
+//Calculates all dropsets of two given bipartition lists, we don't have to create a unique representation :)
 void calculateDropSets(RTaxon** taxonList, Hashmap** mapArray, Hashmap* map, unsigned int*** indBipsPerTree, unsigned int*** sBipsPerTree, int** sets, int** smallTreeTaxaList, int* bipsPerTree, 
   int* taxaPerTree, unsigned int* vectorLengthPerTree, int numberOfTrees) {
 
@@ -1092,7 +1118,7 @@ void calculateDropSets(RTaxon** taxonList, Hashmap** mapArray, Hashmap* map, uns
 
         }
 
-        
+        //Create a pointer which will be given to the dropset
         Bipartition* bip = NULL; 
 
         //Check if we already have it in the hashmap
@@ -1102,7 +1128,7 @@ void calculateDropSets(RTaxon** taxonList, Hashmap** mapArray, Hashmap* map, uns
         //================== Tree Hashtable generation =======================//
 
         if(res == NULL) { 
-          //Create bipartition stuct - we always have to create bips
+          //Create bipartition stuct only when the bip is not inside the hashtable
           bip = Bipartition_create(sBip,matching,i);
           //Set bipartition if its not in hashtable
           Hashmap_set(treeMap,bip->bitvector,bip);
@@ -1147,32 +1173,6 @@ unsigned int** createBitVectors(int numberOfTrees, unsigned int* vectorLengthPer
         
   return bitVectors;
 }
-
-
-// unsigned int* createNewKey(unsigned int* bitVector, unsigned int* deletedTaxa, int ntips, int* taxonToReduction, int first) { 
-  
-//   unsigned int* res = NULL;
-
-//   //for checking purposes 
-//   int firstTaxon = taxonToReduction[first - 1] + 1,   
-
-//   /* if bitvector contains first taxon, use its complement */
-//   if(bitVector[(firstTaxon-1) / MASK_LENGTH] & mask32[(firstTaxon-1) % MASK_LENGTH]) {                 
-//     /* Padding the last bits! */
-//     if(ntips % MASK_LENGTH != 0) {            
-//       for(o = MASK_LENGTH; o > (ntips % MASK_LENGTH); o--) {        
-//         bitVector[vLength - 1] |= mask32[o-1];       
-//       }
-//     }
-    
-//     for(k=0;k < vLength; k++) {         
-//       toInsert[k] = ~toInsert[k];
-//     }         
-//   }
-
-//   return res;
-
-// }
 
 //returns hashmap with newly hashed bipartitions
 Hashmap* removeTaxonFromTree(unsigned int** deletedTaxa, int treeNumber, Hashmap** mapArray) {
