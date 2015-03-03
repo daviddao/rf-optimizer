@@ -651,6 +651,8 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
                 Bipartition* bip = node->data;
                 unsigned int* bitVector = bip->bitvector;
+                int matching = bip->matching;
+                printf("this bip is matching: %i \n",matching);
                 int firstTaxon = firstTaxons[i];
                 int index = (firstTaxon-1) / MASK_LENGTH;
                 int localPosition = (firstTaxon-1) % MASK_LENGTH;

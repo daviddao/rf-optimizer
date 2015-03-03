@@ -1092,23 +1092,30 @@ void calculateDropSets(RTaxon** taxonList, Hashmap** mapArray, Hashmap* map, uns
 
         }
 
-        //Create bipartition stuct - we always have to create bips
-        Bipartition* bip = Bipartition_create(sBip,matching,i);
+        
+        Bipartition* bip = NULL; 
 
         //Check if we already have it in the hashmap
-        int* res = Hashmap_get(treeMap,bip->bitvector);
+        Bipartition* res = Hashmap_get(treeMap,sBip);
 
-        //Push bipartition into array
-        assert(0 == DArray_push(bips,bip));
         
         //================== Tree Hashtable generation =======================//
 
         if(res == NULL) { 
+          //Create bipartition stuct - we always have to create bips
+          bip = Bipartition_create(sBip,matching,i);
           //Set bipartition if its not in hashtable
           Hashmap_set(treeMap,bip->bitvector,bip);
+
         } else {
-          //check if matching and repoint
+          //check if matching was set to 1 and set it
+          if(matching) { 
+            res->matching = 1;
+          }
         }
+
+        //Push bipartition into array (not sure if we don't need a control var for double)
+        assert(0 == DArray_push(bips,bip));
 
         //================== RTaxon Dropset ==================================//
         //Saves a list of dropsets 
