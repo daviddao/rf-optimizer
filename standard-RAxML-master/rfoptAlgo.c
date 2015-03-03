@@ -616,16 +616,16 @@ void plausibilityChecker(tree *tr, analdef *adef)
   taxaPerTree, vectorLengthPerTree, tr->numberOfTrees);
 
   //Tests for using DArray on ints
-  // for(i = 0; i < tr->mxtips + 1; i++) {
-  //     DArray* drops = (RTaxonList[i])->dropsets;
-  //     printf("Taxon %i \n", i);
+  for(i = 0; i < tr->mxtips + 1; i++) {
+      DArray* drops = (RTaxonList[i])->dropsets;
+      printf("Taxon %i \n", i);
 
-  //     Dropset* res = DArray_get(drops,0);
+      Dropset* res = DArray_get(drops,0);
       
-  //     if(res){
-  //       printf("Set %i, %i includes %i \n", (res->set)[0],(res->set)[1],i);
-  //     }
-  // }
+      if(res){
+        printf("Set %i, %i includes %i \n", (res->set)[0],(res->set)[1],i);
+      }
+  }
 
   /***********************************************************************************/
   /* RF-OPT Graph Construction */
@@ -644,7 +644,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
   //   Bipartition* bip = DArray_get(bips,i);
   //   printBitVector(bip->bitvector[0]);
   //   printf("matching: %i \n", bip->matching);
-  //   printf("tree: %i \n", bip->treenumber);
+  //   printf("tree: %i \n", bip->treeNumber);
   // }
 
   // Bipartition* bipFromHash = DArray_first(bips);
@@ -656,7 +656,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
   //   Bipartition* bip = DArray_get(bips,i);
   //   printBitVector(bip->bitvector[0]);
   //   printf("matching: %i \n", bip->matching);
-  //   printf("tree: %i \n", bip->treenumber);
+  //   printf("tree: %i \n", bip->treeNumber);
   // }
   
   
@@ -690,7 +690,26 @@ void plausibilityChecker(tree *tr, analdef *adef)
   //Create an bitvector for each tree which will store deleted taxa
   unsigned int** RBitVectorsPerTree = createBitVectors(tr->numberOfTrees,vectorLengthPerTree);
 
+  log_info("====> TEST \n");
+  DArray* drops = (RTaxonList[3])->dropsets;
+  printf("%i \n",RTaxonList[3]->taxonNumber);
   
+  Dropset* drop = DArray_get(drops,0);
+  int* set2 = drop->set;
+
+  printf("set[0]: %i %i \n",set2[0],set2[1]);
+
+  Dropset_score(drop, RTaxonList, RBitVectorsPerTree, mapArray, taxonToReductionList, tr->numberOfTrees, vectorLengthPerTree);
+  
+  unsigned int* testBV = RBitVectorsPerTree[0];
+
+  printBitVector(testBV[0]);
+  testBV = RBitVectorsPerTree[1];
+
+  printBitVector(testBV[0]);
+  testBV = RBitVectorsPerTree[2];
+
+  printBitVector(testBV[0]);
 
 
   /***********************************************************************************/

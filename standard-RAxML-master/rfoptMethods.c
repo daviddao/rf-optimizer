@@ -102,7 +102,7 @@ Bipartition* Bipartition_create(unsigned int* bitvector, int matching, int treen
 
     bip->bitvector = bitvector;
     bip->matching = matching;
-    bip->treenumber = treenumber;
+    bip->treeNumber = treenumber;
 
     return bip;
 
@@ -1159,8 +1159,25 @@ static int getLocalIndex(int** taxonToReductionList, int treeNumber, int globalT
   return localIndex; 
 }
 
+static unsigned int** copyBitVectors(int numberOfTrees, unsigned int* vectorLengthPerTree, unsigned int** originalBitVectors) {
+
+  unsigned int** bitVectors = (unsigned int**)rax_malloc(sizeof(unsigned int*) * numberOfTrees);
+  
+  int i = 0;
+  
+  //Copy all bits
+  for(i = 0; i < numberOfTrees; i++) {  
+
+    bitVectors[i] = (unsigned int*)rax_malloc(vectorLengthPerTree[i] * sizeof(unsigned int));
+    memcpy(bitVectors[i],originalBitVectors[i],vectorLengthPerTree[i] * sizeof(unsigned int));
+
+  }
+        
+  return bitVectors;  
+}
+
 //Calculate the score
-int Dropset_score(Dropset* drop, RTaxon** RTaxonList, unsigned int** deletedTaxa, Hashmap** mapArray, int** taxonToReductionList) {
+int Dropset_score(Dropset* drop, RTaxon** RTaxonList, unsigned int** deletedTaxa, Hashmap** mapArray, int** taxonToReductionList, int numberOfTrees, unsigned int* vectorLengthPerTree) {
 
   int i = 0;
   int j = 0;
@@ -1174,9 +1191,13 @@ int Dropset_score(Dropset* drop, RTaxon** RTaxonList, unsigned int** deletedTaxa
 
   Hashmap* predict = NULL;
   unsigned int* deletedTaxaTree = NULL;
+  unsigned int** deletedTaxaCopy = NULL;
 
   //Get taxa
   int* taxaList = drop->set;
+
+  //Performance: Maybe only copy trees we need instead of all?
+  deletedTaxaCopy = copyBitVectors(numberOfTrees, vectorLengthPerTree, deletedTaxa);
 
   //-1 is ending symbol for this array
   while(taxaList[i] != -1) {
@@ -1192,16 +1213,18 @@ int Dropset_score(Dropset* drop, RTaxon** RTaxonList, unsigned int** deletedTaxa
 
       localIndex = getLocalIndex(taxonToReductionList, treeNumber, globalIndex);
 
-      //Get the deleted taxa list for each tree
-      deletedTaxaTree = deletedTaxa[treeNumber];
+      //Get the copied deleted taxa list for each tree
+      deletedTaxaTree = deletedTaxaCopy[treeNumber];
 
-      //Set bit at position localIndex to 1
+      //Set bit at position localIndex to 1 on the copied version
       setBitBV(deletedTaxaTree, localIndex);
 
     }
 
     i++;
   }
+
+  //TODO: We need to free copied bitvectors!
 
   return scoreGain-scorePenalty;
 }

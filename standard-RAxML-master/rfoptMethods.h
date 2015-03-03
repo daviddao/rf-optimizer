@@ -14,7 +14,7 @@ typedef struct Dropset {
 typedef struct Bipartition {
 	unsigned int* bitvector; //stores bitvector of smalltree
 	int matching; //matching 1, not matching 0
-	int treenumber; //stores number of tree where bip is from
+	int treeNumber; //stores number of tree where bip is from
 	int leftSize; 
 	int rightSize;
 
@@ -136,3 +136,5 @@ unsigned int** createBitVectors(int numberOfTrees, unsigned int* vectorLengthPer
 void initRTaxonList(RTaxon** map, int** smallTreeTaxaList, int numberOfTrees, int* taxaPerTree);
 
 void detectInitialMatchings(int** sets, int* matchingVector, int* bipsPerTree, int numberOfTrees,  int vLength);
+
+int Dropset_score(Dropset* drop, RTaxon** RTaxonList, unsigned int** deletedTaxa, Hashmap** mapArray, int** taxonToReductionList, int numberOfTrees, unsigned int* vectorLengthPerTree);
