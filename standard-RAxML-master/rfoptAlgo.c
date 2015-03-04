@@ -733,9 +733,10 @@ void plausibilityChecker(tree *tr, analdef *adef)
   printf("====> Delete DropSet from all bips and update numbers \n");
 
   //testdropset for smalltree tests
-  //int key[3] = {4,5,-1};
-  int key[7] = {5852,5853,5854,6387,6389,6390,-1};
-  //printf("Taxa %s %s \n",tr->nameList[4], tr->nameList[5]);
+  int key[3] = {4,-1};
+  //testdropset for large trees
+  //int key[7] = {5852,5853,5854,6387,6389,6390,-1};
+  printf("Taxa %s %s \n",tr->nameList[4], tr->nameList[5]);
   Dropset* dropTest = Hashmap_get(map, key);
 
   Dropset_score(dropTest, RTaxonList, RBitVectorsPerTree, mapArray, taxonToReductionList, tr->numberOfTrees, vectorLengthPerTree);
@@ -758,6 +759,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
                 
                 printBitVector(bitVector[0]);
                 printf("predictDestroyed: %i \n", bip->predictDestroyed);
+                printf("matching: %i \n", bip->matching);
 
 
             }

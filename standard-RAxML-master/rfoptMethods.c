@@ -1309,6 +1309,42 @@ static unsigned int** copyBitVectors(int numberOfTrees, unsigned int* vectorLeng
   return bitVectors;  
 }
 
+static int calculateLoss(int numberOfTrees, Hashmap** mapArray) {
+
+  int loss = 0;
+  int i = 0;
+
+  for(i = 0; i < numberOfTrees; i++) {
+    //printf("tree %i \n",i);
+    Hashmap* treeHash = mapArray[i];
+    int k = 0;
+    int j = 0;
+    for(k = 0; k < DArray_count(treeHash->buckets); k++) {
+      DArray* bucket = DArray_get(treeHash->buckets,k);
+      if(bucket) {
+            for(j = 0; j < DArray_count(bucket); j++) {
+                HashmapNode* node = DArray_get(bucket, j);
+
+                Bipartition* bip = node->data;
+                
+                //if it is getting destroyed ..
+                if(bip->predictDestroyed == 1) {
+                  //and it was matching before ..
+                  if(bip->matching == 1) { 
+                    //we increment loss!
+                    loss++;
+                  }
+                }
+
+            }
+        }
+    }
+  }
+
+  return loss;
+}
+
+
 //Calculate the score
 int Dropset_score(Dropset* drop, RTaxon** RTaxonList, unsigned int** deletedTaxa, Hashmap** mapArray, int** taxonToReductionList, int numberOfTrees, unsigned int* vectorLengthPerTree) {
 
@@ -1351,27 +1387,39 @@ int Dropset_score(Dropset* drop, RTaxon** RTaxonList, unsigned int** deletedTaxa
 
       //Set bit at position localIndex to 1 on the copied version
       setBitBV(deletedTaxaTree, localIndex);
-
     }
 
     i++;
   }
 
-  //Test
-  // for(int x = 0; x < 3; x++) { 
-  //   printBitVector(deletedTaxaCopy[x][0]);
-  //   printf("RBitVector for tree %i\n",x);
-  // }
-
   //Now iterate through all trees and remove the taxons
   for(i = 0; i < numberOfTrees; i++) {
-    printf("tree %i processing ... \n",i);
+    printf("tree %i predicting ... \n",i);
     removeTaxonFromTree(deletedTaxaCopy, i, mapArray); 
   }
 
-  //TODO: We need to free copied bitvectors!
+  //Traverse through all possible RF gains 
+  for(i = 0; i < DArray_count(drop->bipartitions); i++) {
+    Bipartition* bip = DArray_get(drop->bipartitions, i);
 
-  return scoreGain-scorePenalty;
+    if(bip->matching == 0) {
+      //if it was not matching before..
+      if(bip->predictDestroyed == 0) {
+        scoreGain++; //..and it its not destroyed, we have a score gain
+      }
+    }
+  }
+
+  //Now traverse through all bips and see if we would destroy any matching
+  scorePenalty = calculateLoss(numberOfTrees,mapArray);
+
+
+
+  int totalScore = scoreGain - scorePenalty;
+  //TODO: We need to free copied bitvectors!
+  printf("TOTAL SCORE: %i Gain: %i Loss: %i \n", totalScore, scoreGain, scorePenalty);
+
+  return totalScore;
 }
 
 

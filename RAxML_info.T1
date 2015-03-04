@@ -18,41 +18,39 @@ RAxML large-tree plausibility-checker
 
 RAxML was called as follows:
 
-./standard-RAxML-master/raxmlHPC -f R -m GTRCAT -t ./largetest/largetree.txt -z ./largetest/reference.txt -n T1 
+./standard-RAxML-master/raxmlHPC -f R -m GTRCAT -t ./test/largetree -z ./test/reference -n T1 
 
 
-Parsing reference tree ./largetest/largetree.txt
-The reference tree has 55473 tips
+Parsing reference tree ./test/largetree
+The reference tree has 8 tips
 
 
-Found 4 trees in File ./largetest/reference.txt
+Found 3 trees in File ./test/reference
 
 
 
-Found 4 trees in File ./largetest/reference.txt
+Found 3 trees in File ./test/reference
 
-Small tree 0 has 2065 tips and 767 bipartitions
+Small tree 0 has 5 tips and 2 bipartitions
 Relative RF tree 0: 1.000000
 
 Relative RF tree 1: 1.000000
 
 Relative RF tree 2: 1.000000
 
-Relative RF tree 3: 1.000000
-
 Number of small trees skipped: 0
 
 Average RF distance 1.000000
 
-Large Tree: 55473, Number of SmallTrees analyzed: 4 
+Large Tree: 8, Number of SmallTrees analyzed: 3 
 
-Total execution time: 52.832276 secs
+Total execution time: 0.011106 secs
 
-File containing all 4 pair-wise RF distances written to file /Users/David/rf-optimizer/RAxML_RF-Distances.T1
+File containing all 3 pair-wise RF distances written to file /Users/David/rf-optimizer/RAxML_RF-Distances.T1
 
 execution stats:
 
-Accumulated time Effective algorithm: 0.03929 sec 
-Average time for effective: 0.0098221898 sec 
-Preprocessingtime: 0.04117 sec 
+Accumulated time Effective algorithm: 0.00009 sec 
+Average time for effective: 0.0000307560 sec 
+Preprocessingtime: 0.00001 sec 
 
