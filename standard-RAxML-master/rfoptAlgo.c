@@ -597,6 +597,8 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
   printf("===> Calculating and storing DropSets \n");
 
+  printf("number of trees skipped: %i \n", tr->numberOfTrees - numberOfTreesAnalyzed);
+
   //Calculate dropsets of two given bips lists and extract all sets into array sets and into a hashmap. Each set has following format
   //dropset = {taxa_1,taxa_2,...,taxa_n,-1};
   //Furtheremore calculate Dropset generates two data structures from type bips and dropsets which are pointing to each other in hashtables
