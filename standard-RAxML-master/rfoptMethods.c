@@ -1232,8 +1232,8 @@ static void removeTaxonFromTree(unsigned int** deletedTaxa, int treeNumber, Hash
                     //We create a new unambigious representation using the next found taxon in res
                     res = createUniqueKey(res,nextFirstTaxonIndex,bip->vLength,ntips);
 
-                    printBitVector(res[0]);
-                    printf("---------> changed \n");
+                    //printBitVector(res[0]);
+                    //printf("---------> changed \n");
                       
                   }
 
