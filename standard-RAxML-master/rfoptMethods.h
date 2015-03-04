@@ -139,4 +139,4 @@ void initRTaxonList(RTaxon** map, int** smallTreeTaxaList, int numberOfTrees, in
 void detectInitialMatchings(int** sets, int* matchingVector, int* bipsPerTree, int numberOfTrees,  int vLength);
 
 int Dropset_score(Dropset* drop, RTaxon** RTaxonList, unsigned int** deletedTaxa, Hashmap** mapArray, 
-	int** taxonToReductionList, int numberOfTrees, unsigned int* vectorLengthPerTree);
+	int** taxonToReductionList, int numberOfTrees, unsigned int* vectorLengthPerTree, int* taxaPerTree);

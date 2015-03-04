@@ -717,10 +717,10 @@ void plausibilityChecker(tree *tr, analdef *adef)
   
   Dropset* tdrop = Hashmap_get(map,key);
   int sc = Dropset_score(tdrop, RTaxonList, RBitVectorsPerTree, mapArray, 
-    taxonToReductionList, tr->numberOfTrees, vectorLengthPerTree);
+    taxonToReductionList, tr->numberOfTrees, vectorLengthPerTree, taxaPerTree);
 
   for(i = 0; i < tr->numberOfTrees; i++) {
-    printf("tree %i \n",i);
+    //printf("tree %i \n",i);
     Hashmap* treeHash = mapArray[i];
     int k = 0;
     int j = 0;
