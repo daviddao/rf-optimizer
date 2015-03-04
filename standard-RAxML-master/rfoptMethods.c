@@ -1331,7 +1331,6 @@ int Dropset_score(Dropset* drop, RTaxon** RTaxonList, unsigned int** deletedTaxa
 
   //Performance: Maybe only copy trees we need instead of all?
   deletedTaxaCopy = copyBitVectors(numberOfTrees, vectorLengthPerTree, deletedTaxa);
-
   //-1 is ending symbol for this array
   while(taxaList[i] != -1) {
     globalIndex = taxaList[i];
@@ -1366,6 +1365,7 @@ int Dropset_score(Dropset* drop, RTaxon** RTaxonList, unsigned int** deletedTaxa
 
   //Now iterate through all trees and remove the taxons
   for(i = 0; i < numberOfTrees; i++) {
+    printf("tree %i processing ... \n",i);
     removeTaxonFromTree(deletedTaxaCopy, i, mapArray); 
   }
 

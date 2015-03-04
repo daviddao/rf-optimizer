@@ -604,51 +604,51 @@ void plausibilityChecker(tree *tr, analdef *adef)
   taxaPerTree, vectorLengthPerTree, tr->numberOfTrees);
 
   //Tests for using DArray on ints
-  for(i = 0; i < tr->mxtips + 1; i++) {
-      DArray* drops = (RTaxonList[i])->dropsets;
-      //printf("Taxon %i \n", i);
+  // for(i = 0; i < tr->mxtips + 1; i++) {
+  //     DArray* drops = (RTaxonList[i])->dropsets;
+  //     //printf("Taxon %i \n", i);
 
-      Dropset* res = DArray_get(drops,0);
+  //     Dropset* res = DArray_get(drops,0);
       
-      if(res){
-        //printf("Set %i, %i includes %i \n", (res->set)[0],(res->set)[1],i);
-      }
-  }
+  //     if(res){
+  //       //printf("Set %i, %i includes %i \n", (res->set)[0],(res->set)[1],i);
+  //     }
+  // }
 
   //Assertions 
 
-  int countx = 0;
+  // int countx = 0;
 
-  for(i = 0; i < tr->numberOfTrees; i++) {
-    printf("tree %i \n",i);
-    Hashmap* treeHash = mapArray[i];
-    int k = 0;
-    int j = 0;
-    for(k = 0; k < DArray_count(treeHash->buckets); k++) {
-      DArray* bucket = DArray_get(treeHash->buckets,k);
-      if(bucket) {
-            for(j = 0; j < DArray_count(bucket); j++) {
-                HashmapNode* node = DArray_get(bucket, j);
+  // for(i = 0; i < tr->numberOfTrees; i++) {
+  //   printf("tree %i \n",i);
+  //   Hashmap* treeHash = mapArray[i];
+  //   int k = 0;
+  //   int j = 0;
+  //   for(k = 0; k < DArray_count(treeHash->buckets); k++) {
+  //     DArray* bucket = DArray_get(treeHash->buckets,k);
+  //     if(bucket) {
+  //           for(j = 0; j < DArray_count(bucket); j++) {
+  //               HashmapNode* node = DArray_get(bucket, j);
 
-                countx++;
+  //               countx++;
 
-                Bipartition* bip = node->data;
-                unsigned int* bitVector = bip->bitvector;
-                int matching = bip->matching;
-                //printf("this bip is matching: %i \n",matching);
+  //               Bipartition* bip = node->data;
+  //               unsigned int* bitVector = bip->bitvector;
+  //               int matching = bip->matching;
+  //               //printf("this bip is matching: %i \n",matching);
                 
-                printBitVector(bitVector[0]);
-                printf("predictDestroyed: %i \n", bip->predictDestroyed);
+  //               printBitVector(bitVector[0]);
+  //               printf("predictDestroyed: %i \n", bip->predictDestroyed);
 
 
-            }
-        }
-    }
+  //           }
+  //       }
+  //   }
    
-  }
+  // }
 
-  // //assert its the same!
-  assert(countx == numberOfBips);
+  // // //assert its the same!
+  // assert(countx == numberOfBips);
 
   /***********************************************************************************/
   /* RF-OPT Graph Construction */
@@ -732,16 +732,16 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
   printf("====> Delete DropSet from all bips and update numbers \n");
 
-  int key[3] = {4,5,-1};
-  printf("Taxa %s %s \n",tr->nameList[4], tr->nameList[5]);
+  //testdropset for smalltree tests
+  //int key[3] = {4,5,-1};
+  int key[7] = {5852,5853,5854,6387,6389,6390,-1};
+  //printf("Taxa %s %s \n",tr->nameList[4], tr->nameList[5]);
   Dropset* dropTest = Hashmap_get(map, key);
 
   Dropset_score(dropTest, RTaxonList, RBitVectorsPerTree, mapArray, taxonToReductionList, tr->numberOfTrees, vectorLengthPerTree);
 
   for(i = 0; i < tr->numberOfTrees; i++) {
     printf("tree %i \n",i);
-    printBitVector(RBitVectorsPerTree[i][0]);
-    printf("RBitVector \n");
     Hashmap* treeHash = mapArray[i];
     int k = 0;
     int j = 0;
@@ -750,8 +750,6 @@ void plausibilityChecker(tree *tr, analdef *adef)
       if(bucket) {
             for(j = 0; j < DArray_count(bucket); j++) {
                 HashmapNode* node = DArray_get(bucket, j);
-
-                countx++;
 
                 Bipartition* bip = node->data;
                 unsigned int* bitVector = bip->bitvector;
@@ -800,17 +798,17 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
   //Printing if
 
-  printf("\n == Sets == \n");
-  for(int fooo = 0; fooo < numberOfSets; fooo++){
-    printf("Set %i: ", fooo);
-    int i = 0;
-    while(sets[fooo][i] > -1) {
-     printf("%i ",sets[fooo][i]);
-     i++;
-    }
-    printf("\n");
-  }
-  printf("\n");
+  // printf("\n == Sets == \n");
+  // for(int fooo = 0; fooo < numberOfSets; fooo++){
+  //   printf("Set %i: ", fooo);
+  //   int i = 0;
+  //   while(sets[fooo][i] > -1) {
+  //    printf("%i ",sets[fooo][i]);
+  //    i++;
+  //   }
+  //   printf("\n");
+  // }
+  // printf("\n");
 
       
     //#define _PRINT_
