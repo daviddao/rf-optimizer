@@ -17,6 +17,7 @@ typedef struct Bipartition {
 	int treeNumber; //stores number of tree where bip is from
 	int leftSize; 
 	int rightSize;
+	int vLength;
 
 } Bipartition;
 

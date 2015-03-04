@@ -103,6 +103,9 @@ Bipartition* Bipartition_create(unsigned int* bitvector, int matching, int treen
     bip->bitvector = bitvector;
     bip->matching = matching;
     bip->treeNumber = treenumber;
+    bip->vLength = 0;
+    bip->leftSize = 0;
+    bip->rightSize = 0;
 
     return bip;
 
@@ -963,56 +966,6 @@ void initRTaxonList(RTaxon** map, int** smallTreeTaxaList, int numberOfTrees, in
 }
 
 
-// void detectInitialMatchings(int** sets, int* matchingVector, int* bipsPerTree, int numberOfTrees,  int vLength) { 
-
-//   //We use these variables to iterate through all sets and bips
-//   int countBips = 0;
-//   int dropSetCount = 0;
-//   //Now generate Graph and calculate the Scores for each bipartitions
-
-//   //First iterate through all trees 
-//   for(int i = 0; i < numberOfTrees; i++ ) {
-
-//     //Iterate through all bipartitions of each trees
-//     for(int j = 0; j < bipsPerTree[i]; j++) {
-
-//       //Compare each bip with all bips
-//       int dropSetsPerBip = bipsPerTree[i]; 
-      
-//       //Will be set to one if dropset is matching, resulting in a score = 0
-//       int matching = 0; 
-      
-//       //Check all dropsets of each bipartition
-//       for(int k = 0; k < dropSetsPerBip; k++){
-        
-//         int* dropset = sets[dropSetCount + k];
-
-//         //Test if matching
-//         if(dropset[0] == 0){
-//           matching = 1;
-//         }
-//       }
-
-//       if (matching) {
-//         //don't do a thing 
-//         //bvec_scores[countBips] = 0; 
-//       } else {
-//         //Set BitVector on position of the bip
-//         matchingVector = (int*)setBitBV((unsigned int*)matchingVector, countBips);
-//       }
-      
-//       //Index of starting DropSets in Sets for the next Bip 
-//       dropSetCount = dropSetCount + dropSetsPerBip; 
-
-//       countBips++;
-//     }
-
-//   }
-
-//   //printf("dropSetCount : %i \n", dropSetCount);
-//   //printf("bipsCount : %i \n", countBips);
-// }
-
 //uses the first taxon to create unambiguous bitvectors. First taxon is set to 0.
 static unsigned int* createUniqueKey(unsigned int* bitVector, int* taxonToReduction, int first, int vLength, int ntips) { 
   
@@ -1039,30 +992,37 @@ static unsigned int* createUniqueKey(unsigned int* bitVector, int* taxonToReduct
   return bitVector;
 }
 
-//Use this to detect identical keys
+static int vHashLength = 0;
+
+//Set a variable
+void setHashLength(int vLength) {
+  vHashLength = vLength;
+}
+
+//Iterate through all elements of the array. Because we need to know the length of the array we set a private variable
 static int compareBitVectors(unsigned int* a, unsigned int* b) {
   int i = 0;
-  int aLength = 0;
-  aLength = (sizeof(a) / sizeof(a[0])); //Bug? always 1 too much?
-  aLength = aLength - 1;
-  while(i < aLength) {
+
+  while(i < vHashLength) {
+
     if(a[i] != b[i]) {
       return 1;
-    } else {
-      //printf("CHECK: %i is same as %i \n", a[i] , b[i]);
     }
+
     i++;
   }
+
   //Fall through
   return 0;
 }
 
 //returns 0 if same and 1 otherwise
-static int compareHash(void *a, void *b) {
+static int compareHash(void* a, void* b) {
 
   return compareBitVectors((unsigned int*)a, (unsigned int*)b);
 
 }
+
 
 //Calculates all dropsets of two given bipartition lists, we don't have to create a unique representation :)
 void calculateDropSets(RTaxon** taxonList, Hashmap** mapArray, Hashmap* map, unsigned int*** indBipsPerTree, unsigned int*** sBipsPerTree, int** sets, int** smallTreeTaxaList, int* bipsPerTree, 
@@ -1080,8 +1040,8 @@ void calculateDropSets(RTaxon** taxonList, Hashmap** mapArray, Hashmap* map, uns
     //Get all small Bips of this tree
     unsigned int **sBips = sBipsPerTree[i];
 
-    //Create a Hashmap for each tree storing the smallBips
-    Hashmap* treeMap = Hashmap_create(compareHash,NULL);
+    //Create a Hashmap for each tree storing the smallBips using bipartition hash functions
+    Hashmap* treeMap = Hashmap_create(compareHash, NULL);
 
     mapArray[i] = treeMap;
 
@@ -1089,7 +1049,7 @@ void calculateDropSets(RTaxon** taxonList, Hashmap** mapArray, Hashmap* map, uns
     for(int j = 0; j < bipsPerTree[i]; j++) {
 
       //Get the bitVector of this Bips
-      unsigned int *indBip = indBips[j];
+      unsigned int* indBip = indBips[j];
 
       //Now iterate through all small Bips in the tree
       for(int k = 0; k < bipsPerTree[i]; k++) {
@@ -1147,6 +1107,10 @@ void calculateDropSets(RTaxon** taxonList, Hashmap** mapArray, Hashmap* map, uns
         //Check if we already have it in the hashmap
         Bipartition* res = Hashmap_get(treeMap,sBip);
 
+        int sBipLength = vectorLengthPerTree[i];
+        
+        //Set vHashLength for HashComparision
+        setHashLength(sBipLength);
         
         //================== Tree Hashtable generation =======================//
 
@@ -1155,7 +1119,7 @@ void calculateDropSets(RTaxon** taxonList, Hashmap** mapArray, Hashmap* map, uns
           bip = Bipartition_create(sBip,matching,i);
           //Set bipartition if its not in hashtable
           Hashmap_set(treeMap,bip->bitvector,bip);
-          printf("new bip set for tree %i \n", i);
+          //printf("new bip set for tree %i \n", i);
           countBips++;
 
         } else {
