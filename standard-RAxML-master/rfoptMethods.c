@@ -108,6 +108,7 @@ Bipartition* Bipartition_create(unsigned int* bitvector, int matching, int treen
     bip->rightSize = 0;
     bip->destroyed = 0;
     bip->predictDestroyed = 0;
+    bip->firstTaxon = 0;
 
     return bip;
 
@@ -864,43 +865,6 @@ int* getDropSetFromBitVectors(unsigned int* indBip, unsigned int* sBip, unsigned
   return set;
 }
 
-//Filter for unique dropsets and return number of unique sets
-int getUniqueDropSets(int** sets, int** uniqSets, int* setsToUniqSets, int numberOfSets) {
-  
-  int numberOfUniqueSets = 0;
-
-  int dropSetCount = 0;
-
-  //Now generate Graph and calculate the Scores for each bipartitions
-  for(int k = 0; k < numberOfSets; k++){
-
-    //printf("processing set %i \n", k);
-    
-    //Get the dropset at position k
-    int* dropset = sets[k];
-
-    //Check if set is already in uniqSets
-    int containIndex = contains(dropset,uniqSets,numberOfUniqueSets);
-        
-    if(!containIndex) {
-
-      uniqSets[numberOfUniqueSets] = dropset;
-
-      //Add the new index to the translation array
-      setsToUniqSets[k] = numberOfUniqueSets; 
-
-      numberOfUniqueSets++;
-
-    } else {
-      
-      //If it is already inside uniqSet
-      setsToUniqSets[k] = (containIndex - 1);
-    }
-  }
-
-  return numberOfUniqueSets;
-}
-
 RTaxon** createRTaxonList(int numberOfTaxa) {
 
   //initial maxSize
@@ -969,13 +933,13 @@ void initRTaxonList(RTaxon** map, int** smallTreeTaxaList, int numberOfTrees, in
 
 
 //uses the first taxon to create unambiguous bitvectors. First taxon is set to 0.
-static unsigned int* createUniqueKey(unsigned int* bitVector, int* taxonToReduction, int first, int vLength, int ntips) { 
+static unsigned int* createUniqueKey(unsigned int* bitVector, int first, int vLength, int ntips) { 
   
   int o = 0;
   int k = 0;
 
   //for checking purposes 
-  int firstTaxon = taxonToReduction[first - 1] + 1;   
+  int firstTaxon = first;   
 
   /* if bitvector contains first taxon, use its complement */
   if(bitVector[(firstTaxon-1) / MASK_LENGTH] & mask32[(firstTaxon-1) % MASK_LENGTH]) {                 
@@ -1024,7 +988,6 @@ static int compareHash(void* a, void* b) {
   return compareBitVectors((unsigned int*)a, (unsigned int*)b);
 
 }
-
 
 //Calculates all dropsets of two given bipartition lists, we don't have to create a unique representation :)
 void calculateDropSets(RTaxon** taxonList, Hashmap** mapArray, Hashmap* map, unsigned int*** indBipsPerTree, unsigned int*** sBipsPerTree, int** sets, int** smallTreeTaxaList, int* bipsPerTree, 
@@ -1172,6 +1135,17 @@ void calculateDropSets(RTaxon** taxonList, Hashmap** mapArray, Hashmap* map, uns
   }
 }
 
+static int findIndexOfFirstZero(unsigned int* bitVector, int vLength) {
+  int i = 0;
+  int index = 0;
+  //Iterate through all bits
+  for(i = 0; i < vLength; i++) {
+    
+  }
+
+  return 1; //sth went wrong, couldnt find a zero
+}
+
 //Create BitVectors
 unsigned int** createBitVectors(int numberOfTrees, unsigned int* vectorLengthPerTree) {
   
@@ -1185,8 +1159,9 @@ unsigned int** createBitVectors(int numberOfTrees, unsigned int* vectorLengthPer
   return bitVectors;
 }
 
-//returns hashmap with newly hashed bipartitions
-static void removeTaxonFromTree(unsigned int** deletedTaxa, int treeNumber, Hashmap** mapArray) {
+//calculates which bips are going to be destroyed using rehashing and size of the bips
+//special care for deleting the first taxon - we have to choose a new taxon for unambigious representation
+static void removeTaxonFromTree(unsigned int** deletedTaxa, int treeNumber, Hashmap** mapArray, int vLength) {
 
   int i = 0;
   int j = 0;
@@ -1202,6 +1177,15 @@ static void removeTaxonFromTree(unsigned int** deletedTaxa, int treeNumber, Hash
 
   //get the deleted taxons
   unsigned int* deletedTaxaList = deletedTaxa[treeNumber];
+
+  //check if we deleted the firstTaxon (index 0)
+  int deletedFirstTaxon = deletedTaxaList[0] & (1 << 0);
+
+  int nextFirstTaxonIndex = 0;
+  //if we delete the first Taxon, we search a new one
+  if(deletedFirstTaxon) {
+
+  }
   
   //iterate through bips in tree
   for(i = 0; i < DArray_count(treeMap->buckets); i++) {
@@ -1215,7 +1199,8 @@ static void removeTaxonFromTree(unsigned int** deletedTaxa, int treeNumber, Hash
                 //if bip is not destroyed
                 if(!(bip->destroyed)){
 
-                  bip->predictDestroyed = 0; //We assume it won't be destroyed -- if this bip survives all checks it falls through
+                  bip->predictDestroyed = 0; 
+                  //We assume it won't be destroyed -- if this bip survives all checks it falls through
 
                   //total number of deleted taxa
                   int numberOfDeletedTaxa = 0;
@@ -1253,6 +1238,13 @@ static void removeTaxonFromTree(unsigned int** deletedTaxa, int treeNumber, Hash
                   } else {  
                     //Now rehash and check if its already there
                     setHashLength(bip->vLength);
+
+                    //Check if we destroyed the firstTaxon
+                    if(deletedFirstTaxon) {
+                      //Get a new first taxon...
+
+                      
+                    }
 
                     //we look for the new reduced bitvector
                     //due to each tree and umabigious representation, if we delete taxa they still stay unambigious
@@ -1346,7 +1338,8 @@ static int calculateLoss(int numberOfTrees, Hashmap** mapArray) {
 
 
 //Calculate the score
-int Dropset_score(Dropset* drop, RTaxon** RTaxonList, unsigned int** deletedTaxa, Hashmap** mapArray, int** taxonToReductionList, int numberOfTrees, unsigned int* vectorLengthPerTree) {
+int Dropset_score(Dropset* drop, RTaxon** RTaxonList, unsigned int** deletedTaxa, Hashmap** mapArray, 
+  int** taxonToReductionList, int numberOfTrees, unsigned int* vectorLengthPerTree) {
 
   int i = 0;
   int j = 0;
@@ -1379,6 +1372,8 @@ int Dropset_score(Dropset* drop, RTaxon** RTaxonList, unsigned int** deletedTaxa
       int* tree = DArray_get(trees,j);
       treeNumber = *tree; 
 
+      //printf("CHECK: remove 1 taxa from tree %i with index %i \n", treeNumber, globalIndex);
+
       //translate global index into local index
       localIndex = getLocalIndex(taxonToReductionList, treeNumber, globalIndex);
 
@@ -1394,8 +1389,11 @@ int Dropset_score(Dropset* drop, RTaxon** RTaxonList, unsigned int** deletedTaxa
 
   //Now iterate through all trees and remove the taxons
   for(i = 0; i < numberOfTrees; i++) {
-    //printf("tree %i predicting ... \n",i);
-    removeTaxonFromTree(deletedTaxaCopy, i, mapArray); 
+
+    if(i == 2) {
+      printBitVector(deletedTaxaCopy[2][0]);
+    }
+    removeTaxonFromTree(deletedTaxaCopy, i, mapArray, vectorLengthPerTree[i]); 
   }
 
   //Traverse through all possible RF gains 
@@ -1412,7 +1410,6 @@ int Dropset_score(Dropset* drop, RTaxon** RTaxonList, unsigned int** deletedTaxa
 
   //Now traverse through all bips and see if we would destroy any matching
   scorePenalty = calculateLoss(numberOfTrees,mapArray);
-
 
 
   int totalScore = scoreGain - scorePenalty;

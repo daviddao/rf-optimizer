@@ -17,9 +17,10 @@ typedef struct Bipartition {
 	int treeNumber; //stores number of tree where bip is from
 	int leftSize; //number of bits set to 1 where first taxon is set to 0
 	int rightSize; //number of bits set to 1 where first taxon is set to 1
-	int vLength;
+	int vLength; //stores the vLength of the bip
 	int destroyed; //0 for not yet destroyed, 1 for already destroyed
 	int predictDestroyed; //0 if removing this dropset its not destroyed else 1
+	int firstTaxon; //used to set an unambigous representation for all bitvectors
 
 } Bipartition;
 
@@ -125,9 +126,6 @@ int* extractSetsFromBitVector(unsigned int* bitvector, unsigned int* bitvector2,
 //Calculate the DropSet given two BitVectors of the same length
 int* getDropSetFromBitVectors(unsigned int* indBip, unsigned int* sBip, unsigned int vLength, int treenumber, int* taxaPerTree, int* smallTreeTaxa);
 
-//Filter for unique dropsets and return number of unique sets
-int getUniqueDropSets(int** sets, int** uniqSets, int* setsToUniqSets, int numberOfSets);
-
 //Calculates all dropsets of two given bipartition lists
 void calculateDropSets(RTaxon** taxonList, Hashmap** mapArray, Hashmap* map, unsigned int*** indBipsPerTree, unsigned int*** sBipsPerTree, int** sets, int** smallTreeTaxaList, int* bipsPerTree, 
   int* taxaPerTree, unsigned int* vectorLengthPerTree, int numberOfTrees);
@@ -140,4 +138,5 @@ void initRTaxonList(RTaxon** map, int** smallTreeTaxaList, int numberOfTrees, in
 
 void detectInitialMatchings(int** sets, int* matchingVector, int* bipsPerTree, int numberOfTrees,  int vLength);
 
-int Dropset_score(Dropset* drop, RTaxon** RTaxonList, unsigned int** deletedTaxa, Hashmap** mapArray, int** taxonToReductionList, int numberOfTrees, unsigned int* vectorLengthPerTree);
+int Dropset_score(Dropset* drop, RTaxon** RTaxonList, unsigned int** deletedTaxa, Hashmap** mapArray, 
+	int** taxonToReductionList, int numberOfTrees, unsigned int* vectorLengthPerTree);

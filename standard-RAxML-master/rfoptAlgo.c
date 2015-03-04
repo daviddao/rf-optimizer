@@ -604,16 +604,18 @@ void plausibilityChecker(tree *tr, analdef *adef)
   taxaPerTree, vectorLengthPerTree, tr->numberOfTrees);
 
   //Tests for using DArray on ints
-  // for(i = 0; i < tr->mxtips + 1; i++) {
-  //     DArray* drops = (RTaxonList[i])->dropsets;
-  //     //printf("Taxon %i \n", i);
-
-  //     Dropset* res = DArray_get(drops,0);
-      
-  //     if(res){
-  //       //printf("Set %i, %i includes %i \n", (res->set)[0],(res->set)[1],i);
-  //     }
-  // }
+  for(i = 0; i < tr->mxtips + 1; i++) {
+      DArray* trees = (RTaxonList[i])->trees;
+      printf("Taxon %s - %i : ", tr->nameList[i], i);
+      int k = 0;
+      for(k = 0; k < DArray_count(trees); k++) {
+      int* tree = DArray_get(trees,k);  
+        if(tree){
+          printf("%i ", *tree);
+        }
+      }
+      printf("\n");
+  }
 
   //Assertions 
 
@@ -708,53 +710,85 @@ void plausibilityChecker(tree *tr, analdef *adef)
   log_info("Initial prediction \n");
 
   //testdropset for smalltree tests
-  //int key[3] = {4,-1};
+  int key[3] = {3,5,-1};
   //testdropset for large trees
   //int key[7] = {5852,5853,5854,6387,6389,6390,-1};
-  //printf("Taxa %s %s \n",tr->nameList[4], tr->nameList[5]);
-  int j = 0;
-  //Stores the best
-  int maxScore = 0;
-  Dropset* maxDrop = NULL;
+  printf("Taxa %s %s \n",tr->nameList[3], tr->nameList[5]);
+  
+  Dropset* tdrop = Hashmap_get(map,key);
+  int sc = Dropset_score(tdrop, RTaxonList, RBitVectorsPerTree, mapArray, 
+    taxonToReductionList, tr->numberOfTrees, vectorLengthPerTree);
 
-  for(i = 0; i < DArray_count(map->buckets); i++) {
-    DArray* bucket = DArray_get(map->buckets,i);
-    if(bucket) {
-      for(j = 0; j < DArray_count(bucket); j++) {
-        //Get the dropset
-        HashmapNode* node = DArray_get(bucket, j);
-        Dropset* drop = node->data;
+  for(i = 0; i < tr->numberOfTrees; i++) {
+    printf("tree %i \n",i);
+    Hashmap* treeHash = mapArray[i];
+    int k = 0;
+    int j = 0;
+    for(k = 0; k < DArray_count(treeHash->buckets); k++) {
+      DArray* bucket = DArray_get(treeHash->buckets,k);
+      if(bucket) {
+            for(j = 0; j < DArray_count(bucket); j++) {
+                HashmapNode* node = DArray_get(bucket, j);
 
-        //Predict the dropset score
-        drop->score = Dropset_score(drop, RTaxonList, RBitVectorsPerTree, mapArray, 
-          taxonToReductionList, tr->numberOfTrees, vectorLengthPerTree);
+                Bipartition* bip = node->data;
+                unsigned int* bitVector = bip->bitvector;
+                int matching = bip->matching;
+                //printf("this bip is matching: %i \n",matching);
+                if(i == 2) {
+                  printBitVector(bitVector[0]);
+                  printf("predictDestroyed: %i \n", bip->predictDestroyed);
+                  printf("matching: %i \n", bip->matching);
+                }
 
-        if(drop->score > maxScore) {
-          maxScore = drop->score;
-          maxDrop = drop;
+
+            }
         }
-
-        int* set = drop->set;
-
-        printf("Dropset %i %i: %i \n",set[0],set[1],drop->score);
-      }
     }
   }
 
-  printf("MAX: Dropset %i %i with score %i\n", maxDrop->set[0], maxDrop->set[1], maxScore);
+  printf("sc : %i \n", sc);
+  //COMMENTED ALGORITHM
+  // int j = 0;
+  // int dropCounter = 0;
+  // //Stores the best
+  // int maxScore = 0;
+  // Dropset* maxDrop = NULL;
 
+  // for(i = 0; i < DArray_count(map->buckets); i++) {
+  //   DArray* bucket = DArray_get(map->buckets,i);
+  //   if(bucket) {//
+  //     for(j = 0; j < DArray_count(bucket); j++) {
+  //       //Get the dropset
+  //       HashmapNode* node = DArray_get(bucket, j);
+  //       Dropset* drop = node->data;
 
+  //       //Predict the dropset score
+  //       drop->score = Dropset_score(drop, RTaxonList, RBitVectorsPerTree, mapArray, 
+  //         taxonToReductionList, tr->numberOfTrees, vectorLengthPerTree, taxaPerTree);
 
+  //       if(drop->score > maxScore) {
+  //         maxScore = drop->score;
+  //         maxDrop = drop;
+  //       }
 
-  
+  //       int* set = drop->set;
 
+  //       printf("Dropset %i %i: %i \n",set[0],set[1],drop->score);
+  //       //printf("%i \n",dropCounter);
+  //       dropCounter++;
+  //     }
+  //   }
+  // }
+
+  //printf("MAX: Dropset %i %i with score %i\n", maxDrop->set[0], maxDrop->set[1], maxScore);
 
 
   /***********************************************************************************/
   /* TODO RF-OPT Update function */
   /***********************************************************************************/
 
-  
+
+
   /***********************************************************************************/
   /* End RF-OPT Update function */
   /***********************************************************************************/
