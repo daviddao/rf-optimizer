@@ -1114,9 +1114,26 @@ void calculateDropSets(RTaxon** taxonList, Hashmap** mapArray, Hashmap* map, uns
         
         //================== Tree Hashtable generation =======================//
 
+        //This is done only once per bitvector
         if(res == NULL) { 
           //Create bipartition stuct only when the bip is not inside the hashtable
           bip = Bipartition_create(sBip,matching,i);
+
+          int l = 0;
+          int leftCount = 0;
+          int rightCount = 0;
+          for(l = 0; l < sBipLength; l++) {
+            leftCount = leftCount + __builtin_popcount(sBip[l]);
+          }
+
+          //store popcount into the left side
+          bip->leftSize = leftCount;
+
+          //leftover bits are from right side
+          rightCount = taxaPerTree[i] - leftCount;
+          bip->rightSize = rightCount;
+
+
           //Set bipartition if its not in hashtable
           Hashmap_set(treeMap,bip->bitvector,bip);
           //printf("new bip set for tree %i \n", i);
@@ -1150,7 +1167,6 @@ void calculateDropSets(RTaxon** taxonList, Hashmap** mapArray, Hashmap* map, uns
       }
     }
   }
-  printf("overall bips: %i \n",countBips);
 }
 
 //Create BitVectors
@@ -1191,7 +1207,7 @@ Hashmap* removeTaxonFromTree(unsigned int** deletedTaxa, int treeNumber, Hashmap
 
                 Bipartition* bip = node->data;
 
-                //unsigned int* newBitVector = bip->bitvector;
+                unsigned int* newBitVector = bip->bitvector;
 
                 //Bipartition* bipCopy = Bipartition_create()
 

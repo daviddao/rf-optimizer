@@ -15,8 +15,8 @@ typedef struct Bipartition {
 	unsigned int* bitvector; //stores bitvector of smalltree
 	int matching; //matching 1, not matching 0
 	int treeNumber; //stores number of tree where bip is from
-	int leftSize; 
-	int rightSize;
+	int leftSize; //number of bits set to 1 where first taxon is set to 0
+	int rightSize; //number of bits set to 1 where first taxon is set to 1
 	int vLength;
 
 } Bipartition;
