@@ -1227,7 +1227,7 @@ static void removeTaxonFromTree(unsigned int** deletedTaxa, int treeNumber, Hash
 
                   //calculate how much taxa are deleted on the left side
                   for(k = 0; k < bip->vLength; k++) {
-                    
+
                     numberOfDeletedTaxa = numberOfDeletedTaxa + __builtin_popcount(deletedTaxaList[k]);
                     res[k] = bitvector[k] & ~(deletedTaxaList[k]);
                     newLeftSize = newLeftSize + __builtin_popcount(res[k]);
@@ -1358,7 +1358,16 @@ int Dropset_score(Dropset* drop, RTaxon** RTaxonList, unsigned int** deletedTaxa
     i++;
   }
 
-  removeTaxonFromTree(deletedTaxaCopy, treeNumber, mapArray); 
+  //Test
+  // for(int x = 0; x < 3; x++) { 
+  //   printBitVector(deletedTaxaCopy[x][0]);
+  //   printf("RBitVector for tree %i\n",x);
+  // }
+
+  //Now iterate through all trees and remove the taxons
+  for(i = 0; i < numberOfTrees; i++) {
+    removeTaxonFromTree(deletedTaxaCopy, i, mapArray); 
+  }
 
   //TODO: We need to free copied bitvectors!
 

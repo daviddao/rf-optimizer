@@ -620,6 +620,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
   int countx = 0;
 
   for(i = 0; i < tr->numberOfTrees; i++) {
+    printf("tree %i \n",i);
     Hashmap* treeHash = mapArray[i];
     int k = 0;
     int j = 0;
@@ -637,7 +638,8 @@ void plausibilityChecker(tree *tr, analdef *adef)
                 //printf("this bip is matching: %i \n",matching);
                 
                 printBitVector(bitVector[0]);
-                printf("leftSize: %i rightSize: %i \n", bip->leftSize, bip->rightSize);
+                printf("predictDestroyed: %i \n", bip->predictDestroyed);
+
 
             }
         }
@@ -711,8 +713,6 @@ void plausibilityChecker(tree *tr, analdef *adef)
   // int* set2 = drop->set;
 
   // printf("set[0]: %i %i \n",set2[0],set2[1]);
-
-  // Dropset_score(drop, RTaxonList, RBitVectorsPerTree, mapArray, taxonToReductionList, tr->numberOfTrees, vectorLengthPerTree);
   
   // unsigned int* testBV = RBitVectorsPerTree[0];
 
@@ -731,6 +731,43 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
 
   printf("====> Delete DropSet from all bips and update numbers \n");
+
+  int key[3] = {4,5,-1};
+  printf("Taxa %s %s \n",tr->nameList[4], tr->nameList[5]);
+  Dropset* dropTest = Hashmap_get(map, key);
+
+  Dropset_score(dropTest, RTaxonList, RBitVectorsPerTree, mapArray, taxonToReductionList, tr->numberOfTrees, vectorLengthPerTree);
+
+  for(i = 0; i < tr->numberOfTrees; i++) {
+    printf("tree %i \n",i);
+    printBitVector(RBitVectorsPerTree[i][0]);
+    printf("RBitVector \n");
+    Hashmap* treeHash = mapArray[i];
+    int k = 0;
+    int j = 0;
+    for(k = 0; k < DArray_count(treeHash->buckets); k++) {
+      DArray* bucket = DArray_get(treeHash->buckets,k);
+      if(bucket) {
+            for(j = 0; j < DArray_count(bucket); j++) {
+                HashmapNode* node = DArray_get(bucket, j);
+
+                countx++;
+
+                Bipartition* bip = node->data;
+                unsigned int* bitVector = bip->bitvector;
+                int matching = bip->matching;
+                //printf("this bip is matching: %i \n",matching);
+                
+                printBitVector(bitVector[0]);
+                printf("predictDestroyed: %i \n", bip->predictDestroyed);
+
+
+            }
+        }
+    }
+   
+  }
+
 
 
   /***********************************************************************************/
@@ -763,17 +800,17 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
   //Printing if
 
-  // printf("\n == Sets == \n");
-  // for(int fooo = 0; fooo < numberOfSets; fooo++){
-  //   printf("Set %i: ", fooo);
-  //   int i = 0;
-  //   while(sets[fooo][i] > -1) {
-  //    printf("%i ",sets[fooo][i]);
-  //    i++;
-  //   }
-  //   printf("\n");
-  // }
-  // printf("\n");
+  printf("\n == Sets == \n");
+  for(int fooo = 0; fooo < numberOfSets; fooo++){
+    printf("Set %i: ", fooo);
+    int i = 0;
+    while(sets[fooo][i] > -1) {
+     printf("%i ",sets[fooo][i]);
+     i++;
+    }
+    printf("\n");
+  }
+  printf("\n");
 
       
     //#define _PRINT_
