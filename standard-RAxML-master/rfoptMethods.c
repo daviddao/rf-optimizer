@@ -106,6 +106,8 @@ Bipartition* Bipartition_create(unsigned int* bitvector, int matching, int treen
     bip->vLength = 0;
     bip->leftSize = 0;
     bip->rightSize = 0;
+    bip->destroyed = 0;
+    bip->predictDestroyed = 0;
 
     return bip;
 
@@ -1132,7 +1134,8 @@ void calculateDropSets(RTaxon** taxonList, Hashmap** mapArray, Hashmap* map, uns
           //leftover bits are from right side
           rightCount = taxaPerTree[i] - leftCount;
           bip->rightSize = rightCount;
-
+          //saving vector length
+          bip->vLength = sBipLength;
 
           //Set bipartition if its not in hashtable
           Hashmap_set(treeMap,bip->bitvector,bip);
@@ -1183,14 +1186,16 @@ unsigned int** createBitVectors(int numberOfTrees, unsigned int* vectorLengthPer
 }
 
 //returns hashmap with newly hashed bipartitions
-Hashmap* removeTaxonFromTree(unsigned int** deletedTaxa, int treeNumber, Hashmap** mapArray) {
+static void removeTaxonFromTree(unsigned int** deletedTaxa, int treeNumber, Hashmap** mapArray) {
 
   int i = 0;
   int j = 0;
-
+  int k = 0;
   //Create new hashtable to check for merging bips
   Hashmap* testMap = NULL;
-  testMap = Hashmap_create(NULL,NULL);
+
+  //Hashtable for comparing bitvectors
+  testMap = Hashmap_create(compareHash,NULL);
 
   //Get the tree hashmap
   Hashmap* treeMap = mapArray[treeNumber];
@@ -1206,19 +1211,72 @@ Hashmap* removeTaxonFromTree(unsigned int** deletedTaxa, int treeNumber, Hashmap
                 HashmapNode* node = DArray_get(bucket, j);
 
                 Bipartition* bip = node->data;
+                
+                //if bip is not destroyed
+                if(!(bip->destroyed)){
 
-                unsigned int* newBitVector = bip->bitvector;
+                  bip->predictDestroyed = 0; //We assume it won't be destroyed -- if this bip survives all checks it falls through
 
-                //Bipartition* bipCopy = Bipartition_create()
+                  //total number of deleted taxa
+                  int numberOfDeletedTaxa = 0;
+                  int newLeftSize = 0;
+                  int vLength = bip->vLength;
+                  //get the deleted taxa
+                  unsigned int* res = (unsigned int*)rax_malloc(vLength * sizeof(unsigned int));
+                  unsigned int* bitvector = bip->bitvector;
+
+                  //calculate how much taxa are deleted on the left side
+                  for(k = 0; k < bip->vLength; k++) {
+                    
+                    numberOfDeletedTaxa = numberOfDeletedTaxa + __builtin_popcount(deletedTaxaList[k]);
+                    res[k] = bitvector[k] & ~(deletedTaxaList[k]);
+                    newLeftSize = newLeftSize + __builtin_popcount(res[k]);
+
+                  }
+                  
+                  assert(bip->leftSize >= newLeftSize);
+
+                  int leftDeletedSize = bip->leftSize - newLeftSize;
+
+                  int rightDeletedSize = 0;
+
+                  //Simple math to figure our how many taxa are subtracted from the right side
+                  rightDeletedSize = numberOfDeletedTaxa - leftDeletedSize;
+
+                  //Get the new size 
+                  int newRightSize = bip->rightSize - rightDeletedSize;
+
+                  //Check if destroyed
+                  if(newRightSize < 2 || newLeftSize < 2) {
+                    bip->predictDestroyed = 1;
+
+                  } else {  
+                    //Now rehash and check if its already there
+                    setHashLength(bip->vLength);
+
+                    //we look for the new reduced bitvector
+                    //due to each tree and umabigious representation, if we delete taxa they still stay unambigious
+                    unsigned int* val = Hashmap_get(testMap,res);
+                    
+                    //not yet in hashtable testMap, so we rehash
+                    if(val == NULL) {
+                      Hashmap_set(testMap,res,res);
+                    } else {
+                      //already inside! So we set this bipartition to destroyed
+                      bip->predictDestroyed = 1;
+                    }
+
+                  }
+
+                } 
+
 
             }
         }
     }
 
-  //check if destroyed
-  //check if merged
-
-  return testMap;
+  //TODO: free testMap;
+  Hashmap_destroy(testMap);
 }
 
 //translate from global to local index
@@ -1286,6 +1344,7 @@ int Dropset_score(Dropset* drop, RTaxon** RTaxonList, unsigned int** deletedTaxa
       int* tree = DArray_get(trees,j);
       treeNumber = *tree; 
 
+      //translate global index into local index
       localIndex = getLocalIndex(taxonToReductionList, treeNumber, globalIndex);
 
       //Get the copied deleted taxa list for each tree

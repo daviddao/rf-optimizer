@@ -18,6 +18,8 @@ typedef struct Bipartition {
 	int leftSize; //number of bits set to 1 where first taxon is set to 0
 	int rightSize; //number of bits set to 1 where first taxon is set to 1
 	int vLength;
+	int destroyed; //0 for not yet destroyed, 1 for already destroyed
+	int predictDestroyed; //0 if removing this dropset its not destroyed else 1
 
 } Bipartition;
 
