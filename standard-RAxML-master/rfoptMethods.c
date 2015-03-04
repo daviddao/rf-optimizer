@@ -960,9 +960,10 @@ static unsigned int* createUniqueKey(unsigned int* bitVector, int first, int vLe
 
 static int vHashLength = 0;
 
-//Set a variable
+//Set the private variable HashLength
 void setHashLength(int vLength) {
   vHashLength = vLength;
+
 }
 
 //Iterate through all elements of the array. Because we need to know the length of the array we set a private variable
@@ -1135,15 +1136,23 @@ void calculateDropSets(RTaxon** taxonList, Hashmap** mapArray, Hashmap* map, uns
   }
 }
 
+//Search for the first unset bit
 static int findIndexOfFirstZero(unsigned int* bitVector, int vLength) {
   int i = 0;
+  int j = 0;
   int index = 0;
   //Iterate through all bits
   for(i = 0; i < vLength; i++) {
-    
+    for(j = 0; j < MASK_LENGTH; j++) {
+      //check if its not setted
+      if(!checkBit(bitVector[i],j)) {
+        index = (MASK_LENGTH * i + j);
+        return index;
+      }
+    }
   }
 
-  return 1; //sth went wrong, couldnt find a zero
+  return -1; //sth went wrong, couldnt find a zero
 }
 
 //Create BitVectors
@@ -1179,14 +1188,15 @@ static void removeTaxonFromTree(unsigned int** deletedTaxa, int treeNumber, Hash
   unsigned int* deletedTaxaList = deletedTaxa[treeNumber];
 
   //check if we deleted the firstTaxon (index 0)
-  int deletedFirstTaxon = deletedTaxaList[0] & (1 << 0);
+  int deletedFirstTaxon = checkBit(deletedTaxaList[0],0);
 
   int nextFirstTaxonIndex = 0;
   //if we delete the first Taxon, we search a new one
   if(deletedFirstTaxon) {
+    nextFirstTaxonIndex = findIndexOfFirstZero(deletedTaxaList,vLength);
 
   }
-  
+
   //iterate through bips in tree
   for(i = 0; i < DArray_count(treeMap->buckets); i++) {
         DArray* bucket = DArray_get(treeMap->buckets, i);
@@ -1242,7 +1252,6 @@ static void removeTaxonFromTree(unsigned int** deletedTaxa, int treeNumber, Hash
                     //Check if we destroyed the firstTaxon
                     if(deletedFirstTaxon) {
                       //Get a new first taxon...
-
                       
                     }
 
