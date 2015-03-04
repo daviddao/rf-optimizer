@@ -761,3 +761,19 @@ Relative RF tree 379: 1.000000
 
 Relative RF tree 380: 1.000000
 
+Number of small trees skipped: 18
+
+Average RF distance 1.000000
+
+Large Tree: 55473, Number of SmallTrees analyzed: 363 
+
+Total execution time: 11.573506 secs
+
+File containing all 363 pair-wise RF distances written to file /Users/David/rf-optimizer/RAxML_RF-Distances.T1
+
+execution stats:
+
+Accumulated time Effective algorithm: 0.01443 sec 
+Average time for effective: 0.0000397515 sec 
+Preprocessingtime: 0.04399 sec 
+

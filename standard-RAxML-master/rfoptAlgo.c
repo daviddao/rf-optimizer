@@ -582,7 +582,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
   log_info("===>Init RTaxon Array with tree list \n");
   //Initialize all RTaxon->trees 
-  initRTaxonList(RTaxonList, smallTreeTaxaList, tr->numberOfTrees, taxaPerTree);
+  initRTaxonList(RTaxonList, smallTreeTaxaList, numberOfTreesAnalyzed, taxaPerTree);
   
   log_info("===> Create DropSet Datastructure \n");
 
@@ -592,18 +592,18 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
   static Hashmap** mapArray = NULL;
   //Set an array to store the pointers to bitvector hashtables for each tree 
-  mapArray = rax_malloc(tr->numberOfTrees * sizeof(Hashmap*));
+  mapArray = rax_malloc(numberOfTreesAnalyzed * sizeof(Hashmap*));
 
 
   printf("===> Calculating and storing DropSets \n");
 
-  printf("number of trees skipped: %i \n", tr->numberOfTrees - numberOfTreesAnalyzed);
+  printf("number of trees skipped: %i ", numberOfTreesAnalyzed - numberOfTreesAnalyzed);
 
   //Calculate dropsets of two given bips lists and extract all sets into array sets and into a hashmap. Each set has following format
   //dropset = {taxa_1,taxa_2,...,taxa_n,-1};
   //Furtheremore calculate Dropset generates two data structures from type bips and dropsets which are pointing to each other in hashtables
   calculateDropSets(RTaxonList, mapArray, map, indBipsPerTree, sBipsPerTree, sets, smallTreeTaxaList, bipsPerTree, 
-  taxaPerTree, vectorLengthPerTree, tr->numberOfTrees);
+  taxaPerTree, vectorLengthPerTree, numberOfTreesAnalyzed);
 
   //Tests for using DArray on ints
   // for(i = 0; i < tr->mxtips + 1; i++) {
@@ -623,7 +623,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
   // int countx = 0;
 
-  // for(i = 0; i < tr->numberOfTrees; i++) {
+  // for(i = 0; i < numberOfTreesAnalyzed; i++) {
   //   printf("tree %i \n",i);
   //   Hashmap* treeHash = mapArray[i];
   //   int k = 0;
@@ -707,7 +707,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
 
   //Create an bitvector for each tree which will store deleted taxa
-  unsigned int** RBitVectorsPerTree = createBitVectors(tr->numberOfTrees,vectorLengthPerTree);
+  unsigned int** RBitVectorsPerTree = createBitVectors(numberOfTreesAnalyzed,vectorLengthPerTree);
 
   log_info("Initial prediction \n");
 
@@ -719,9 +719,9 @@ void plausibilityChecker(tree *tr, analdef *adef)
   
   // Dropset* tdrop = Hashmap_get(map,key);
   // int sc = Dropset_score(tdrop, RTaxonList, RBitVectorsPerTree, mapArray, 
-  //   taxonToReductionList, tr->numberOfTrees, vectorLengthPerTree, taxaPerTree);
+  //   taxonToReductionList, numberOfTreesAnalyzed, vectorLengthPerTree, taxaPerTree);
 
-  // for(i = 0; i < tr->numberOfTrees; i++) {
+  // for(i = 0; i < numberOfTreesAnalyzed; i++) {
   //   //printf("tree %i \n",i);
   //   Hashmap* treeHash = mapArray[i];
   //   int k = 0;
@@ -766,7 +766,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
         //Predict the dropset score
         drop->score = Dropset_score(drop, RTaxonList, RBitVectorsPerTree, mapArray, 
-          taxonToReductionList, tr->numberOfTrees, vectorLengthPerTree, taxaPerTree);
+          taxonToReductionList, numberOfTreesAnalyzed, vectorLengthPerTree, taxaPerTree);
 
         if(drop->score > maxScore) {
           maxScore = drop->score;
@@ -932,7 +932,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
   printBitVector(bvec_scores);
   
   printf("BipsPerTree: ");
-  for(int foo = 0; foo < tr->numberOfTrees; foo++) {
+  for(int foo = 0; foo < numberOfTreesAnalyzed; foo++) {
 
     printf("%i ",bipsPerTree[foo]);
 
