@@ -705,68 +705,48 @@ void plausibilityChecker(tree *tr, analdef *adef)
   //Create an bitvector for each tree which will store deleted taxa
   unsigned int** RBitVectorsPerTree = createBitVectors(tr->numberOfTrees,vectorLengthPerTree);
 
-  log_info("====> TEST \n");
-  // DArray* drops = (RTaxonList[3])->dropsets;
-  // printf("%i \n",RTaxonList[3]->taxonNumber);
-  
-  // Dropset* drop = DArray_get(drops,0);
-  // int* set2 = drop->set;
-
-  // printf("set[0]: %i %i \n",set2[0],set2[1]);
-  
-  // unsigned int* testBV = RBitVectorsPerTree[0];
-
-  // printBitVector(testBV[0]);
-  // testBV = RBitVectorsPerTree[1];
-
-  // printBitVector(testBV[0]);
-  // testBV = RBitVectorsPerTree[2];
-
-  // printBitVector(testBV[0]);
-
-
-  /***********************************************************************************/
-  /* RF-OPT Create Update Data Structures */
-  /***********************************************************************************/
-
-
-  printf("====> Delete DropSet from all bips and update numbers \n");
+  log_info("Initial prediction \n");
 
   //testdropset for smalltree tests
-  int key[3] = {4,-1};
+  //int key[3] = {4,-1};
   //testdropset for large trees
   //int key[7] = {5852,5853,5854,6387,6389,6390,-1};
-  printf("Taxa %s %s \n",tr->nameList[4], tr->nameList[5]);
-  Dropset* dropTest = Hashmap_get(map, key);
+  //printf("Taxa %s %s \n",tr->nameList[4], tr->nameList[5]);
+  int j = 0;
+  //Stores the best
+  int maxScore = 0;
+  Dropset* maxDrop = NULL;
 
-  Dropset_score(dropTest, RTaxonList, RBitVectorsPerTree, mapArray, taxonToReductionList, tr->numberOfTrees, vectorLengthPerTree);
+  for(i = 0; i < DArray_count(map->buckets); i++) {
+    DArray* bucket = DArray_get(map->buckets,i);
+    if(bucket) {
+      for(j = 0; j < DArray_count(bucket); j++) {
+        //Get the dropset
+        HashmapNode* node = DArray_get(bucket, j);
+        Dropset* drop = node->data;
 
-  for(i = 0; i < tr->numberOfTrees; i++) {
-    printf("tree %i \n",i);
-    Hashmap* treeHash = mapArray[i];
-    int k = 0;
-    int j = 0;
-    for(k = 0; k < DArray_count(treeHash->buckets); k++) {
-      DArray* bucket = DArray_get(treeHash->buckets,k);
-      if(bucket) {
-            for(j = 0; j < DArray_count(bucket); j++) {
-                HashmapNode* node = DArray_get(bucket, j);
+        //Predict the dropset score
+        drop->score = Dropset_score(drop, RTaxonList, RBitVectorsPerTree, mapArray, 
+          taxonToReductionList, tr->numberOfTrees, vectorLengthPerTree);
 
-                Bipartition* bip = node->data;
-                unsigned int* bitVector = bip->bitvector;
-                int matching = bip->matching;
-                //printf("this bip is matching: %i \n",matching);
-                
-                printBitVector(bitVector[0]);
-                printf("predictDestroyed: %i \n", bip->predictDestroyed);
-                printf("matching: %i \n", bip->matching);
-
-
-            }
+        if(drop->score > maxScore) {
+          maxScore = drop->score;
+          maxDrop = drop;
         }
+
+        int* set = drop->set;
+
+        printf("Dropset %i %i: %i \n",set[0],set[1],drop->score);
+      }
     }
-   
   }
+
+  printf("MAX: Dropset %i %i with score %i\n", maxDrop->set[0], maxDrop->set[1], maxScore);
+
+
+
+
+  
 
 
 

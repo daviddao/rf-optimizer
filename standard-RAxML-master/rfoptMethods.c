@@ -1394,7 +1394,7 @@ int Dropset_score(Dropset* drop, RTaxon** RTaxonList, unsigned int** deletedTaxa
 
   //Now iterate through all trees and remove the taxons
   for(i = 0; i < numberOfTrees; i++) {
-    printf("tree %i predicting ... \n",i);
+    //printf("tree %i predicting ... \n",i);
     removeTaxonFromTree(deletedTaxaCopy, i, mapArray); 
   }
 
@@ -1417,7 +1417,7 @@ int Dropset_score(Dropset* drop, RTaxon** RTaxonList, unsigned int** deletedTaxa
 
   int totalScore = scoreGain - scorePenalty;
   //TODO: We need to free copied bitvectors!
-  printf("TOTAL SCORE: %i Gain: %i Loss: %i \n", totalScore, scoreGain, scorePenalty);
+  //printf("TOTAL SCORE: %i Gain: %i Loss: %i \n", totalScore, scoreGain, scorePenalty);
 
   return totalScore;
 }
