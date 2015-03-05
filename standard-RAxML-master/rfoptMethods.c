@@ -1336,22 +1336,26 @@ static int calculateLoss(int numberOfTrees, Hashmap** mapArray) {
     for(k = 0; k < DArray_count(treeHash->buckets); k++) {
       DArray* bucket = DArray_get(treeHash->buckets,k);
       if(bucket) {
-            for(j = 0; j < DArray_count(bucket); j++) {
-                HashmapNode* node = DArray_get(bucket, j);
+        
+        for(j = 0; j < DArray_count(bucket); j++) {
+          HashmapNode* node = DArray_get(bucket, j);
 
-                Bipartition* bip = node->data;
+          Bipartition* bip = node->data;
                 
-                //if it is getting destroyed ..
-                if(bip->predictDestroyed == 1) {
-                  //and it was matching before ..
-                  if(bip->matching == 1) { 
-                    //we increment loss!
-                    loss++;
-                  }
-                }
-
+          //if it is not destroyed yet
+          if(bip->destroyed == 0) {
+            //if it is getting destroyed ..
+            if(bip->predictDestroyed == 1) {
+              //and it was matching before ..
+              if(bip->matching == 1) { 
+                //we increment loss!
+                loss++;
+              }
             }
+          }
+
         }
+      }
     }
   }
 
@@ -1420,11 +1424,15 @@ int Dropset_score(Dropset* drop, RTaxon** RTaxonList, unsigned int** deletedTaxa
   //Traverse through all possible RF gains 
   for(i = 0; i < DArray_count(drop->bipartitions); i++) {
     Bipartition* bip = DArray_get(drop->bipartitions, i);
-
-    if(bip->matching == 0) {
-      //if it was not matching before..
-      if(bip->predictDestroyed == 0) {
-        scoreGain++; //..and it its not destroyed, we have a score gain
+    
+    //If it is not destroyed before
+    if(bip->destroyed == 0) {
+      
+      if(bip->matching == 0) {
+        //if it was not matching before..
+        if(bip->predictDestroyed == 0) {
+          scoreGain++; //..and it its not destroyed, we have a score gain
+        }
       }
     }
   }
