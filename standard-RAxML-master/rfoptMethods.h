@@ -4,6 +4,7 @@ typedef struct Dropset {
 	int* set; //dropset
 	int score; //score for this dropset
 	DArray* bipartitions; //Affected bipartitions
+	int destroyed;
 
 } Dropset;
 
@@ -137,6 +138,9 @@ unsigned int** createBitVectors(int numberOfTrees, unsigned int* vectorLengthPer
 void initRTaxonList(RTaxon** map, int** smallTreeTaxaList, int numberOfTrees, int* taxaPerTree);
 
 void detectInitialMatchings(int** sets, int* matchingVector, int* bipsPerTree, int numberOfTrees,  int vLength);
+
+unsigned int** setDeletedBitVectors(unsigned int** deletedTaxaCopy, int* taxaList, 
+  RTaxon** RTaxonList, int** taxonToReductionList);
 
 int Dropset_score(Dropset* drop, RTaxon** RTaxonList, unsigned int** deletedTaxa, Hashmap** mapArray, 
 	int** taxonToReductionList, int numberOfTrees, unsigned int* vectorLengthPerTree, int* taxaPerTree);

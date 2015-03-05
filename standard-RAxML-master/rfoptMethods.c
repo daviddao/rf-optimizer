@@ -130,6 +130,7 @@ Dropset* Dropset_create(int* dropset) {
     //Create pointer list pointing to bipartitions in the tree
     drop->bipartitions = NULL;
     drop->score = 0; 
+    drop->destroyed = 0;
 
     return drop;
 
@@ -1362,8 +1363,44 @@ static int calculateLoss(int numberOfTrees, Hashmap** mapArray) {
   return loss;
 }
 
+//Set deletedTaxaCopy as array containing the bitvectors where deleted taxa are set to one and encoded with local indices
+unsigned int** setDeletedBitVectors(unsigned int** deletedTaxaCopy, int* taxaList, 
+  RTaxon** RTaxonList, int** taxonToReductionList) {
 
+  RTaxon* rtaxon = NULL;
+  int i = 0;
+  int j = 0;
+  int globalIndex = 0;
+  int treeNumber = 0;
+  int localIndex = 0;
+  unsigned int* deletedTaxaTree = NULL; 
 
+  while(taxaList[i] != -1) {
+    globalIndex = taxaList[i];
+    rtaxon = RTaxonList[globalIndex];
+
+    DArray* trees = rtaxon->trees;
+
+    for(j = 0; j < DArray_count(trees); j++) {
+
+      int* tree = DArray_get(trees,j);
+      treeNumber = *tree; 
+
+      //translate global index into local index
+      localIndex = getLocalIndex(taxonToReductionList, treeNumber, globalIndex);
+
+      //Get the copied deleted taxa list for each tree
+      deletedTaxaTree = deletedTaxaCopy[treeNumber];
+
+      //Set bit at position localIndex to 1 on the copied version
+      setBitBV(deletedTaxaTree, localIndex);
+    }
+
+    i++;
+  }
+
+  return deletedTaxaCopy;
+}
 
 //Predict the score
 int Dropset_score(Dropset* drop, RTaxon** RTaxonList, unsigned int** deletedTaxa, Hashmap** mapArray, 
@@ -1389,31 +1426,7 @@ int Dropset_score(Dropset* drop, RTaxon** RTaxonList, unsigned int** deletedTaxa
   //Performance: Maybe only copy trees we need instead of all?
   deletedTaxaCopy = copyBitVectors(numberOfTrees, vectorLengthPerTree, deletedTaxa);
   //-1 is ending symbol for this array
-  while(taxaList[i] != -1) {
-    globalIndex = taxaList[i];
-    rtaxon = RTaxonList[globalIndex];
-
-    DArray* trees = rtaxon->trees;
-
-    for(j = 0; j < DArray_count(trees); j++) {
-
-      int* tree = DArray_get(trees,j);
-      treeNumber = *tree; 
-
-      //printf("CHECK: remove 1 taxa from tree %i with index %i \n", treeNumber, globalIndex);
-
-      //translate global index into local index
-      localIndex = getLocalIndex(taxonToReductionList, treeNumber, globalIndex);
-
-      //Get the copied deleted taxa list for each tree
-      deletedTaxaTree = deletedTaxaCopy[treeNumber];
-
-      //Set bit at position localIndex to 1 on the copied version
-      setBitBV(deletedTaxaTree, localIndex);
-    }
-
-    i++;
-  }
+  deletedTaxaCopy = setDeletedBitVectors(deletedTaxaCopy, taxaList, RTaxonList, taxonToReductionList);
 
   //Now iterate through all trees and remove the taxons
   for(i = 0; i < numberOfTrees; i++) {
