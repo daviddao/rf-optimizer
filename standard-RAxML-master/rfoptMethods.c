@@ -1231,9 +1231,6 @@ static void removeTaxonFromTree(unsigned int** deletedTaxa, int treeNumber, Hash
                   if(deletedFirstTaxon) {
                     //We create a new unambigious representation using the next found taxon in res
                     res = createUniqueKey(res,nextFirstTaxonIndex,bip->vLength,ntips);
-
-                    //printBitVector(res[0]);
-                    //printf("---------> changed \n");
                       
                   }
 
@@ -1362,7 +1359,9 @@ static int calculateLoss(int numberOfTrees, Hashmap** mapArray) {
 }
 
 
-//Calculate the score
+
+
+//Predict the score
 int Dropset_score(Dropset* drop, RTaxon** RTaxonList, unsigned int** deletedTaxa, Hashmap** mapArray, 
   int** taxonToReductionList, int numberOfTrees, unsigned int* vectorLengthPerTree, int* taxaPerTree) {
 
@@ -1415,9 +1414,6 @@ int Dropset_score(Dropset* drop, RTaxon** RTaxonList, unsigned int** deletedTaxa
   //Now iterate through all trees and remove the taxons
   for(i = 0; i < numberOfTrees; i++) {
 
-    if(i == 2) {
-      printBitVector(deletedTaxaCopy[2][0]);
-    }
     removeTaxonFromTree(deletedTaxaCopy, i, mapArray, vectorLengthPerTree[i], taxaPerTree[i]); 
   }
 
@@ -1439,7 +1435,6 @@ int Dropset_score(Dropset* drop, RTaxon** RTaxonList, unsigned int** deletedTaxa
 
   int totalScore = scoreGain - scorePenalty;
   //TODO: We need to free copied bitvectors!
-  //printf("TOTAL SCORE: %i Gain: %i Loss: %i \n", totalScore, scoreGain, scorePenalty);
 
   return totalScore;
 }

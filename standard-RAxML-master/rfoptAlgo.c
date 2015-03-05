@@ -570,6 +570,11 @@ void plausibilityChecker(tree *tr, analdef *adef)
   }// End of Small Tree Iterations
 
   /***********************************************************************************/
+  /* RF-OPT Graph Construction */
+  /***********************************************************************************/
+
+
+  /***********************************************************************************/
   /* RF-OPT DropSet Calculation using BitVectors */
   /***********************************************************************************/
 
@@ -655,39 +660,6 @@ void plausibilityChecker(tree *tr, analdef *adef)
   // assert(countx == numberOfBips);
 
   /***********************************************************************************/
-  /* RF-OPT Graph Construction */
-  /***********************************************************************************/
-
-  log_info("===> Hashmap tests...\n");
-  
-  //Hashmap_traverse(map, traverse_cb);
-
-  //int key[2] = {0,-1};
-
-  //Dropset* drop0 = Hashmap_get(map,key);
-  //DArray* bips = drop0->bipartitions;
-
-  // for(int i = 0; i < DArray_count(bips); i++) {
-  //   Bipartition* bip = DArray_get(bips,i);
-  //   printBitVector(bip->bitvector[0]);
-  //   printf("matching: %i \n", bip->matching);
-  //   printf("tree: %i \n", bip->treeNumber);
-  // }
-
-  //Bipartition* bipFromHash = DArray_first(bips);
-  //Bipartition* testBip = Hashmap_get(mapArray[0],bipFromHash->bitvector);
-  //printf("matching before: %i \n", testBip->matching);
-  //testBip->matching = 999;
-
-  // for(int i = 0; i < DArray_count(bips); i++) {
-  //   Bipartition* bip = DArray_get(bips,i);
-  //   printBitVector(bip->bitvector[0]);
-  //   printf("matching: %i \n", bip->matching);
-  //   printf("tree: %i \n", bip->treeNumber);
-  // }
-
-
-  /***********************************************************************************/
   /* End RF-OPT Graph Construction */
   /***********************************************************************************/
 
@@ -712,12 +684,12 @@ void plausibilityChecker(tree *tr, analdef *adef)
   log_info("Initial prediction \n");
 
   //testdropset for smalltree tests
-  // int key[3] = {3,5,-1};
+  //int key[3] = {3,5,-1};
   // //testdropset for large trees
-  // //int key[7] = {5852,5853,5854,6387,6389,6390,-1};
+  // int key[7] = {5852,5853,5854,6387,6389,6390,-1};
   // printf("Taxa %s %s \n",tr->nameList[3], tr->nameList[5]);
   
-  // Dropset* tdrop = Hashmap_get(map,key);
+  //Dropset* tdrop = Hashmap_get(map,key);
   // int sc = Dropset_score(tdrop, RTaxonList, RBitVectorsPerTree, mapArray, 
   //   taxonToReductionList, numberOfTreesAnalyzed, vectorLengthPerTree, taxaPerTree);
 
@@ -748,46 +720,96 @@ void plausibilityChecker(tree *tr, analdef *adef)
   //   }
   // }
 
-  //printf("sc : %i \n", sc);
-  //COMMENTED ALGORITHM
+  //Iterate through all dropsets and predict their scores
   int j = 0;
   int dropCounter = 0;
-  //Stores the best
-  int maxScore = 0;
+  //Stores the best, algorithm aborts for scores under original
+  int maxScore = -1;
   Dropset* maxDrop = NULL;
 
   for(i = 0; i < DArray_count(map->buckets); i++) {
     DArray* bucket = DArray_get(map->buckets,i);
-    if(bucket) {//
+    if(bucket) {
+
       for(j = 0; j < DArray_count(bucket); j++) {
         //Get the dropset
         HashmapNode* node = DArray_get(bucket, j);
         Dropset* drop = node->data;
 
-        //Predict the dropset score
-        drop->score = Dropset_score(drop, RTaxonList, RBitVectorsPerTree, mapArray, 
-          taxonToReductionList, numberOfTreesAnalyzed, vectorLengthPerTree, taxaPerTree);
+        //Predict the dropset score for every dropset except {0,-1}
+        if(!(drop->set[0] == 0)){
 
-        if(drop->score > maxScore) {
-          maxScore = drop->score;
-          maxDrop = drop;
+          drop->score = Dropset_score(drop, RTaxonList, RBitVectorsPerTree, mapArray, 
+            taxonToReductionList, numberOfTreesAnalyzed, vectorLengthPerTree, taxaPerTree);
+
+          if(drop->score > maxScore) {
+            maxScore = drop->score;
+            maxDrop = drop;
+          }
+
+          int* set = drop->set;
+        
+          printf("Dropset %i %i: %i \n",set[0],set[1],drop->score);
+          printf("%i \n",dropCounter);
         }
 
-        int* set = drop->set;
-
-        printf("Dropset %i %i: %i \n",set[0],set[1],drop->score);
-        //printf("%i \n",dropCounter);
         dropCounter++;
       }
     }
   }
 
-  //printf("MAX: Dropset %i %i with score %i\n", maxDrop->set[0], maxDrop->set[1], maxScore);
-
+  printf("MAX: Score %i\n", maxScore);
+  printf("DropSet: %i %i - %s\n", maxDrop->set[0], maxDrop->set[1], tr->nameList[maxDrop->set[0]]);
 
   /***********************************************************************************/
   /* TODO RF-OPT Update function */
   /***********************************************************************************/
+
+  //Get the predictDestroyed values for all taxa 
+  Dropset_score(maxDrop, RTaxonList, RBitVectorsPerTree, mapArray, 
+    taxonToReductionList, numberOfTreesAnalyzed, vectorLengthPerTree, taxaPerTree);
+
+  //Iterate through all bips and set all values as destroyed and unmatching to matching
+  for(i = 0; i < numberOfTreesAnalyzed; i++) {
+    //printf("tree %i \n",i);
+    Hashmap* treeHash = mapArray[i];
+    int k = 0;
+    int j = 0;
+    for(k = 0; k < DArray_count(treeHash->buckets); k++) {
+      DArray* bucket = DArray_get(treeHash->buckets,k);
+      if(bucket) {
+            for(j = 0; j < DArray_count(bucket); j++) {
+                HashmapNode* node = DArray_get(bucket, j);
+
+                Bipartition* bip = node->data;
+                unsigned int* bitVector = bip->bitvector;
+                int matching = bip->matching;
+
+                //If we predict this to be destroyed
+                if(bip->predictDestroyed == 1) { 
+                  bip->destroyed = 1;
+                }
+
+                printBitVector(bitVector[0]);
+                printf("predictDestroyed: %i \n", bip->predictDestroyed);
+                printf("destroyed: %i \n", bip->destroyed);
+                printf("matching: %i \n", bip->matching);
+                
+            }
+        }
+    }
+  }
+
+  //Iterate through all bips and set them to matching
+  for(i = 0; i < DArray_count(maxDrop->bipartitions); i++) {
+    Bipartition* bip = DArray_get(maxDrop->bipartitions, i);
+
+    if(bip->matching == 0) {
+      if(bip->destroyed == 0) {
+        bip->matching = 1;
+      }
+    }
+  }
 
 
 
@@ -828,143 +850,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
   // }
   // printf("\n");
 
-      
-    //#define _PRINT_
-      
-    #ifdef _PRINT_
 
-    for(int i = 0; i < numberOfUniqueSets; i++) {
-      printf("Bips of Set %i: ", i);
-        for(int j = 0; j < numberOfBipsPerSet[i]; j++) {
-          int* bips = bipsOfDropSet[i];
-          printf("%i ", bips[j]);
-        }
-      printf("\n");
-    }
-
-
-    printf("Induced Bips! \n");
-    // Now checking which dropset would destroy which bipartition 
-    for(int i = 0 ; i < numberOfBips; i++) {
-      printf("Bip %i is %i \n",i,ind_bips[i]);
-    }
-
-
-    printf("Taxa Names : \n");
-    for(int i = 0; i < tr->mxtips + 1; i++) {
-      printf("%s ",tr->nameList[i]);
-    }
-    printf("\n");
-
-    printf("Small Tree Taxa Names 0 : \n");
-    for(int i = 0; i < taxaPerTree[0]; i++) {
-      int* list = smallTreeTaxaList[0];
-      int taxa = list[i]; 
-      printf("%s ",tr->nameList[taxa]);
-    }
-    printf("\n");
-
-    printf("Small Tree Taxa Names 1 : \n");
-    for(int i = 0; i < taxaPerTree[1]; i++) {
-      int* list = smallTreeTaxaList[1];
-      int taxa = list[i]; 
-      printf("%s ",tr->nameList[taxa]);
-    }
-    printf("\n");
-
-    printf("Small Tree Taxa Names 2 : \n");
-    for(int i = 0; i < taxaPerTree[2]; i++) {
-      int* list = smallTreeTaxaList[2];
-      int taxa = list[i]; 
-      printf("%s ",tr->nameList[taxa]);
-    }
-    printf("\n");
-
-    printf("Number of DropSets extracted%i \n",dropSetCount);
-    printf("Number of Bips extracted %i \n",currentBips);
-
-    //Testing ...
-    printf("Number of Sets is %i \n",numberOfSets);
-    printf("Number of Unique Sets is %i \n",numberOfUniqueSets);
-
-    printf("==> Testing bips of unique sets \n");
-    for(int i = 0; i < numberOfUniqueSets; i++) {
-      printf("Bips of Set %i: ", i);
-        for(int j = 0; j < numberOfBipsPerSet[i]; j++) {
-          int* bips = bipsOfDropSet[i];
-          printf("%i ", bips[j]);
-        }
-      printf("\n");
-    }
-
-    printf("==> Testing bips of taxa \n");
-    for(int i = 1; i < tr->mxtips + 1; i++) {
-      printf("Bips of Taxa %i: ", i);
-        for(int j = 0; j < numberOfBipsPerTaxa[i]; j++) {
-        int* bips = bipsOfTaxa[i];
-        printf("%i ", bips[j]);
-        }
-      printf("\n");
-    }
-
-
-
-  printf("==> Unique Sets: ");
-  for(int i = 0; i < numberOfUniqueSets; i++) {
-    int j = 0;
-    int* set = uniqSets[i];
-    while(set[j] > -1) {
-      printf("%i ",set[j]);
-      j++;
-    }
-    printf("; ");
-  }
-  printf("\n");
-
-  printf("==> setsToUniqSets: ");
-  for(int i = 0; i < numberOfSets; i++) {
-    printf("%i ",setsToUniqSets[i]);
-  }
-  printf("\n");
-
-  //=== TREE GRAPH CONSTRUCTION ENDS ===
-  printf("Scores: ");
-  printBitVector(bvec_scores);
-  
-  printf("BipsPerTree: ");
-  for(int foo = 0; foo < numberOfTreesAnalyzed; foo++) {
-
-    printf("%i ",bipsPerTree[foo]);
-
-  } 
-
-  printf("\nInduced Bips: ");
-  for(int foo = 0;foo < numberOfBips; foo++) {
-    
-    printf("%u ",ind_bips[foo]);
-  
-  }
-
-  printf("\nSmall Tree Bips: ");
-  for(int foo = 0;foo < numberOfBips; foo++) {
-  
-    printf("%u ",s_bips[foo]);
-
-  }
-
-  printf("\n == Sets == \n");
-  for(int fooo = 0; fooo < numberOfSets; fooo++){
-    printf("Set %i: ", fooo);
-    int i = 0;
-    while(sets[fooo][i] > -1) {
-     printf("%i ",sets[fooo][i]);
-     i++;
-    }
-    printf("\n");
-  }
-  printf("\n");
-
-  #endif
 
   printBothOpen("Number of small trees skipped: %d\n\n", tr->numberOfTrees - numberOfTreesAnalyzed);
   
