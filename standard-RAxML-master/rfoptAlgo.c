@@ -555,7 +555,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
     sumEffectivetime += effectivetime;
     
     //if(numberOfTreesAnalyzed % 100 == 0)
-    printBothOpen("Relative RF tree %d: %f\n\n", i, rec_rf);
+    //printBothOpen("Relative RF tree %d: %f\n\n", i, rec_rf);
     
     fprintf(rfFile, "%d %f\n", i, rec_rf);
     
@@ -632,8 +632,6 @@ void plausibilityChecker(tree *tr, analdef *adef)
   //Create an bitvector for each tree which will store deleted taxa
   unsigned int** RBitVectorsPerTree = createBitVectors(numberOfTreesAnalyzed,vectorLengthPerTree);
 
-  log_info("Initial prediction \n");
-
   //testdropset for smalltree tests
   //int key[3] = {3,5,-1};
   // //testdropset for large trees
@@ -641,6 +639,8 @@ void plausibilityChecker(tree *tr, analdef *adef)
   // printf("Taxa %s %s \n",tr->nameList[3], tr->nameList[5]);
   
   //Dropset* tdrop = Hashmap_get(map,key);
+
+printf("\n==> Prediction Step \n");
 
 int iter = 0;
 
@@ -675,7 +675,10 @@ do
 
           int* set = drop->set;
         
-          printf("Dropset %i %i: %i \n",set[0],set[1],drop->score);
+          //printf("Dropset %i %i: %i \n",set[0],set[1],drop->score);
+          if(dropCounter % 10 == 0) {
+            printf("%i dropsets analyzed, current MAX score: %i \n",dropCounter, maxScore);
+          }
           //printf("%i \n",dropCounter);
         }
 
@@ -684,8 +687,8 @@ do
     }
   }
 
-  printf("MAX: Score %i\n", maxScore);
-  printf("DropSet: %i %i - %s\n", maxDrop->set[0], maxDrop->set[1], tr->nameList[maxDrop->set[0]]);
+  printf("\nMAX Score: %i \n", maxScore);
+  printf("Remove Dropset: %i %i \n\n", maxDrop->set[0], maxDrop->set[1]);
 
   /***********************************************************************************/
   /* TODO RF-OPT Update function */
@@ -716,10 +719,10 @@ do
                   bip->destroyed = 1;
                 }
 
-                printBitVector(bitVector[0]);
-                printf("predictDestroyed: %i \n", bip->predictDestroyed);
-                printf("destroyed: %i \n", bip->destroyed);
-                printf("matching: %i \n", bip->matching);
+                //printBitVector(bitVector[0]);
+                //printf("predictDestroyed: %i \n", bip->predictDestroyed);
+                //printf("destroyed: %i \n", bip->destroyed);
+                //printf("matching: %i \n", bip->matching);
                 
             }
         }
@@ -740,9 +743,9 @@ do
   RBitVectorsPerTree = setDeletedBitVectors(RBitVectorsPerTree, maxDrop->set, 
   RTaxonList, taxonToReductionList);
 
-  for(i = 0; i < 3; i++) {
-    printBitVector(RBitVectorsPerTree[i][0]);
-  } 
+  // for(i = 0; i < 3; i++) {
+  //   printBitVector(RBitVectorsPerTree[i][0]);
+  // } 
 
   //Rehash dropsets
 

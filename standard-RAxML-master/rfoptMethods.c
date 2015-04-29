@@ -998,6 +998,7 @@ void calculateDropSets(RTaxon** taxonList, Hashmap** mapArray, Hashmap* map, uns
 
   int countSets = 0;
   int countBips = 0;
+  int uniqueDropSetCount = 0;
 
   //First iterate through all trees
   for(int i = 0; i< numberOfTrees; i++) {
@@ -1058,6 +1059,8 @@ void calculateDropSets(RTaxon** taxonList, Hashmap** mapArray, Hashmap* map, uns
           drop->bipartitions = bips;
 
           assert(0 == Hashmap_set(map, drop->set, drop));
+
+          uniqueDropSetCount++;
 
         } else {
 
@@ -1131,11 +1134,16 @@ void calculateDropSets(RTaxon** taxonList, Hashmap** mapArray, Hashmap* map, uns
         }
 
         countSets++;
+        if(countSets % 5000 == 0) {
+          printf("looked at %i sets, current unique dropsets: %i \n", countSets, uniqueDropSetCount);
+        }
         //printf("%i \n",countSets);
 
       }
     }
   }
+
+  printf("\n=> Unique Dropsets found: %i \n", uniqueDropSetCount);
 }
 
 //Search for the first unset bit
