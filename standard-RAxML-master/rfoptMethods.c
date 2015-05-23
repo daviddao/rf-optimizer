@@ -91,8 +91,6 @@ extern volatile int NumberOfJobs;
 
 
 
-
-
 /********************************** Init functions ******************************/
 
 Bipartition* Bipartition_create(unsigned int* bitvector, int matching, int treenumber) {
@@ -962,7 +960,10 @@ static unsigned int* createUniqueKey(unsigned int* bitVector, int firstIndex, in
 
 static int vHashLength = 0;
 
-//Set the private variable HashLength
+
+/***************************** hash stuff **************************************/ 
+
+//Set the private variable HashLength for use in the compareBitVectors function
 void setHashLength(int vLength) {
   vHashLength = vLength;
 
@@ -991,6 +992,8 @@ static int compareHash(void* a, void* b) {
   return compareBitVectors((unsigned int*)a, (unsigned int*)b);
 
 }
+
+/************************ hash stuff ends ***************************************/
 
 //Calculates all dropsets of two given bipartition lists, we don't have to create a unique representation :)
 void calculateDropSets(RTaxon** taxonList, Hashmap** mapArray, Hashmap* map, unsigned int*** indBipsPerTree, unsigned int*** sBipsPerTree, int** sets, int** smallTreeTaxaList, int* bipsPerTree, 
@@ -1324,6 +1327,7 @@ static unsigned int** copyBitVectors(int numberOfTrees, unsigned int* vectorLeng
   return bitVectors;  
 }
 
+//Function for calculating the predicted penality
 static int calculateLoss(int numberOfTrees, Hashmap** mapArray) {
 
   int loss = 0;
@@ -1452,7 +1456,6 @@ int Dropset_score(Dropset* drop, RTaxon** RTaxonList, unsigned int** deletedTaxa
 
   //Now traverse through all bips and see if we would destroy any matching
   scorePenalty = calculateLoss(numberOfTrees,mapArray);
-
 
   int totalScore = scoreGain - scorePenalty;
   //TODO: We need to free copied bitvectors!

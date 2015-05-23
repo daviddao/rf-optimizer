@@ -555,7 +555,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
     sumEffectivetime += effectivetime;
     
     //if(numberOfTreesAnalyzed % 100 == 0)
-    printBothOpen("Relative RF tree %d: %f\n\n", i, rec_rf);
+    //printBothOpen("Relative RF tree %d: %f\n\n", i, rec_rf);
     
     fprintf(rfFile, "%d %f\n", i, rec_rf);
     
@@ -572,7 +572,6 @@ void plausibilityChecker(tree *tr, analdef *adef)
   /***********************************************************************************/
   /* RF-OPT Graph Construction */
   /***********************************************************************************/
-
 
   /***********************************************************************************/
   /* RF-OPT DropSet Calculation using BitVectors */
@@ -614,15 +613,6 @@ void plausibilityChecker(tree *tr, analdef *adef)
   /* End RF-OPT Graph Construction */
   /***********************************************************************************/
 
-  /* Short summary :
-    sets - array of all dropsets
-    uniqSets - array of all unique dropsets
-    bipsPerTree - bips per tree
-    setsToUniqSets - translates the index of sets to the index of its unique dropset index
-    bipsOfDropSets - all bips which disappear when dropset i is pruned
-    scores - has all scores between 0 and 1 for the bips (however 0s can be found out by looking at all dropsets with link to dropset 0 (because we sort and it will always be the lowest))  
-  */
-
 
   /***********************************************************************************/
   /* RF-OPT Initial Score Calculation */
@@ -634,24 +624,21 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
   log_info("Initial prediction \n");
 
-  //testdropset for smalltree tests
-  //int key[3] = {3,5,-1};
-  // //testdropset for large trees
-  // int key[7] = {5852,5853,5854,6387,6389,6390,-1};
-  // printf("Taxa %s %s \n",tr->nameList[3], tr->nameList[5]);
-  
-  //Dropset* tdrop = Hashmap_get(map,key);
+
+//Starting the iteration algorithm
 
 int iter = 0;
 
 do
 {
+
   //Iterate through all dropsets and predict their scores
   int j = 0;
   int dropCounter = 0;
   //Stores the best, algorithm aborts for scores under original
   int maxScore = -999;
   Dropset* maxDrop = NULL;
+
 
   for(i = 0; i < DArray_count(map->buckets); i++) {
     DArray* bucket = DArray_get(map->buckets,i);
@@ -675,8 +662,9 @@ do
 
           int* set = drop->set;
         
-          printf("Dropset %i %i: %i \n",set[0],set[1],drop->score);
-          //printf("%i \n",dropCounter);
+          printf("Dropset: %i %i - %s %s: %i \n",set[0], set[1], tr->nameList[set[0]],tr->nameList[set[1]],drop->score);
+
+          assert(drop->score < 1);
         }
 
         dropCounter++;
@@ -684,20 +672,22 @@ do
     }
   }
 
+  
+
   printf("MAX: Score %i\n", maxScore);
-  printf("DropSet: %i %i - %s\n", maxDrop->set[0], maxDrop->set[1], tr->nameList[maxDrop->set[0]]);
+  printf("Max DropSet[0][1]: %i %i \n", maxDrop->set[0], maxDrop->set[1]);
 
   /***********************************************************************************/
-  /* TODO RF-OPT Update function */
+  /* RF-OPT Update function */
   /***********************************************************************************/
 
   //Get the predictDestroyed values for all taxa 
   Dropset_score(maxDrop, RTaxonList, RBitVectorsPerTree, mapArray, 
     taxonToReductionList, numberOfTreesAnalyzed, vectorLengthPerTree, taxaPerTree);
 
-  //Iterate through all bips and set all values as destroyed and unmatching to matching
+  //Iterate through all bips in the trees and set all values to destroyed 
   for(i = 0; i < numberOfTreesAnalyzed; i++) {
-    //printf("tree %i \n",i);
+
     Hashmap* treeHash = mapArray[i];
     int k = 0;
     int j = 0;
@@ -715,18 +705,13 @@ do
                 if(bip->predictDestroyed == 1) { 
                   bip->destroyed = 1;
                 }
-
-                printBitVector(bitVector[0]);
-                printf("predictDestroyed: %i \n", bip->predictDestroyed);
-                printf("destroyed: %i \n", bip->destroyed);
-                printf("matching: %i \n", bip->matching);
                 
             }
         }
     }
   }
 
-  //Iterate through all bips and set them to matching
+  //Iterate through all bips in the selected dropset and set them to matching
   for(i = 0; i < DArray_count(maxDrop->bipartitions); i++) {
     Bipartition* bip = DArray_get(maxDrop->bipartitions, i);
 
@@ -737,19 +722,19 @@ do
     }
   }
 
+  //Store deleted taxa into bitvector
   RBitVectorsPerTree = setDeletedBitVectors(RBitVectorsPerTree, maxDrop->set, 
   RTaxonList, taxonToReductionList);
 
-  for(i = 0; i < 3; i++) {
-    printBitVector(RBitVectorsPerTree[i][0]);
-  } 
-
   //Rehash dropsets
 
-  //Destroy dropset
+  //TODO: Can be easily added, left out for optimization purpose
+
+  //Set dropset to destroyed
   maxDrop->destroyed = 1;
 
   iter++;
+  //Repeat prediction ...
 } while(iter < 3);
 
 
@@ -764,25 +749,10 @@ do
   /* Console Logs for debugging */
   /***********************************************************************************/
 
-  //Printing if
-
-  // printf("\n == Sets == \n");
-  // for(int fooo = 0; fooo < numberOfSets; fooo++){
-  //   printf("Set %i: ", fooo);
-  //   int i = 0;
-  //   while(sets[fooo][i] > -1) {
-  //    printf("%i ",sets[fooo][i]);
-  //    i++;
-  //   }
-  //   printf("\n");
-  // }
-  // printf("\n");
-
-
 
   printBothOpen("Number of small trees skipped: %d\n\n", tr->numberOfTrees - numberOfTreesAnalyzed);
   
-  printBothOpen("Average RF distance %f\n\n", avgRF / (double)numberOfTreesAnalyzed);
+  //printBothOpen("Average RF distance %f\n\n", avgRF / (double)numberOfTreesAnalyzed);
   
   printBothOpen("Large Tree: %i, Number of SmallTrees analyzed: %i \n\n", tr->mxtips, numberOfTreesAnalyzed); 
   
