@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include "darray.h"
 
-#define DEFAULT_NUMBER_OF_BUCKETS 100000
+#define DEFAULT_NUMBER_OF_BUCKETS 1000000
 
 typedef int (*Hashmap_compare)(void *a, void *b);
 typedef uint32_t (*Hashmap_hash)(void *key);
