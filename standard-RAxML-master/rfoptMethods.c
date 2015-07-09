@@ -413,15 +413,16 @@ unsigned int** RFOPT_extractBipartitionsMulti(unsigned int** bitvectors, int* se
 
 /* converts integer into binary representation */
  char *int2bin(int a, char *buffer, int buf_size) {
-      buffer += (buf_size - 1);
+    buffer += (buf_size - 1);
 
-        for (int i = 31; i >= 0; i--) {
-                *buffer-- = (a & 1) + '0';
+    int i;
+      for (i = 31; i >= 0; i--) {
+        *buffer-- = (a & 1) + '0';
 
-                    a >>= 1;
-                    }
+        a >>= 1;
+        }
 
-          return buffer;
+      return buffer;
 }
 
 /* function for built-in quicksort sorting after number of bits */
@@ -512,8 +513,8 @@ int isSameDropSet(int* a, int* b) {
     returns index+1 if it contains the element 
 */
 int contains(int* check, int** sets, int numberOfSets) {
-
-  for (int i = 0; i < numberOfSets; i++) {
+  int i;
+  for (i = 0; i < numberOfSets; i++) {
     
     int* dropset = sets[i];
     
@@ -530,8 +531,8 @@ int contains(int* check, int** sets, int numberOfSets) {
 int getMax(int* arr, int size) {
 
   int max = 0;
-
-  for (int i = 1; i < size; i++) {
+  int i;
+  for (i = 1; i < size; i++) {
 
     if(arr[i] > arr[max]) {
       max = i;
@@ -582,8 +583,8 @@ unsigned int* setBitBV(unsigned int* bitVector, int pos) {
 
 //Use to setup a mask to clear the offset bits
 int setOffSet(int mask, int offset) {
-  
-  for(int i = 0; i < offset; i++) {
+  int i;
+  for(i = 0; i < offset; i++) {
     mask = setBit(mask, i);
   }
 
@@ -620,7 +621,8 @@ void printSet(int* set) {
 //Takes as input a bitvector and returns a new bitvector OLD
  int getBipsOfDropSet(int bvec_bips, int dropsetNumber, int* numberOfBipsPerSet, int** bipsOfDropSet) {
     //Now iterate through bipsOfDropSet list
-    for(int l = 0; l < numberOfBipsPerSet[dropsetNumber]; l++) {
+    int l;
+    for(l = 0; l < numberOfBipsPerSet[dropsetNumber]; l++) {
 
       //Get the index list of bips for this Drop Set
       int* bips = bipsOfDropSet[dropsetNumber];
@@ -640,15 +642,17 @@ int* extractSetFromBitVector(unsigned int* bitvector, int* smallTreeTaxa, unsign
 
     int numberOfOnes = 0;
 
-    for(int i = 0; i < vLength; i++) {
+    int i;
+
+    for(i = 0; i < vLength; i++) {
       numberOfOnes = numberOfOnes + __builtin_popcount(bitvector[i]);
       //printf("%i - %i ones \n", i, __builtin_popcount(bitvector[i]));
     }
 
+    i = 0;
+
     //plus one because of the terminal number -1 to determine the end of the array
     int* set = rax_malloc((numberOfOnes + 1) * sizeof(int));
-
-    int i = 0;
 
     int numberOfZerosBefore = 0;
 
@@ -771,8 +775,9 @@ int* getDropSetFromBitVectors(unsigned int* indBip, unsigned int* sBip, unsigned
   unsigned int count3 = 0;
   unsigned int count4 = 0;
 
+  int i;
   //Calculate a logical operation on BitVectors
-  for(int i = 0; i < vLength; i++) {
+  for(i = 0; i < vLength; i++) {
 
     //Calculating the two different Bipartition choices
     x1_x2[i] = indBip[i] & sBip[i];
@@ -786,8 +791,9 @@ int* getDropSetFromBitVectors(unsigned int* indBip, unsigned int* sBip, unsigned
   int ntips = taxaPerTree[treenumber];
 
   if(ntips % MASK_LENGTH != 0) 
-      {            
-        for(int o = MASK_LENGTH; o > (ntips % MASK_LENGTH); o--) {        
+      { 
+        int o;       
+        for(o = MASK_LENGTH; o > (ntips % MASK_LENGTH); o--) {        
           x1_x2[vLength - 1] &= ~mask32[o-1];  
           y1_y2[vLength - 1] &= ~mask32[o-1];
           x1_y2[vLength - 1] &= ~mask32[o-1];
@@ -796,7 +802,7 @@ int* getDropSetFromBitVectors(unsigned int* indBip, unsigned int* sBip, unsigned
       }
 
 
-  for(int i = 0; i < vLength; i++) {
+  for(i = 0; i < vLength; i++) {
     //Calculate number of bits of the resulting set calculations  
     count1 = count1 + __builtin_popcount(x1_x2[i]);
     count2 = count2 + __builtin_popcount(y1_y2[i]);
@@ -999,9 +1005,9 @@ void calculateDropSets(RTaxon** taxonList, Hashmap** mapArray, Hashmap* map, uns
   int countSets = 0;
   int countBips = 0;
   int uniqueDropSetCount = 0;
-
+  int i;
   //First iterate through all trees
-  for(int i = 0; i< numberOfTrees; i++) {
+  for(i = 0; i< numberOfTrees; i++) {
 
     //Get all induced Bips of this tree
     unsigned int **indBips = indBipsPerTree[i];
@@ -1013,15 +1019,15 @@ void calculateDropSets(RTaxon** taxonList, Hashmap** mapArray, Hashmap* map, uns
     Hashmap* treeMap = Hashmap_create(compareHash, NULL);
 
     mapArray[i] = treeMap;
-
+    int j;
     //Now go through all Bips of this tree
-    for(int j = 0; j < bipsPerTree[i]; j++) {
+    for(j = 0; j < bipsPerTree[i]; j++) {
 
       //Get the bitVector of this Bips
       unsigned int* indBip = indBips[j];
-
+      int k;
       //Now iterate through all small Bips in the tree
-      for(int k = 0; k < bipsPerTree[i]; k++) {
+      for(k = 0; k < bipsPerTree[i]; k++) {
         
         //get small Bip
         unsigned int *sBip = sBips[k];

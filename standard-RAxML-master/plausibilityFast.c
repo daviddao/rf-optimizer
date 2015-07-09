@@ -91,7 +91,7 @@ extern volatile int NumberOfJobs;
 /* Calculates the size of every subtree and extract its bipartition by seperating the subtree from the small tree 
  This Algorithm works on the induced bifurcating subtree only and needs therefore no multifurcation adaption 
  It then counts, how many bipartition is shared with the reference small tree*/
-int rec_findBipartitions(unsigned int ** bitvectors, int* seq, int arraysize, int* translate, int numsp, unsigned int vLength, int ntips, int first, hashtable* hash, int* taxonToReduction)
+int rec_findBipartitions(FILE * file, unsigned int ** bitvectors, int* seq, int arraysize, int* translate, int numsp, unsigned int vLength, int ntips, int first, hashtable* hash, int* taxonToReduction)
 {
   int 
     i, 
@@ -166,7 +166,8 @@ int rec_findBipartitions(unsigned int ** bitvectors, int* seq, int arraysize, in
 	  numberOfSplits += 1;
 	}
     }
-  
+
+  fprintf(file, "ind_bip_start\n");
   for(i=0;i < (ntips - 3); i++) 
     {
       toInsert = bitvectors[bipartitions[i]];
@@ -195,9 +196,16 @@ int rec_findBipartitions(unsigned int ** bitvectors, int* seq, int arraysize, in
       /* re-hash to the new hash table that contains the bips of the large tree, pruned down 
 	 to the taxa contained in the small tree
       */
+
+      // Save the small bitvectors
+      for(k=0; k < vLength; k++)
+        fprintf(file,"%u ",toInsert[k]);  
+      fprintf(file,"\n");  
       
       found = found + findHash(toInsert, hash, vLength, position);              
     }
+
+    fprintf(file, "ind_bip_end\n");
 
   rax_free(V);
   rax_free(bipartitions);
@@ -208,7 +216,7 @@ int rec_findBipartitions(unsigned int ** bitvectors, int* seq, int arraysize, in
 /* method adapted for multifurcating trees, changes are: 
 we now need information about the degree of an inner node, because it is not 2 anymore 
 we also can have less than n-3 splits and therefore need a new parameter telling us the actual split number */
-void rec_extractBipartitionsMulti(unsigned int** bitvectors, int* seq, int arraysize, int numsp, unsigned int vLength, int ntips, int first, hashtable* hash, int* taxonToReduction, int* taxonHasDegree, int maxSplits)
+void rec_extractBipartitionsMulti(FILE *file, unsigned int** bitvectors, int* seq, int arraysize, int numsp, unsigned int vLength, int ntips, int first, hashtable* hash, int* taxonToReduction, int* taxonHasDegree, int maxSplits)
 {
   int 
     i,
@@ -276,6 +284,7 @@ void rec_extractBipartitionsMulti(unsigned int** bitvectors, int* seq, int array
 	}
     }
   /* we now iterate to maxSplits instead of n-3 */
+  fprintf(file, "s_bip_start\n");
   for(i=0;i < maxSplits; i++) 
     {
       toInsert = bitvectors[bipartitions[i]];
@@ -306,8 +315,15 @@ void rec_extractBipartitionsMulti(unsigned int** bitvectors, int* seq, int array
       /* re-hash to the new hash table that contains the bips of the large tree, pruned down 
 	 to the taxa contained in the small tree
       */
-      insertHashPlausibility(toInsert, hash, vLength, position);     
+      insertHashPlausibility(toInsert, hash, vLength, position); 
+
+      //Save the bitvector for the bip from left to right
+      
+      for(k=0; k < vLength; k++)
+        fprintf(file,"%u ",toInsert[k]);  
+      fprintf(file,"\n");  
     }
+    fprintf(file, "s_bip_end\n");
 
   rax_free(V);
   rax_free(bipartitions);  

@@ -3,12 +3,12 @@
 /* Calculates the size of every subtree and extract its bipartition by seperating the subtree from the small tree 
  This Algorithm works on the induced bifurcating subtree only and needs therefore no multifurcation adaption 
  It then counts, how many bipartition is shared with the reference small tree*/
-int rec_findBipartitions(unsigned int ** bitvectors, int* seq, int arraysize, int* translate, int numsp, unsigned int vLength, int ntips, int first, hashtable* hash, int* taxonToReduction);
+int rec_findBipartitions(FILE * file, unsigned int ** bitvectors, int* seq, int arraysize, int* translate, int numsp, unsigned int vLength, int ntips, int first, hashtable* hash, int* taxonToReduction);
 
 /* method adapted for multifurcating trees, changes are: 
 we now need information about the degree of an inner node, because it is not 2 anymore 
 we also can have less than n-3 splits and therefore need a new parameter telling us the actual split number */
-void rec_extractBipartitionsMulti(unsigned int** bitvectors, int* seq, int arraysize, int numsp, unsigned int vLength, int ntips, int first, hashtable* hash, int* taxonToReduction, int* taxonHasDegree, int maxSplits);
+void rec_extractBipartitionsMulti(FILE * file, unsigned int** bitvectors, int* seq, int arraysize, int numsp, unsigned int vLength, int ntips, int first, hashtable* hash, int* taxonToReduction, int* taxonHasDegree, int maxSplits);
 
 /*Preordertraversal of the big tree using bitVectorInitrav as reference and taking start->back node, 
 number of tips and start->number as parameter and delivers a TaxonToPreOrderLabel and LabelToTaxon Array*/

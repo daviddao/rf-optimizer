@@ -18,885 +18,2236 @@ RAxML large-tree plausibility-checker
 
 RAxML was called as follows:
 
-./standard-RAxML-master/raxmlHPC -f R -m GTRCAT -t ./largetest/largetree.txt -z ./largetest/175830-Trees-from-STbase.txt -n T1 
+./standard-RAxML-master/raxmlHPC -f R -m GTRCAT -t ./largetest/largetree.txt -z ./largetest/pruned_stbase.txt -n T1 
 
 
 Parsing reference tree ./largetest/largetree.txt
 The reference tree has 55473 tips
 
 
-Found 175831 trees in File ./largetest/175830-Trees-from-STbase.txt
+Found 75830 trees in File ./largetest/pruned_stbase.txt
 
+Small tree 0 has 7 tips and 3 bipartitions
+Relative RF tree 0: 0.666667
 
+Small tree 101 has 7 tips and 4 bipartitions
+Relative RF tree 101: 0.500000
 
-Found 175831 trees in File ./largetest/175830-Trees-from-STbase.txt
+Small tree 201 has 7 tips and 2 bipartitions
+Relative RF tree 201: 0.500000
 
-Small tree 0 has 2065 tips and 767 bipartitions
-Small tree 100 has 441 tips and 150 bipartitions
-Small tree 200 has 321 tips and 132 bipartitions
-Small tree 300 has 258 tips and 112 bipartitions
-Small tree 400 has 230 tips and 100 bipartitions
-Small tree 500 has 204 tips and 34 bipartitions
-Small tree 600 has 184 tips and 44 bipartitions
-Small tree 700 has 173 tips and 86 bipartitions
-Small tree 800 has 163 tips and 97 bipartitions
-Small tree 900 has 148 tips and 20 bipartitions
-Small tree 1000 has 148 tips and 59 bipartitions
-Small tree 1100 has 143 tips and 48 bipartitions
-Small tree 1200 has 137 tips and 42 bipartitions
-Small tree 1300 has 131 tips and 38 bipartitions
-Small tree 1400 has 126 tips and 67 bipartitions
-Small tree 1500 has 122 tips and 47 bipartitions
-Small tree 1600 has 119 tips and 51 bipartitions
-Small tree 1700 has 116 tips and 27 bipartitions
-Small tree 1800 has 114 tips and 53 bipartitions
-Small tree 1900 has 113 tips and 47 bipartitions
-Small tree 2000 has 111 tips and 57 bipartitions
-Small tree 2100 has 110 tips and 60 bipartitions
-Small tree 2200 has 109 tips and 68 bipartitions
-Small tree 2300 has 107 tips and 73 bipartitions
-Small tree 2400 has 105 tips and 63 bipartitions
-Small tree 2500 has 103 tips and 15 bipartitions
-Small tree 2600 has 93 tips and 31 bipartitions
-Small tree 2700 has 99 tips and 59 bipartitions
-Small tree 2800 has 97 tips and 58 bipartitions
-Small tree 2900 has 95 tips and 9 bipartitions
-Small tree 3000 has 93 tips and 46 bipartitions
-Small tree 3100 has 91 tips and 57 bipartitions
-Small tree 3200 has 89 tips and 29 bipartitions
-Small tree 3300 has 88 tips and 42 bipartitions
-Small tree 3400 has 86 tips and 58 bipartitions
-Small tree 3500 has 85 tips and 50 bipartitions
-Small tree 3600 has 84 tips and 46 bipartitions
-Small tree 3700 has 81 tips and 23 bipartitions
-Small tree 3800 has 81 tips and 51 bipartitions
-Small tree 3900 has 80 tips and 43 bipartitions
-Small tree 4000 has 78 tips and 56 bipartitions
-Small tree 4100 has 77 tips and 25 bipartitions
-Small tree 4200 has 77 tips and 41 bipartitions
-Small tree 4300 has 76 tips and 46 bipartitions
-Small tree 4400 has 75 tips and 28 bipartitions
-Small tree 4500 has 74 tips and 30 bipartitions
-Small tree 4600 has 73 tips and 38 bipartitions
-Small tree 4700 has 69 tips and 36 bipartitions
-Small tree 4802 has 69 tips and 7 bipartitions
-Small tree 4902 has 71 tips and 39 bipartitions
-Small tree 5002 has 70 tips and 40 bipartitions
-Small tree 5102 has 69 tips and 36 bipartitions
-Small tree 5202 has 69 tips and 23 bipartitions
-Small tree 5302 has 68 tips and 11 bipartitions
-Small tree 5402 has 67 tips and 29 bipartitions
-Small tree 5502 has 66 tips and 7 bipartitions
-Small tree 5602 has 66 tips and 42 bipartitions
-Small tree 5702 has 65 tips and 29 bipartitions
-Small tree 5802 has 64 tips and 44 bipartitions
-Small tree 5902 has 63 tips and 18 bipartitions
-Small tree 6002 has 63 tips and 38 bipartitions
-Small tree 6102 has 60 tips and 44 bipartitions
-Small tree 6202 has 61 tips and 32 bipartitions
-Small tree 6302 has 61 tips and 24 bipartitions
-Small tree 6402 has 60 tips and 29 bipartitions
-Small tree 6502 has 58 tips and 15 bipartitions
-Small tree 6602 has 59 tips and 26 bipartitions
-Small tree 6702 has 58 tips and 31 bipartitions
-Small tree 6802 has 58 tips and 1 bipartitions
-Small tree 6902 has 57 tips and 34 bipartitions
-Small tree 7002 has 57 tips and 40 bipartitions
-Small tree 7102 has 56 tips and 16 bipartitions
-Small tree 7202 has 56 tips and 8 bipartitions
-Small tree 7302 has 56 tips and 17 bipartitions
-Small tree 7402 has 55 tips and 35 bipartitions
-Small tree 7503 has 55 tips and 14 bipartitions
-Small tree 7603 has 54 tips and 18 bipartitions
-Small tree 7703 has 54 tips and 38 bipartitions
-Small tree 7803 has 53 tips and 25 bipartitions
-Small tree 7903 has 53 tips and 13 bipartitions
-Small tree 8003 has 53 tips and 22 bipartitions
-Small tree 8103 has 52 tips and 34 bipartitions
-Small tree 8203 has 52 tips and 12 bipartitions
-Small tree 8303 has 51 tips and 20 bipartitions
-Small tree 8403 has 51 tips and 31 bipartitions
-Small tree 8503 has 51 tips and 18 bipartitions
-Small tree 8603 has 50 tips and 13 bipartitions
-Small tree 8703 has 50 tips and 30 bipartitions
-Small tree 8803 has 50 tips and 20 bipartitions
-Small tree 8903 has 49 tips and 16 bipartitions
-Small tree 9003 has 49 tips and 36 bipartitions
-Small tree 9104 has 48 tips and 19 bipartitions
-Small tree 9204 has 46 tips and 10 bipartitions
-Small tree 9304 has 48 tips and 10 bipartitions
-Small tree 9404 has 47 tips and 28 bipartitions
-Small tree 9504 has 44 tips and 6 bipartitions
-Small tree 9604 has 46 tips and 30 bipartitions
-Small tree 9704 has 46 tips and 31 bipartitions
-Small tree 9804 has 46 tips and 21 bipartitions
-Small tree 9904 has 45 tips and 33 bipartitions
-Small tree 10004 has 45 tips and 22 bipartitions
-Small tree 10104 has 45 tips and 8 bipartitions
-Small tree 10204 has 44 tips and 17 bipartitions
-Small tree 10304 has 44 tips and 17 bipartitions
-Small tree 10404 has 44 tips and 24 bipartitions
-Small tree 10504 has 43 tips and 32 bipartitions
-Small tree 10604 has 43 tips and 29 bipartitions
-Small tree 10704 has 43 tips and 23 bipartitions
-Small tree 10805 has 42 tips and 26 bipartitions
-Small tree 10905 has 41 tips and 10 bipartitions
-Small tree 11005 has 42 tips and 18 bipartitions
-Small tree 11105 has 41 tips and 20 bipartitions
-Small tree 11205 has 41 tips and 23 bipartitions
-Small tree 11305 has 41 tips and 20 bipartitions
-Small tree 11405 has 38 tips and 17 bipartitions
-Small tree 11505 has 40 tips and 22 bipartitions
-Small tree 11605 has 40 tips and 13 bipartitions
-Small tree 11705 has 40 tips and 23 bipartitions
-Small tree 11805 has 39 tips and 13 bipartitions
-Small tree 11905 has 39 tips and 7 bipartitions
-Small tree 12005 has 39 tips and 22 bipartitions
-Small tree 12105 has 38 tips and 5 bipartitions
-Small tree 12205 has 38 tips and 11 bipartitions
-Small tree 12305 has 38 tips and 13 bipartitions
-Small tree 12405 has 38 tips and 28 bipartitions
-Small tree 12505 has 38 tips and 15 bipartitions
-Small tree 12605 has 37 tips and 15 bipartitions
-Small tree 12706 has 37 tips and 19 bipartitions
-Small tree 12806 has 37 tips and 17 bipartitions
-Small tree 12906 has 36 tips and 4 bipartitions
-Small tree 13006 has 37 tips and 19 bipartitions
-Small tree 13106 has 35 tips and 5 bipartitions
-Small tree 13206 has 36 tips and 9 bipartitions
-Small tree 13306 has 36 tips and 13 bipartitions
-Small tree 13406 has 36 tips and 18 bipartitions
-Small tree 13506 has 36 tips and 19 bipartitions
-Small tree 13606 has 36 tips and 18 bipartitions
-Small tree 13706 has 34 tips and 11 bipartitions
-Small tree 13806 has 35 tips and 16 bipartitions
-Small tree 13906 has 35 tips and 22 bipartitions
-Small tree 14006 has 35 tips and 17 bipartitions
-Small tree 14106 has 35 tips and 10 bipartitions
-Small tree 14206 has 33 tips and 3 bipartitions
-Small tree 14308 has 34 tips and 11 bipartitions
-Small tree 14408 has 34 tips and 14 bipartitions
-Small tree 14508 has 33 tips and 17 bipartitions
-Small tree 14608 has 34 tips and 13 bipartitions
-Small tree 14708 has 34 tips and 6 bipartitions
-Small tree 14808 has 34 tips and 15 bipartitions
-Small tree 14908 has 33 tips and 17 bipartitions
-Small tree 15008 has 33 tips and 21 bipartitions
-Small tree 15108 has 33 tips and 4 bipartitions
-Small tree 15208 has 33 tips and 8 bipartitions
-Small tree 15308 has 33 tips and 24 bipartitions
-Small tree 15408 has 33 tips and 3 bipartitions
-Small tree 15508 has 33 tips and 15 bipartitions
-Small tree 15608 has 33 tips and 24 bipartitions
-Small tree 15708 has 32 tips and 20 bipartitions
-Small tree 15808 has 31 tips and 7 bipartitions
-Small tree 15908 has 32 tips and 6 bipartitions
-Small tree 16008 has 32 tips and 8 bipartitions
-Small tree 16108 has 32 tips and 18 bipartitions
-Small tree 16208 has 32 tips and 17 bipartitions
-Small tree 16308 has 32 tips and 18 bipartitions
-Small tree 16408 has 31 tips and 26 bipartitions
-Small tree 16508 has 31 tips and 4 bipartitions
-Small tree 16608 has 31 tips and 11 bipartitions
-Small tree 16709 has 31 tips and 23 bipartitions
-Small tree 16809 has 31 tips and 11 bipartitions
-Small tree 16909 has 31 tips and 19 bipartitions
-Small tree 17009 has 31 tips and 14 bipartitions
-Small tree 17109 has 31 tips and 11 bipartitions
-Small tree 17209 has 31 tips and 22 bipartitions
-Small tree 17309 has 30 tips and 21 bipartitions
-Small tree 17409 has 30 tips and 19 bipartitions
-Small tree 17509 has 30 tips and 23 bipartitions
-Small tree 17609 has 30 tips and 10 bipartitions
-Small tree 17710 has 30 tips and 17 bipartitions
-Small tree 17810 has 30 tips and 15 bipartitions
-Small tree 17910 has 30 tips and 20 bipartitions
-Small tree 18010 has 30 tips and 16 bipartitions
-Small tree 18110 has 30 tips and 14 bipartitions
-Small tree 18210 has 30 tips and 4 bipartitions
-Small tree 18310 has 29 tips and 21 bipartitions
-Small tree 18410 has 29 tips and 16 bipartitions
-Small tree 18510 has 24 tips and 9 bipartitions
-Small tree 18610 has 29 tips and 8 bipartitions
-Small tree 18712 has 29 tips and 5 bipartitions
-Small tree 18812 has 29 tips and 12 bipartitions
-Small tree 18912 has 29 tips and 13 bipartitions
-Small tree 19012 has 29 tips and 2 bipartitions
-Small tree 19112 has 29 tips and 6 bipartitions
-Small tree 19212 has 29 tips and 21 bipartitions
-Small tree 19313 has 28 tips and 15 bipartitions
-Small tree 19413 has 28 tips and 5 bipartitions
-Small tree 19513 has 28 tips and 12 bipartitions
-Small tree 19613 has 28 tips and 12 bipartitions
-Small tree 19715 has 28 tips and 17 bipartitions
-Small tree 19815 has 28 tips and 10 bipartitions
-Small tree 19915 has 28 tips and 5 bipartitions
-Small tree 20016 has 28 tips and 4 bipartitions
-Small tree 20116 has 28 tips and 15 bipartitions
-Small tree 20216 has 27 tips and 15 bipartitions
-Small tree 20316 has 27 tips and 10 bipartitions
-Small tree 20416 has 27 tips and 15 bipartitions
-Small tree 20516 has 27 tips and 15 bipartitions
-Small tree 20616 has 27 tips and 12 bipartitions
-Small tree 20716 has 27 tips and 9 bipartitions
-Small tree 20816 has 27 tips and 6 bipartitions
-Small tree 20917 has 27 tips and 10 bipartitions
-Small tree 21017 has 27 tips and 21 bipartitions
-Small tree 21117 has 25 tips and 2 bipartitions
-Small tree 21217 has 27 tips and 15 bipartitions
-Small tree 21317 has 27 tips and 15 bipartitions
-Small tree 21417 has 27 tips and 8 bipartitions
-Small tree 21517 has 26 tips and 7 bipartitions
-Small tree 21617 has 26 tips and 12 bipartitions
-Small tree 21717 has 26 tips and 10 bipartitions
-Small tree 21817 has 26 tips and 13 bipartitions
-Small tree 21917 has 26 tips and 14 bipartitions
-Small tree 22017 has 26 tips and 20 bipartitions
-Small tree 22117 has 26 tips and 6 bipartitions
-Small tree 22217 has 26 tips and 16 bipartitions
-Small tree 22317 has 26 tips and 20 bipartitions
-Small tree 22417 has 26 tips and 18 bipartitions
-Small tree 22517 has 26 tips and 9 bipartitions
-Small tree 22617 has 26 tips and 15 bipartitions
-Small tree 22717 has 26 tips and 12 bipartitions
-Small tree 22817 has 25 tips and 15 bipartitions
-Small tree 22917 has 25 tips and 9 bipartitions
-Small tree 23018 has 25 tips and 16 bipartitions
-Small tree 23118 has 25 tips and 12 bipartitions
-Small tree 23218 has 25 tips and 9 bipartitions
-Small tree 23318 has 25 tips and 17 bipartitions
-Small tree 23418 has 25 tips and 10 bipartitions
-Small tree 23518 has 25 tips and 10 bipartitions
-Small tree 23618 has 25 tips and 5 bipartitions
-Small tree 23718 has 25 tips and 8 bipartitions
-Small tree 23818 has 25 tips and 8 bipartitions
-Small tree 23918 has 25 tips and 15 bipartitions
-Small tree 24018 has 24 tips and 3 bipartitions
-Small tree 24118 has 24 tips and 6 bipartitions
-Small tree 24219 has 24 tips and 15 bipartitions
-Small tree 24319 has 24 tips and 20 bipartitions
-Small tree 24419 has 24 tips and 13 bipartitions
-Small tree 24519 has 24 tips and 1 bipartitions
-Small tree 24619 has 24 tips and 10 bipartitions
-Small tree 24719 has 24 tips and 18 bipartitions
-Small tree 24819 has 24 tips and 17 bipartitions
-Small tree 24919 has 24 tips and 7 bipartitions
-Small tree 25019 has 24 tips and 15 bipartitions
-Small tree 25119 has 24 tips and 12 bipartitions
-Small tree 25220 has 24 tips and 5 bipartitions
-Small tree 25320 has 24 tips and 11 bipartitions
-Small tree 25420 has 23 tips and 13 bipartitions
-Small tree 25520 has 23 tips and 14 bipartitions
-Small tree 25620 has 23 tips and 11 bipartitions
-Small tree 25720 has 23 tips and 13 bipartitions
-Small tree 25820 has 23 tips and 6 bipartitions
-Small tree 25920 has 23 tips and 17 bipartitions
-Small tree 26020 has 23 tips and 9 bipartitions
-Small tree 26120 has 23 tips and 12 bipartitions
-Small tree 26220 has 23 tips and 18 bipartitions
-Small tree 26320 has 23 tips and 14 bipartitions
-Small tree 26420 has 23 tips and 15 bipartitions
-Small tree 26520 has 23 tips and 14 bipartitions
-Small tree 26620 has 23 tips and 15 bipartitions
-Small tree 26720 has 23 tips and 9 bipartitions
-Small tree 26820 has 23 tips and 14 bipartitions
-Small tree 26921 has 23 tips and 16 bipartitions
-Small tree 27021 has 22 tips and 8 bipartitions
-Small tree 27121 has 22 tips and 10 bipartitions
-Small tree 27221 has 22 tips and 13 bipartitions
-Small tree 27321 has 22 tips and 18 bipartitions
-Small tree 27421 has 22 tips and 14 bipartitions
-Small tree 27521 has 22 tips and 14 bipartitions
-Small tree 27623 has 22 tips and 7 bipartitions
-Small tree 27723 has 22 tips and 16 bipartitions
-Small tree 27823 has 22 tips and 18 bipartitions
-Small tree 27924 has 22 tips and 14 bipartitions
-Small tree 28029 has 22 tips and 19 bipartitions
-Small tree 28129 has 22 tips and 15 bipartitions
-Small tree 28229 has 22 tips and 12 bipartitions
-Small tree 28329 has 22 tips and 11 bipartitions
-Small tree 28429 has 22 tips and 11 bipartitions
-Small tree 28529 has 22 tips and 9 bipartitions
-Small tree 28629 has 21 tips and 12 bipartitions
-Small tree 28729 has 21 tips and 11 bipartitions
-Small tree 28829 has 21 tips and 5 bipartitions
-Small tree 28930 has 21 tips and 14 bipartitions
-Small tree 29030 has 21 tips and 6 bipartitions
-Small tree 29130 has 21 tips and 13 bipartitions
-Small tree 29230 has 21 tips and 14 bipartitions
-Small tree 29330 has 21 tips and 9 bipartitions
-Small tree 29430 has 21 tips and 16 bipartitions
-Small tree 29531 has 21 tips and 11 bipartitions
-Small tree 29631 has 21 tips and 18 bipartitions
-Small tree 29731 has 21 tips and 14 bipartitions
-Small tree 29831 has 21 tips and 18 bipartitions
-Small tree 29933 has 21 tips and 14 bipartitions
-Small tree 30033 has 21 tips and 15 bipartitions
-Small tree 30133 has 21 tips and 13 bipartitions
-Small tree 30233 has 21 tips and 16 bipartitions
-Small tree 30333 has 21 tips and 12 bipartitions
-Small tree 30433 has 21 tips and 18 bipartitions
-Small tree 30533 has 20 tips and 9 bipartitions
-Small tree 30633 has 20 tips and 14 bipartitions
-Small tree 30733 has 20 tips and 12 bipartitions
-Small tree 30833 has 20 tips and 5 bipartitions
-Small tree 30933 has 20 tips and 5 bipartitions
-Small tree 31033 has 20 tips and 14 bipartitions
-Small tree 31133 has 20 tips and 12 bipartitions
-Small tree 31233 has 20 tips and 15 bipartitions
-Small tree 31333 has 20 tips and 12 bipartitions
-Small tree 31434 has 20 tips and 8 bipartitions
-Small tree 31534 has 20 tips and 7 bipartitions
-Small tree 31634 has 20 tips and 12 bipartitions
-Small tree 31734 has 20 tips and 4 bipartitions
-Small tree 31834 has 20 tips and 16 bipartitions
-Small tree 31934 has 20 tips and 12 bipartitions
-Small tree 32034 has 20 tips and 16 bipartitions
-Small tree 32134 has 20 tips and 1 bipartitions
-Small tree 32235 has 20 tips and 9 bipartitions
-Small tree 32335 has 20 tips and 12 bipartitions
-Small tree 32435 has 20 tips and 13 bipartitions
-Small tree 32535 has 20 tips and 5 bipartitions
-Small tree 32635 has 19 tips and 9 bipartitions
-Small tree 32735 has 19 tips and 15 bipartitions
-Small tree 32835 has 19 tips and 13 bipartitions
-Small tree 32935 has 19 tips and 15 bipartitions
-Small tree 33035 has 19 tips and 7 bipartitions
-Small tree 33136 has 19 tips and 12 bipartitions
-Small tree 33236 has 19 tips and 10 bipartitions
-Small tree 33336 has 19 tips and 13 bipartitions
-Small tree 33436 has 19 tips and 10 bipartitions
-Small tree 33536 has 19 tips and 12 bipartitions
-Small tree 33636 has 19 tips and 9 bipartitions
-Small tree 33736 has 19 tips and 4 bipartitions
-Small tree 33836 has 19 tips and 15 bipartitions
-Small tree 33936 has 19 tips and 13 bipartitions
-Small tree 34037 has 19 tips and 14 bipartitions
-Small tree 34137 has 19 tips and 11 bipartitions
-Small tree 34237 has 19 tips and 12 bipartitions
-Small tree 34337 has 19 tips and 9 bipartitions
-Small tree 34437 has 19 tips and 8 bipartitions
-Small tree 34540 has 19 tips and 6 bipartitions
-Small tree 34640 has 19 tips and 14 bipartitions
-Small tree 34740 has 19 tips and 13 bipartitions
-Small tree 34840 has 19 tips and 6 bipartitions
-Small tree 34940 has 18 tips and 5 bipartitions
-Small tree 35040 has 18 tips and 15 bipartitions
-Small tree 35140 has 18 tips and 5 bipartitions
-Small tree 35240 has 18 tips and 7 bipartitions
-Small tree 35340 has 18 tips and 15 bipartitions
-Small tree 35440 has 18 tips and 6 bipartitions
-Small tree 35541 has 18 tips and 11 bipartitions
-Small tree 35641 has 18 tips and 10 bipartitions
-Small tree 35741 has 18 tips and 14 bipartitions
-Small tree 35841 has 18 tips and 6 bipartitions
-Small tree 35941 has 18 tips and 11 bipartitions
-Small tree 36041 has 18 tips and 7 bipartitions
-Small tree 36141 has 18 tips and 8 bipartitions
-Small tree 36241 has 18 tips and 10 bipartitions
-Small tree 36341 has 18 tips and 11 bipartitions
-Small tree 36441 has 18 tips and 14 bipartitions
-Small tree 36541 has 18 tips and 10 bipartitions
-Small tree 36641 has 18 tips and 8 bipartitions
-Small tree 36741 has 18 tips and 11 bipartitions
-Small tree 36841 has 18 tips and 12 bipartitions
-Small tree 36941 has 18 tips and 8 bipartitions
-Small tree 37041 has 18 tips and 8 bipartitions
-Small tree 37141 has 18 tips and 9 bipartitions
-Small tree 37241 has 18 tips and 12 bipartitions
-Small tree 37342 has 18 tips and 12 bipartitions
-Small tree 37442 has 17 tips and 7 bipartitions
-Small tree 37542 has 17 tips and 12 bipartitions
-Small tree 37642 has 17 tips and 10 bipartitions
-Small tree 37742 has 17 tips and 7 bipartitions
-Small tree 37842 has 17 tips and 3 bipartitions
-Small tree 37942 has 17 tips and 12 bipartitions
-Small tree 38043 has 17 tips and 10 bipartitions
-Small tree 38143 has 17 tips and 9 bipartitions
-Small tree 38243 has 17 tips and 14 bipartitions
-Small tree 38343 has 17 tips and 5 bipartitions
-Small tree 38445 has 17 tips and 5 bipartitions
-Small tree 38545 has 17 tips and 5 bipartitions
-Small tree 38645 has 17 tips and 1 bipartitions
-Small tree 38745 has 17 tips and 12 bipartitions
-Small tree 38845 has 17 tips and 9 bipartitions
-Small tree 38945 has 17 tips and 10 bipartitions
-Small tree 39045 has 17 tips and 11 bipartitions
-Small tree 39145 has 17 tips and 3 bipartitions
-Small tree 39246 has 17 tips and 8 bipartitions
-Small tree 39347 has 17 tips and 10 bipartitions
-Small tree 39447 has 17 tips and 11 bipartitions
-Small tree 39547 has 17 tips and 10 bipartitions
-Small tree 39647 has 17 tips and 9 bipartitions
-Small tree 39748 has 17 tips and 7 bipartitions
-Small tree 39849 has 17 tips and 5 bipartitions
-Small tree 39949 has 17 tips and 5 bipartitions
-Small tree 40049 has 17 tips and 3 bipartitions
-Small tree 40149 has 17 tips and 9 bipartitions
-Small tree 40249 has 16 tips and 6 bipartitions
-Small tree 40349 has 16 tips and 13 bipartitions
-Small tree 40449 has 16 tips and 8 bipartitions
-Small tree 40549 has 16 tips and 9 bipartitions
-Small tree 40649 has 16 tips and 2 bipartitions
-Small tree 40749 has 15 tips and 11 bipartitions
-Small tree 40849 has 16 tips and 10 bipartitions
-Small tree 40949 has 16 tips and 12 bipartitions
-Small tree 41049 has 16 tips and 10 bipartitions
-Small tree 41149 has 16 tips and 9 bipartitions
-Small tree 41249 has 16 tips and 9 bipartitions
-Small tree 41349 has 16 tips and 11 bipartitions
-Small tree 41449 has 16 tips and 6 bipartitions
-Small tree 41550 has 16 tips and 12 bipartitions
-Small tree 41650 has 16 tips and 4 bipartitions
-Small tree 41752 has 16 tips and 11 bipartitions
-Small tree 41852 has 16 tips and 10 bipartitions
-Small tree 41952 has 16 tips and 13 bipartitions
-Small tree 42052 has 16 tips and 10 bipartitions
-Small tree 42152 has 16 tips and 9 bipartitions
-Small tree 42252 has 16 tips and 5 bipartitions
-Small tree 42356 has 16 tips and 3 bipartitions
-Small tree 42456 has 16 tips and 10 bipartitions
-Small tree 42556 has 16 tips and 9 bipartitions
-Small tree 42656 has 16 tips and 5 bipartitions
-Small tree 42757 has 16 tips and 5 bipartitions
-Small tree 42857 has 16 tips and 9 bipartitions
-Small tree 42957 has 16 tips and 7 bipartitions
-Small tree 43057 has 16 tips and 6 bipartitions
-Small tree 43157 has 16 tips and 6 bipartitions
-Small tree 43257 has 16 tips and 10 bipartitions
-Small tree 43357 has 16 tips and 7 bipartitions
-Small tree 43457 has 15 tips and 10 bipartitions
-Small tree 43557 has 15 tips and 9 bipartitions
-Small tree 43657 has 15 tips and 9 bipartitions
-Small tree 43757 has 15 tips and 11 bipartitions
-Small tree 43857 has 15 tips and 5 bipartitions
-Small tree 43957 has 15 tips and 11 bipartitions
-Small tree 44057 has 15 tips and 2 bipartitions
-Small tree 44159 has 15 tips and 3 bipartitions
-Small tree 44259 has 15 tips and 2 bipartitions
-Small tree 44359 has 15 tips and 11 bipartitions
-Small tree 44459 has 15 tips and 7 bipartitions
-Small tree 44559 has 15 tips and 6 bipartitions
-Small tree 44659 has 15 tips and 11 bipartitions
-Small tree 44759 has 15 tips and 8 bipartitions
-Small tree 44859 has 15 tips and 10 bipartitions
-Small tree 44959 has 15 tips and 5 bipartitions
-Small tree 45059 has 12 tips and 7 bipartitions
-Small tree 45159 has 15 tips and 8 bipartitions
-Small tree 45259 has 15 tips and 11 bipartitions
-Small tree 45359 has 15 tips and 11 bipartitions
-Small tree 45459 has 15 tips and 3 bipartitions
-Small tree 45559 has 15 tips and 6 bipartitions
-Small tree 45659 has 15 tips and 12 bipartitions
-Small tree 45759 has 15 tips and 9 bipartitions
-Small tree 45860 has 15 tips and 6 bipartitions
-Small tree 45960 has 15 tips and 10 bipartitions
-Small tree 46060 has 15 tips and 9 bipartitions
-Small tree 46160 has 15 tips and 7 bipartitions
-Small tree 46260 has 15 tips and 6 bipartitions
-Small tree 46360 has 15 tips and 4 bipartitions
-Small tree 46460 has 15 tips and 2 bipartitions
-Small tree 46561 has 15 tips and 1 bipartitions
-Small tree 46661 has 15 tips and 2 bipartitions
-Small tree 46761 has 15 tips and 2 bipartitions
-Small tree 46862 has 15 tips and 9 bipartitions
-Small tree 46962 has 14 tips and 10 bipartitions
-Small tree 47062 has 14 tips and 8 bipartitions
-Small tree 47162 has 14 tips and 10 bipartitions
-Small tree 47262 has 14 tips and 3 bipartitions
-Small tree 47362 has 14 tips and 11 bipartitions
-Small tree 47462 has 14 tips and 9 bipartitions
-Small tree 47562 has 14 tips and 6 bipartitions
-Small tree 47662 has 14 tips and 7 bipartitions
-Small tree 47764 has 14 tips and 9 bipartitions
-Small tree 47865 has 14 tips and 5 bipartitions
-Small tree 47965 has 14 tips and 8 bipartitions
-Small tree 48065 has 14 tips and 8 bipartitions
-Small tree 48165 has 14 tips and 7 bipartitions
-Small tree 48265 has 14 tips and 4 bipartitions
-Small tree 48365 has 14 tips and 9 bipartitions
-Small tree 48465 has 14 tips and 7 bipartitions
-Small tree 48565 has 14 tips and 11 bipartitions
-Small tree 48665 has 14 tips and 9 bipartitions
-Small tree 48765 has 14 tips and 9 bipartitions
-Small tree 48865 has 14 tips and 5 bipartitions
-Small tree 48965 has 14 tips and 3 bipartitions
-Small tree 49065 has 14 tips and 8 bipartitions
-Small tree 49165 has 14 tips and 10 bipartitions
-Small tree 49265 has 14 tips and 11 bipartitions
-Small tree 49365 has 14 tips and 10 bipartitions
-Small tree 49465 has 14 tips and 9 bipartitions
-Small tree 49565 has 14 tips and 5 bipartitions
-Small tree 49665 has 14 tips and 2 bipartitions
-Small tree 49765 has 14 tips and 1 bipartitions
-Small tree 49865 has 14 tips and 7 bipartitions
-Small tree 49965 has 14 tips and 10 bipartitions
-Small tree 50065 has 14 tips and 9 bipartitions
-Small tree 50166 has 14 tips and 8 bipartitions
-Small tree 50266 has 14 tips and 4 bipartitions
-Small tree 50367 has 14 tips and 10 bipartitions
-Small tree 50467 has 14 tips and 6 bipartitions
-Small tree 50567 has 14 tips and 5 bipartitions
-Small tree 50667 has 11 tips and 5 bipartitions
-Small tree 50767 has 14 tips and 4 bipartitions
-Small tree 50867 has 14 tips and 6 bipartitions
-Small tree 50967 has 14 tips and 6 bipartitions
-Small tree 51069 has 14 tips and 8 bipartitions
-Small tree 51169 has 13 tips and 8 bipartitions
-Small tree 51269 has 13 tips and 8 bipartitions
-Small tree 51369 has 13 tips and 9 bipartitions
-Small tree 51469 has 13 tips and 10 bipartitions
-Small tree 51569 has 13 tips and 8 bipartitions
-Small tree 51670 has 13 tips and 1 bipartitions
-Small tree 51770 has 13 tips and 5 bipartitions
-Small tree 51870 has 13 tips and 2 bipartitions
-Small tree 51970 has 13 tips and 9 bipartitions
-Small tree 52070 has 13 tips and 5 bipartitions
-Small tree 52170 has 13 tips and 9 bipartitions
-Small tree 52270 has 13 tips and 2 bipartitions
-Small tree 52370 has 13 tips and 10 bipartitions
-Small tree 52470 has 13 tips and 8 bipartitions
-Small tree 52570 has 13 tips and 8 bipartitions
-Small tree 52670 has 13 tips and 5 bipartitions
-Small tree 52770 has 13 tips and 8 bipartitions
-Small tree 52871 has 13 tips and 10 bipartitions
-Small tree 52971 has 8 tips and 4 bipartitions
-Small tree 53071 has 13 tips and 7 bipartitions
-Small tree 53171 has 13 tips and 7 bipartitions
-Small tree 53271 has 13 tips and 10 bipartitions
-Small tree 53371 has 13 tips and 5 bipartitions
-Small tree 53472 has 13 tips and 6 bipartitions
-Small tree 53572 has 13 tips and 10 bipartitions
-Small tree 53672 has 13 tips and 9 bipartitions
-Small tree 53773 has 13 tips and 8 bipartitions
-Small tree 53873 has 13 tips and 8 bipartitions
-Small tree 53973 has 13 tips and 8 bipartitions
-Small tree 54073 has 13 tips and 3 bipartitions
-Small tree 54173 has 13 tips and 10 bipartitions
-Small tree 54273 has 13 tips and 5 bipartitions
-Small tree 54373 has 13 tips and 8 bipartitions
-Small tree 54473 has 13 tips and 6 bipartitions
-Small tree 54573 has 13 tips and 8 bipartitions
-Small tree 54673 has 13 tips and 8 bipartitions
-Small tree 54773 has 13 tips and 6 bipartitions
-Small tree 54873 has 13 tips and 6 bipartitions
-Small tree 54973 has 13 tips and 3 bipartitions
-Small tree 55073 has 12 tips and 5 bipartitions
-Small tree 55173 has 13 tips and 10 bipartitions
-Small tree 55273 has 13 tips and 7 bipartitions
-Small tree 55373 has 13 tips and 5 bipartitions
-Small tree 55474 has 13 tips and 6 bipartitions
-Small tree 55574 has 13 tips and 8 bipartitions
-Small tree 55674 has 13 tips and 8 bipartitions
-Small tree 55775 has 9 tips and 1 bipartitions
-Small tree 55875 has 12 tips and 6 bipartitions
-Small tree 55975 has 12 tips and 4 bipartitions
-Small tree 56075 has 12 tips and 9 bipartitions
-Small tree 56175 has 12 tips and 8 bipartitions
-Small tree 56275 has 12 tips and 7 bipartitions
-Small tree 56375 has 12 tips and 8 bipartitions
-Small tree 56475 has 12 tips and 9 bipartitions
-Small tree 56575 has 12 tips and 8 bipartitions
-Small tree 56675 has 12 tips and 7 bipartitions
-Small tree 56775 has 12 tips and 9 bipartitions
-Small tree 56875 has 12 tips and 4 bipartitions
-Small tree 56975 has 12 tips and 6 bipartitions
-Small tree 57075 has 12 tips and 7 bipartitions
-Small tree 57175 has 12 tips and 8 bipartitions
-Small tree 57275 has 12 tips and 8 bipartitions
-Small tree 57376 has 12 tips and 3 bipartitions
-Small tree 57476 has 12 tips and 7 bipartitions
-Small tree 57576 has 12 tips and 6 bipartitions
-Small tree 57676 has 12 tips and 5 bipartitions
-Small tree 57776 has 12 tips and 8 bipartitions
-Small tree 57876 has 12 tips and 7 bipartitions
-Small tree 57976 has 12 tips and 6 bipartitions
-Small tree 58076 has 12 tips and 6 bipartitions
-Small tree 58176 has 12 tips and 7 bipartitions
-Small tree 58276 has 12 tips and 5 bipartitions
-Small tree 58377 has 12 tips and 1 bipartitions
-Small tree 58477 has 12 tips and 9 bipartitions
-Small tree 58577 has 12 tips and 9 bipartitions
-Small tree 58677 has 12 tips and 7 bipartitions
-Small tree 58777 has 12 tips and 5 bipartitions
-Small tree 58877 has 12 tips and 9 bipartitions
-Small tree 58978 has 12 tips and 6 bipartitions
-Small tree 59078 has 12 tips and 9 bipartitions
-Small tree 59178 has 12 tips and 5 bipartitions
-Small tree 59278 has 12 tips and 8 bipartitions
-Small tree 59379 has 12 tips and 4 bipartitions
-Small tree 59479 has 12 tips and 9 bipartitions
-Small tree 59580 has 12 tips and 8 bipartitions
-Small tree 59680 has 12 tips and 9 bipartitions
-Small tree 59780 has 12 tips and 6 bipartitions
-Small tree 59880 has 12 tips and 1 bipartitions
-Small tree 59980 has 12 tips and 6 bipartitions
-Small tree 60081 has 12 tips and 3 bipartitions
-Small tree 60183 has 12 tips and 6 bipartitions
-Small tree 60283 has 12 tips and 1 bipartitions
-Small tree 60383 has 12 tips and 7 bipartitions
-Small tree 60485 has 12 tips and 8 bipartitions
-Small tree 60589 has 12 tips and 6 bipartitions
-Small tree 60689 has 12 tips and 5 bipartitions
-Small tree 60789 has 12 tips and 9 bipartitions
-Small tree 60889 has 12 tips and 5 bipartitions
-Small tree 60989 has 12 tips and 7 bipartitions
-Small tree 61090 has 12 tips and 1 bipartitions
-Small tree 61190 has 11 tips and 5 bipartitions
-Small tree 61290 has 11 tips and 6 bipartitions
-Small tree 61390 has 11 tips and 6 bipartitions
-Small tree 61490 has 11 tips and 8 bipartitions
-Small tree 61590 has 11 tips and 7 bipartitions
-Small tree 61691 has 11 tips and 1 bipartitions
-Small tree 61791 has 11 tips and 7 bipartitions
-Small tree 61891 has 11 tips and 8 bipartitions
-Small tree 61991 has 11 tips and 8 bipartitions
-Small tree 62093 has 11 tips and 8 bipartitions
-Small tree 62194 has 11 tips and 6 bipartitions
-Small tree 62294 has 11 tips and 5 bipartitions
-Small tree 62394 has 11 tips and 5 bipartitions
-Small tree 62494 has 11 tips and 6 bipartitions
-Small tree 62595 has 11 tips and 6 bipartitions
-Small tree 62696 has 11 tips and 7 bipartitions
-Small tree 62796 has 11 tips and 8 bipartitions
-Small tree 62896 has 11 tips and 7 bipartitions
-Small tree 62997 has 11 tips and 5 bipartitions
-Small tree 63097 has 11 tips and 8 bipartitions
-Small tree 63197 has 11 tips and 7 bipartitions
-Small tree 63297 has 11 tips and 8 bipartitions
-Small tree 63397 has 11 tips and 8 bipartitions
-Small tree 63497 has 11 tips and 8 bipartitions
-Small tree 63597 has 10 tips and 4 bipartitions
-Small tree 63701 has 11 tips and 6 bipartitions
-Small tree 63801 has 11 tips and 6 bipartitions
-Small tree 63901 has 11 tips and 6 bipartitions
-Small tree 64001 has 11 tips and 3 bipartitions
-Small tree 64101 has 11 tips and 8 bipartitions
-Small tree 64202 has 11 tips and 5 bipartitions
-Small tree 64302 has 11 tips and 8 bipartitions
-Small tree 64402 has 11 tips and 8 bipartitions
-Small tree 64502 has 11 tips and 5 bipartitions
-Small tree 64602 has 11 tips and 4 bipartitions
-Small tree 64702 has 11 tips and 6 bipartitions
-Small tree 64802 has 11 tips and 6 bipartitions
-Small tree 64902 has 11 tips and 8 bipartitions
-Small tree 65002 has 11 tips and 4 bipartitions
-Small tree 65103 has 11 tips and 7 bipartitions
-Small tree 65203 has 11 tips and 8 bipartitions
-Small tree 65304 has 11 tips and 4 bipartitions
-Small tree 65406 has 11 tips and 3 bipartitions
-Small tree 65506 has 11 tips and 4 bipartitions
-Small tree 65606 has 11 tips and 6 bipartitions
-Small tree 65706 has 11 tips and 4 bipartitions
-Small tree 65806 has 11 tips and 4 bipartitions
-Small tree 65906 has 11 tips and 8 bipartitions
-Small tree 66007 has 11 tips and 4 bipartitions
-Small tree 66109 has 11 tips and 7 bipartitions
-Small tree 66210 has 11 tips and 7 bipartitions
-Small tree 66312 has 11 tips and 8 bipartitions
-Small tree 66412 has 11 tips and 1 bipartitions
-Small tree 66513 has 11 tips and 6 bipartitions
-Small tree 66614 has 11 tips and 4 bipartitions
-Small tree 66714 has 11 tips and 7 bipartitions
-Small tree 66814 has 11 tips and 8 bipartitions
-Small tree 66915 has 11 tips and 8 bipartitions
-Small tree 67016 has 11 tips and 6 bipartitions
-Small tree 67116 has 11 tips and 8 bipartitions
-Small tree 67216 has 11 tips and 6 bipartitions
-Small tree 67316 has 11 tips and 7 bipartitions
-Small tree 67416 has 10 tips and 7 bipartitions
-Small tree 67516 has 10 tips and 5 bipartitions
-Small tree 67616 has 9 tips and 1 bipartitions
-Small tree 67716 has 10 tips and 6 bipartitions
-Small tree 67816 has 10 tips and 7 bipartitions
-Small tree 67916 has 10 tips and 7 bipartitions
-Small tree 68016 has 10 tips and 7 bipartitions
-Small tree 68116 has 10 tips and 4 bipartitions
-Small tree 68216 has 10 tips and 6 bipartitions
-Small tree 68316 has 10 tips and 6 bipartitions
-Small tree 68416 has 10 tips and 6 bipartitions
-Small tree 68516 has 10 tips and 7 bipartitions
-Small tree 68617 has 10 tips and 6 bipartitions
-Small tree 68721 has 10 tips and 7 bipartitions
-Small tree 68821 has 10 tips and 7 bipartitions
-Small tree 68921 has 10 tips and 7 bipartitions
-Small tree 69021 has 10 tips and 5 bipartitions
-Small tree 69121 has 10 tips and 2 bipartitions
-Small tree 69221 has 10 tips and 7 bipartitions
-Small tree 69321 has 10 tips and 7 bipartitions
-Small tree 69422 has 10 tips and 6 bipartitions
-Small tree 69523 has 10 tips and 7 bipartitions
-Small tree 69624 has 10 tips and 1 bipartitions
-Small tree 69724 has 10 tips and 6 bipartitions
-Small tree 69824 has 10 tips and 3 bipartitions
-Small tree 69924 has 10 tips and 5 bipartitions
-Small tree 70024 has 10 tips and 5 bipartitions
-Small tree 70124 has 10 tips and 7 bipartitions
-Small tree 70224 has 10 tips and 7 bipartitions
-Small tree 70324 has 10 tips and 7 bipartitions
-Small tree 70424 has 10 tips and 7 bipartitions
-Small tree 70524 has 10 tips and 2 bipartitions
-Small tree 70624 has 10 tips and 6 bipartitions
-Small tree 70724 has 10 tips and 4 bipartitions
-Small tree 70824 has 10 tips and 6 bipartitions
-Small tree 70926 has 9 tips and 5 bipartitions
-Small tree 71028 has 9 tips and 6 bipartitions
-Small tree 71129 has 10 tips and 3 bipartitions
-Small tree 71230 has 10 tips and 4 bipartitions
-Small tree 71330 has 10 tips and 7 bipartitions
-Small tree 71431 has 10 tips and 5 bipartitions
-Small tree 71531 has 10 tips and 7 bipartitions
-Small tree 71631 has 10 tips and 5 bipartitions
-Small tree 71731 has 10 tips and 5 bipartitions
-Small tree 71834 has 10 tips and 7 bipartitions
-Small tree 71934 has 10 tips and 7 bipartitions
-Small tree 72035 has 10 tips and 7 bipartitions
-Small tree 72135 has 10 tips and 3 bipartitions
-Small tree 72235 has 10 tips and 4 bipartitions
-Small tree 72335 has 10 tips and 6 bipartitions
-Small tree 72435 has 10 tips and 6 bipartitions
-Small tree 72536 has 10 tips and 5 bipartitions
-Small tree 72636 has 10 tips and 7 bipartitions
-Small tree 72736 has 10 tips and 6 bipartitions
-Small tree 72836 has 10 tips and 6 bipartitions
-Small tree 72936 has 10 tips and 6 bipartitions
-Small tree 73036 has 10 tips and 7 bipartitions
-Small tree 73137 has 10 tips and 2 bipartitions
-Small tree 73240 has 9 tips and 2 bipartitions
-Small tree 73341 has 10 tips and 5 bipartitions
-Small tree 73441 has 10 tips and 3 bipartitions
-Small tree 73542 has 10 tips and 4 bipartitions
-Small tree 73642 has 10 tips and 3 bipartitions
-Small tree 73742 has 10 tips and 4 bipartitions
-Small tree 73842 has 10 tips and 5 bipartitions
-Small tree 73942 has 10 tips and 3 bipartitions
-Small tree 74042 has 10 tips and 7 bipartitions
-Small tree 74142 has 10 tips and 4 bipartitions
-Small tree 74243 has 10 tips and 5 bipartitions
-Small tree 74344 has 10 tips and 2 bipartitions
-Small tree 74445 has 10 tips and 5 bipartitions
-Small tree 74545 has 10 tips and 7 bipartitions
-Small tree 74645 has 10 tips and 2 bipartitions
-Small tree 74746 has 9 tips and 2 bipartitions
-Small tree 74846 has 9 tips and 6 bipartitions
-Small tree 74946 has 9 tips and 3 bipartitions
-Small tree 75046 has 9 tips and 2 bipartitions
-Small tree 75146 has 9 tips and 5 bipartitions
-Small tree 75246 has 9 tips and 6 bipartitions
-Small tree 75346 has 9 tips and 6 bipartitions
-Small tree 75446 has 9 tips and 2 bipartitions
-Small tree 75550 has 9 tips and 6 bipartitions
-Small tree 75650 has 9 tips and 6 bipartitions
-Small tree 75750 has 9 tips and 5 bipartitions
-Small tree 75852 has 9 tips and 6 bipartitions
-Small tree 75952 has 9 tips and 6 bipartitions
-Small tree 76052 has 9 tips and 6 bipartitions
-Small tree 76154 has 9 tips and 5 bipartitions
-Small tree 76254 has 9 tips and 5 bipartitions
-Small tree 76354 has 9 tips and 4 bipartitions
-Small tree 76454 has 9 tips and 5 bipartitions
-Small tree 76555 has 9 tips and 6 bipartitions
-Small tree 76655 has 8 tips and 3 bipartitions
-Small tree 76755 has 9 tips and 6 bipartitions
-Small tree 76855 has 9 tips and 4 bipartitions
-Small tree 76955 has 9 tips and 4 bipartitions
-Small tree 77055 has 9 tips and 6 bipartitions
-Small tree 77156 has 9 tips and 6 bipartitions
-Small tree 77256 has 9 tips and 5 bipartitions
-Small tree 77356 has 9 tips and 5 bipartitions
-Small tree 77456 has 9 tips and 4 bipartitions
-Small tree 77556 has 9 tips and 6 bipartitions
-Small tree 77656 has 9 tips and 4 bipartitions
-Small tree 77756 has 9 tips and 2 bipartitions
-Small tree 77857 has 9 tips and 3 bipartitions
-Small tree 77957 has 9 tips and 6 bipartitions
-Small tree 78057 has 9 tips and 5 bipartitions
-Small tree 78157 has 9 tips and 5 bipartitions
-Small tree 78257 has 9 tips and 5 bipartitions
-Small tree 78357 has 9 tips and 5 bipartitions
-Small tree 78458 has 9 tips and 6 bipartitions
-Small tree 78558 has 9 tips and 6 bipartitions
-Small tree 78658 has 9 tips and 3 bipartitions
-Small tree 78758 has 9 tips and 5 bipartitions
-Small tree 78858 has 9 tips and 5 bipartitions
-Small tree 78961 has 9 tips and 4 bipartitions
-Small tree 79062 has 9 tips and 5 bipartitions
-Small tree 79163 has 9 tips and 5 bipartitions
-Small tree 79263 has 9 tips and 5 bipartitions
-Small tree 79363 has 9 tips and 6 bipartitions
-Small tree 79463 has 9 tips and 6 bipartitions
-Small tree 79563 has 9 tips and 5 bipartitions
-Small tree 79663 has 9 tips and 4 bipartitions
-Small tree 79766 has 9 tips and 6 bipartitions
-Small tree 79866 has 9 tips and 6 bipartitions
-Small tree 79966 has 9 tips and 6 bipartitions
-Small tree 80071 has 9 tips and 5 bipartitions
-Small tree 80172 has 9 tips and 6 bipartitions
-Small tree 80277 has 9 tips and 6 bipartitions
-Small tree 80377 has 9 tips and 6 bipartitions
-Small tree 80477 has 9 tips and 6 bipartitions
-Small tree 80577 has 9 tips and 3 bipartitions
-Small tree 80677 has 9 tips and 5 bipartitions
-Small tree 80778 has 9 tips and 2 bipartitions
-Small tree 80878 has 9 tips and 5 bipartitions
-Small tree 80978 has 9 tips and 6 bipartitions
-Small tree 81078 has 9 tips and 4 bipartitions
-Small tree 81178 has 9 tips and 5 bipartitions
-Small tree 81281 has 9 tips and 6 bipartitions
-Small tree 81381 has 9 tips and 6 bipartitions
-Small tree 81482 has 9 tips and 4 bipartitions
-Small tree 81583 has 9 tips and 4 bipartitions
-Small tree 81683 has 9 tips and 6 bipartitions
-Small tree 81787 has 9 tips and 6 bipartitions
-Small tree 81891 has 9 tips and 3 bipartitions
-Small tree 81992 has 9 tips and 6 bipartitions
-Small tree 82093 has 9 tips and 2 bipartitions
-Small tree 82193 has 9 tips and 3 bipartitions
-Small tree 82294 has 9 tips and 1 bipartitions
-Small tree 82394 has 9 tips and 4 bipartitions
-Small tree 82494 has 9 tips and 6 bipartitions
-Small tree 82597 has 9 tips and 6 bipartitions
-Small tree 82697 has 9 tips and 3 bipartitions
-Small tree 82799 has 9 tips and 3 bipartitions
-Small tree 82900 has 9 tips and 2 bipartitions
-Small tree 83002 has 9 tips and 5 bipartitions
-Small tree 83102 has 9 tips and 6 bipartitions
-Small tree 83202 has 9 tips and 6 bipartitions
-Small tree 83302 has 9 tips and 5 bipartitions
-Small tree 83402 has 8 tips and 2 bipartitions
-Small tree 83505 has 8 tips and 3 bipartitions
-Small tree 83605 has 8 tips and 5 bipartitions
-Small tree 83712 has 8 tips and 1 bipartitions
-Small tree 83812 has 8 tips and 5 bipartitions
-Small tree 83912 has 8 tips and 5 bipartitions
-Small tree 84012 has 8 tips and 5 bipartitions
-Small tree 84113 has 8 tips and 5 bipartitions
-Small tree 84213 has 8 tips and 5 bipartitions
-Small tree 84313 has 8 tips and 3 bipartitions
-Small tree 84413 has 8 tips and 5 bipartitions
-Small tree 84513 has 8 tips and 5 bipartitions
-Small tree 84613 has 8 tips and 5 bipartitions
-Small tree 84713 has 8 tips and 2 bipartitions
-Small tree 84813 has 8 tips and 4 bipartitions
-Small tree 84913 has 8 tips and 1 bipartitions
-Small tree 85013 has 8 tips and 5 bipartitions
-Small tree 85113 has 8 tips and 4 bipartitions
-Small tree 85213 has 8 tips and 5 bipartitions
-Small tree 85313 has 8 tips and 5 bipartitions
-Small tree 85414 has 8 tips and 4 bipartitions
-Small tree 85514 has 8 tips and 2 bipartitions
-Small tree 85614 has 8 tips and 4 bipartitions
-Small tree 85716 has 8 tips and 2 bipartitions
-Small tree 85817 has 8 tips and 3 bipartitions
-Small tree 85917 has 8 tips and 5 bipartitions
-Small tree 86019 has 8 tips and 3 bipartitions
-Small tree 86121 has 8 tips and 3 bipartitions
-Small tree 86222 has 8 tips and 4 bipartitions
-Small tree 86322 has 8 tips and 4 bipartitions
-Small tree 86422 has 8 tips and 5 bipartitions
-Small tree 86523 has 8 tips and 4 bipartitions
-Small tree 86623 has 8 tips and 5 bipartitions
-Small tree 86726 has 8 tips and 3 bipartitions
-Small tree 86828 has 8 tips and 4 bipartitions
-Small tree 86931 has 8 tips and 5 bipartitions
-Small tree 87031 has 8 tips and 5 bipartitions
+Small tree 301 has 7 tips and 3 bipartitions
+Relative RF tree 301: 0.000000
+
+Small tree 402 has 7 tips and 4 bipartitions
+Relative RF tree 402: 0.500000
+
+Small tree 502 has 7 tips and 4 bipartitions
+Relative RF tree 502: 0.750000
+
+Small tree 602 has 7 tips and 4 bipartitions
+Relative RF tree 602: 0.250000
+
+Small tree 702 has 7 tips and 4 bipartitions
+Relative RF tree 702: 0.250000
+
+Small tree 802 has 7 tips and 4 bipartitions
+Relative RF tree 802: 1.000000
+
+Small tree 903 has 7 tips and 2 bipartitions
+Relative RF tree 903: 0.500000
+
+Small tree 1006 has 7 tips and 4 bipartitions
+Relative RF tree 1006: 0.000000
+
+Small tree 1107 has 7 tips and 4 bipartitions
+Relative RF tree 1107: 0.000000
+
+Small tree 1212 has 7 tips and 4 bipartitions
+Relative RF tree 1212: 0.250000
+
+Small tree 1314 has 7 tips and 3 bipartitions
+Relative RF tree 1314: 0.000000
+
+Small tree 1414 has 7 tips and 2 bipartitions
+Relative RF tree 1414: 0.000000
+
+Small tree 1514 has 7 tips and 4 bipartitions
+Relative RF tree 1514: 0.750000
+
+Small tree 1614 has 7 tips and 4 bipartitions
+Relative RF tree 1614: 0.000000
+
+Small tree 1715 has 7 tips and 3 bipartitions
+Relative RF tree 1715: 0.333333
+
+Small tree 1815 has 7 tips and 4 bipartitions
+Relative RF tree 1815: 0.000000
+
+Small tree 1919 has 7 tips and 4 bipartitions
+Relative RF tree 1919: 0.000000
+
+Small tree 2019 has 7 tips and 3 bipartitions
+Relative RF tree 2019: 1.000000
+
+Small tree 2120 has 7 tips and 4 bipartitions
+Relative RF tree 2120: 0.500000
+
+Small tree 2220 has 7 tips and 2 bipartitions
+Relative RF tree 2220: 0.500000
+
+Small tree 2320 has 7 tips and 4 bipartitions
+Relative RF tree 2320: 0.500000
+
+Small tree 2420 has 7 tips and 4 bipartitions
+Relative RF tree 2420: 0.500000
+
+Small tree 2522 has 7 tips and 4 bipartitions
+Relative RF tree 2522: 0.500000
+
+Small tree 2624 has 7 tips and 4 bipartitions
+Relative RF tree 2624: 0.750000
+
+Small tree 2727 has 7 tips and 4 bipartitions
+Relative RF tree 2727: 0.750000
+
+Small tree 2827 has 7 tips and 2 bipartitions
+Relative RF tree 2827: 0.000000
+
+Small tree 2927 has 7 tips and 4 bipartitions
+Relative RF tree 2927: 0.000000
+
+Small tree 3029 has 7 tips and 2 bipartitions
+Relative RF tree 3029: 0.000000
+
+Small tree 3134 has 7 tips and 3 bipartitions
+Relative RF tree 3134: 0.666667
+
+Small tree 3234 has 7 tips and 4 bipartitions
+Relative RF tree 3234: 0.250000
+
+Small tree 3334 has 7 tips and 2 bipartitions
+Relative RF tree 3334: 0.500000
+
+Small tree 3436 has 7 tips and 3 bipartitions
+Relative RF tree 3436: 0.000000
+
+Small tree 3536 has 7 tips and 1 bipartitions
+Relative RF tree 3536: 0.000000
+
+Small tree 3637 has 7 tips and 4 bipartitions
+Relative RF tree 3637: 0.000000
+
+Small tree 3737 has 7 tips and 4 bipartitions
+Relative RF tree 3737: 0.500000
+
+Small tree 3837 has 7 tips and 4 bipartitions
+Relative RF tree 3837: 0.250000
+
+Small tree 3937 has 7 tips and 4 bipartitions
+Relative RF tree 3937: 0.000000
+
+Small tree 4037 has 7 tips and 2 bipartitions
+Relative RF tree 4037: 0.500000
+
+Small tree 4137 has 7 tips and 2 bipartitions
+Relative RF tree 4137: 0.500000
+
+Small tree 4237 has 7 tips and 3 bipartitions
+Relative RF tree 4237: 0.666667
+
+Small tree 4338 has 7 tips and 4 bipartitions
+Relative RF tree 4338: 0.250000
+
+Small tree 4442 has 7 tips and 3 bipartitions
+Relative RF tree 4442: 0.666667
+
+Small tree 4543 has 7 tips and 4 bipartitions
+Relative RF tree 4543: 0.500000
+
+Small tree 4649 has 7 tips and 4 bipartitions
+Relative RF tree 4649: 0.000000
+
+Small tree 4752 has 6 tips and 3 bipartitions
+Relative RF tree 4752: 0.333333
+
+Small tree 4854 has 7 tips and 3 bipartitions
+Relative RF tree 4854: 0.666667
+
+Small tree 4955 has 7 tips and 4 bipartitions
+Relative RF tree 4955: 0.250000
+
+Small tree 5055 has 7 tips and 4 bipartitions
+Relative RF tree 5055: 0.000000
+
+Small tree 5156 has 7 tips and 4 bipartitions
+Relative RF tree 5156: 0.500000
+
+Small tree 5256 has 7 tips and 3 bipartitions
+Relative RF tree 5256: 0.000000
+
+Small tree 5356 has 7 tips and 4 bipartitions
+Relative RF tree 5356: 0.500000
+
+Small tree 5471 has 7 tips and 2 bipartitions
+Relative RF tree 5471: 1.000000
+
+Small tree 5571 has 7 tips and 2 bipartitions
+Relative RF tree 5571: 1.000000
+
+Small tree 5673 has 7 tips and 4 bipartitions
+Relative RF tree 5673: 0.250000
+
+Small tree 5773 has 7 tips and 2 bipartitions
+Relative RF tree 5773: 1.000000
+
+Small tree 5877 has 7 tips and 3 bipartitions
+Relative RF tree 5877: 0.000000
+
+Small tree 5977 has 7 tips and 3 bipartitions
+Relative RF tree 5977: 0.000000
+
+Small tree 6077 has 7 tips and 3 bipartitions
+Relative RF tree 6077: 0.333333
+
+Small tree 6177 has 7 tips and 4 bipartitions
+Relative RF tree 6177: 0.500000
+
+Small tree 6279 has 7 tips and 4 bipartitions
+Relative RF tree 6279: 0.000000
+
+Small tree 6380 has 7 tips and 3 bipartitions
+Relative RF tree 6380: 0.333333
+
+Small tree 6480 has 7 tips and 4 bipartitions
+Relative RF tree 6480: 0.000000
+
+Small tree 6580 has 7 tips and 4 bipartitions
+Relative RF tree 6580: 0.000000
+
+Small tree 6683 has 7 tips and 2 bipartitions
+Relative RF tree 6683: 0.000000
+
+Small tree 6783 has 7 tips and 4 bipartitions
+Relative RF tree 6783: 0.750000
+
+Small tree 6883 has 7 tips and 4 bipartitions
+Relative RF tree 6883: 0.250000
+
+Small tree 6983 has 7 tips and 4 bipartitions
+Relative RF tree 6983: 0.250000
+
+Small tree 7084 has 7 tips and 1 bipartitions
+Relative RF tree 7084: 1.000000
+
+Small tree 7191 has 7 tips and 3 bipartitions
+Relative RF tree 7191: 0.333333
+
+Small tree 7293 has 6 tips and 1 bipartitions
+Relative RF tree 7293: 0.000000
+
+Small tree 7393 has 5 tips and 1 bipartitions
+Relative RF tree 7393: 1.000000
+
+Small tree 7495 has 5 tips and 1 bipartitions
+Relative RF tree 7495: 0.000000
+
+Small tree 7597 has 5 tips and 2 bipartitions
+Relative RF tree 7597: 0.000000
+
+Small tree 7701 has 6 tips and 3 bipartitions
+Relative RF tree 7701: 0.000000
+
+Small tree 7806 has 6 tips and 1 bipartitions
+Relative RF tree 7806: 0.000000
+
+Small tree 7906 has 6 tips and 3 bipartitions
+Relative RF tree 7906: 0.333333
+
+Small tree 8006 has 6 tips and 2 bipartitions
+Relative RF tree 8006: 0.500000
+
+Small tree 8106 has 6 tips and 3 bipartitions
+Relative RF tree 8106: 0.000000
+
+Small tree 8206 has 6 tips and 3 bipartitions
+Relative RF tree 8206: 0.000000
+
+Small tree 8306 has 6 tips and 3 bipartitions
+Relative RF tree 8306: 0.000000
+
+Small tree 8406 has 6 tips and 3 bipartitions
+Relative RF tree 8406: 1.000000
+
+Small tree 8510 has 6 tips and 1 bipartitions
+Relative RF tree 8510: 0.000000
+
+Small tree 8611 has 6 tips and 1 bipartitions
+Relative RF tree 8611: 0.000000
+
+Small tree 8711 has 6 tips and 3 bipartitions
+Relative RF tree 8711: 0.666667
+
+Small tree 8811 has 6 tips and 3 bipartitions
+Relative RF tree 8811: 0.333333
+
+Small tree 8911 has 6 tips and 2 bipartitions
+Relative RF tree 8911: 1.000000
+
+Small tree 9011 has 6 tips and 3 bipartitions
+Relative RF tree 9011: 0.000000
+
+Small tree 9111 has 6 tips and 3 bipartitions
+Relative RF tree 9111: 0.333333
+
+Small tree 9211 has 6 tips and 3 bipartitions
+Relative RF tree 9211: 0.333333
+
+Small tree 9311 has 6 tips and 3 bipartitions
+Relative RF tree 9311: 0.000000
+
+Small tree 9411 has 6 tips and 3 bipartitions
+Relative RF tree 9411: 0.000000
+
+Small tree 9511 has 6 tips and 3 bipartitions
+Relative RF tree 9511: 0.333333
+
+Small tree 9611 has 6 tips and 3 bipartitions
+Relative RF tree 9611: 0.333333
+
+Small tree 9711 has 6 tips and 3 bipartitions
+Relative RF tree 9711: 0.333333
+
+Small tree 9811 has 6 tips and 2 bipartitions
+Relative RF tree 9811: 0.500000
+
+Small tree 9911 has 6 tips and 2 bipartitions
+Relative RF tree 9911: 0.000000
+
+Small tree 10011 has 6 tips and 3 bipartitions
+Relative RF tree 10011: 0.333333
+
+Small tree 10111 has 6 tips and 3 bipartitions
+Relative RF tree 10111: 0.000000
+
+Small tree 10212 has 6 tips and 3 bipartitions
+Relative RF tree 10212: 0.000000
+
+Small tree 10312 has 6 tips and 3 bipartitions
+Relative RF tree 10312: 0.000000
+
+Small tree 10412 has 6 tips and 3 bipartitions
+Relative RF tree 10412: 0.000000
+
+Small tree 10512 has 6 tips and 3 bipartitions
+Relative RF tree 10512: 0.333333
+
+Small tree 10613 has 6 tips and 2 bipartitions
+Relative RF tree 10613: 0.000000
+
+Small tree 10717 has 6 tips and 2 bipartitions
+Relative RF tree 10717: 0.000000
+
+Small tree 10818 has 6 tips and 3 bipartitions
+Relative RF tree 10818: 0.000000
+
+Small tree 10918 has 6 tips and 2 bipartitions
+Relative RF tree 10918: 0.500000
+
+Small tree 11018 has 6 tips and 3 bipartitions
+Relative RF tree 11018: 0.333333
+
+Small tree 11118 has 6 tips and 3 bipartitions
+Relative RF tree 11118: 0.000000
+
+Small tree 11218 has 6 tips and 3 bipartitions
+Relative RF tree 11218: 0.000000
+
+Small tree 11320 has 6 tips and 1 bipartitions
+Relative RF tree 11320: 0.000000
+
+Small tree 11420 has 6 tips and 1 bipartitions
+Relative RF tree 11420: 0.000000
+
+Small tree 11520 has 6 tips and 3 bipartitions
+Relative RF tree 11520: 0.333333
+
+Small tree 11621 has 6 tips and 3 bipartitions
+Relative RF tree 11621: 0.333333
+
+Small tree 11722 has 6 tips and 3 bipartitions
+Relative RF tree 11722: 0.333333
+
+Small tree 11825 has 6 tips and 3 bipartitions
+Relative RF tree 11825: 0.333333
+
+Small tree 11925 has 6 tips and 2 bipartitions
+Relative RF tree 11925: 0.000000
+
+Small tree 12027 has 6 tips and 3 bipartitions
+Relative RF tree 12027: 0.666667
+
+Small tree 12127 has 6 tips and 2 bipartitions
+Relative RF tree 12127: 0.000000
+
+Small tree 12227 has 6 tips and 3 bipartitions
+Relative RF tree 12227: 0.333333
+
+Small tree 12329 has 6 tips and 2 bipartitions
+Relative RF tree 12329: 0.500000
+
+Small tree 12429 has 6 tips and 3 bipartitions
+Relative RF tree 12429: 0.333333
+
+Small tree 12535 has 6 tips and 2 bipartitions
+Relative RF tree 12535: 0.500000
+
+Small tree 12635 has 6 tips and 3 bipartitions
+Relative RF tree 12635: 0.000000
+
+Small tree 12737 has 6 tips and 3 bipartitions
+Relative RF tree 12737: 0.666667
+
+Small tree 12837 has 6 tips and 3 bipartitions
+Relative RF tree 12837: 0.666667
+
+Small tree 12940 has 6 tips and 3 bipartitions
+Relative RF tree 12940: 0.000000
+
+Small tree 13045 has 6 tips and 3 bipartitions
+Relative RF tree 13045: 0.666667
+
+Small tree 13146 has 6 tips and 3 bipartitions
+Relative RF tree 13146: 0.000000
+
+Small tree 13246 has 6 tips and 3 bipartitions
+Relative RF tree 13246: 0.000000
+
+Small tree 13349 has 6 tips and 3 bipartitions
+Relative RF tree 13349: 1.000000
+
+Small tree 13452 has 6 tips and 3 bipartitions
+Relative RF tree 13452: 0.666667
+
+Small tree 13554 has 6 tips and 3 bipartitions
+Relative RF tree 13554: 0.000000
+
+Small tree 13654 has 6 tips and 3 bipartitions
+Relative RF tree 13654: 0.333333
+
+Small tree 13754 has 6 tips and 2 bipartitions
+Relative RF tree 13754: 0.000000
+
+Small tree 13854 has 6 tips and 2 bipartitions
+Relative RF tree 13854: 0.000000
+
+Small tree 13954 has 6 tips and 2 bipartitions
+Relative RF tree 13954: 0.000000
+
+Small tree 14054 has 6 tips and 3 bipartitions
+Relative RF tree 14054: 0.000000
+
+Small tree 14154 has 6 tips and 2 bipartitions
+Relative RF tree 14154: 0.500000
+
+Small tree 14254 has 6 tips and 3 bipartitions
+Relative RF tree 14254: 0.666667
+
+Small tree 14354 has 6 tips and 3 bipartitions
+Relative RF tree 14354: 0.333333
+
+Small tree 14454 has 6 tips and 2 bipartitions
+Relative RF tree 14454: 0.000000
+
+Small tree 14554 has 6 tips and 3 bipartitions
+Relative RF tree 14554: 0.333333
+
+Small tree 14655 has 6 tips and 3 bipartitions
+Relative RF tree 14655: 0.333333
+
+Small tree 14755 has 6 tips and 3 bipartitions
+Relative RF tree 14755: 0.333333
+
+Small tree 14855 has 6 tips and 3 bipartitions
+Relative RF tree 14855: 0.333333
+
+Small tree 14955 has 6 tips and 2 bipartitions
+Relative RF tree 14955: 0.500000
+
+Small tree 15055 has 6 tips and 3 bipartitions
+Relative RF tree 15055: 0.666667
+
+Small tree 15155 has 6 tips and 3 bipartitions
+Relative RF tree 15155: 0.000000
+
+Small tree 15255 has 6 tips and 3 bipartitions
+Relative RF tree 15255: 0.000000
+
+Small tree 15355 has 6 tips and 3 bipartitions
+Relative RF tree 15355: 0.000000
+
+Small tree 15460 has 6 tips and 3 bipartitions
+Relative RF tree 15460: 0.000000
+
+Small tree 15560 has 6 tips and 3 bipartitions
+Relative RF tree 15560: 0.000000
+
+Small tree 15660 has 6 tips and 3 bipartitions
+Relative RF tree 15660: 0.000000
+
+Small tree 15760 has 6 tips and 2 bipartitions
+Relative RF tree 15760: 1.000000
+
+Small tree 15863 has 6 tips and 3 bipartitions
+Relative RF tree 15863: 0.666667
+
+Small tree 15964 has 6 tips and 3 bipartitions
+Relative RF tree 15964: 0.666667
+
+Small tree 16064 has 6 tips and 3 bipartitions
+Relative RF tree 16064: 0.666667
+
+Small tree 16165 has 6 tips and 3 bipartitions
+Relative RF tree 16165: 1.000000
+
+Small tree 16265 has 6 tips and 3 bipartitions
+Relative RF tree 16265: 0.333333
+
+Small tree 16366 has 6 tips and 3 bipartitions
+Relative RF tree 16366: 0.000000
+
+Small tree 16466 has 6 tips and 3 bipartitions
+Relative RF tree 16466: 0.000000
+
+Small tree 16574 has 6 tips and 3 bipartitions
+Relative RF tree 16574: 0.000000
+
+Small tree 16674 has 6 tips and 2 bipartitions
+Relative RF tree 16674: 0.000000
+
+Small tree 16775 has 6 tips and 3 bipartitions
+Relative RF tree 16775: 1.000000
+
+Small tree 16877 has 6 tips and 3 bipartitions
+Relative RF tree 16877: 0.333333
+
+Small tree 16984 has 6 tips and 3 bipartitions
+Relative RF tree 16984: 0.333333
+
+Small tree 17086 has 6 tips and 3 bipartitions
+Relative RF tree 17086: 0.333333
+
+Small tree 17186 has 6 tips and 3 bipartitions
+Relative RF tree 17186: 0.000000
+
+Small tree 17286 has 6 tips and 2 bipartitions
+Relative RF tree 17286: 1.000000
+
+Small tree 17390 has 6 tips and 3 bipartitions
+Relative RF tree 17390: 0.666667
+
+Small tree 17496 has 6 tips and 3 bipartitions
+Relative RF tree 17496: 0.000000
+
+Small tree 17598 has 6 tips and 3 bipartitions
+Relative RF tree 17598: 0.000000
+
+Small tree 17698 has 6 tips and 2 bipartitions
+Relative RF tree 17698: 0.000000
+
+Small tree 17799 has 6 tips and 3 bipartitions
+Relative RF tree 17799: 0.333333
+
+Small tree 17903 has 6 tips and 3 bipartitions
+Relative RF tree 17903: 0.000000
+
+Small tree 18003 has 6 tips and 3 bipartitions
+Relative RF tree 18003: 0.000000
+
+Small tree 18103 has 6 tips and 3 bipartitions
+Relative RF tree 18103: 0.000000
+
+Small tree 18204 has 6 tips and 3 bipartitions
+Relative RF tree 18204: 0.333333
+
+Small tree 18304 has 6 tips and 3 bipartitions
+Relative RF tree 18304: 1.000000
+
+Small tree 18404 has 6 tips and 3 bipartitions
+Relative RF tree 18404: 0.333333
+
+Small tree 18510 has 6 tips and 3 bipartitions
+Relative RF tree 18510: 0.333333
+
+Small tree 18610 has 6 tips and 1 bipartitions
+Relative RF tree 18610: 0.000000
+
+Small tree 18710 has 6 tips and 2 bipartitions
+Relative RF tree 18710: 0.000000
+
+Small tree 18810 has 6 tips and 2 bipartitions
+Relative RF tree 18810: 1.000000
+
+Small tree 18911 has 6 tips and 3 bipartitions
+Relative RF tree 18911: 0.000000
+
+Small tree 19019 has 6 tips and 2 bipartitions
+Relative RF tree 19019: 0.000000
+
+Small tree 19119 has 6 tips and 3 bipartitions
+Relative RF tree 19119: 0.333333
+
+Small tree 19221 has 6 tips and 3 bipartitions
+Relative RF tree 19221: 0.333333
+
+Small tree 19325 has 6 tips and 3 bipartitions
+Relative RF tree 19325: 0.333333
+
+Small tree 19427 has 6 tips and 2 bipartitions
+Relative RF tree 19427: 0.000000
+
+Small tree 19529 has 6 tips and 3 bipartitions
+Relative RF tree 19529: 0.000000
+
+Small tree 19632 has 6 tips and 3 bipartitions
+Relative RF tree 19632: 0.666667
+
+Small tree 19732 has 6 tips and 3 bipartitions
+Relative RF tree 19732: 0.000000
+
+Small tree 19832 has 6 tips and 2 bipartitions
+Relative RF tree 19832: 0.500000
+
+Small tree 19932 has 6 tips and 2 bipartitions
+Relative RF tree 19932: 0.500000
+
+Small tree 20032 has 6 tips and 3 bipartitions
+Relative RF tree 20032: 0.666667
+
+Small tree 20132 has 6 tips and 2 bipartitions
+Relative RF tree 20132: 0.000000
+
+Small tree 20232 has 6 tips and 1 bipartitions
+Relative RF tree 20232: 1.000000
+
+Small tree 20334 has 6 tips and 3 bipartitions
+Relative RF tree 20334: 0.000000
+
+Small tree 20434 has 6 tips and 3 bipartitions
+Relative RF tree 20434: 0.000000
+
+Small tree 20534 has 6 tips and 2 bipartitions
+Relative RF tree 20534: 0.000000
+
+Small tree 20637 has 6 tips and 2 bipartitions
+Relative RF tree 20637: 0.000000
+
+Small tree 20738 has 6 tips and 1 bipartitions
+Relative RF tree 20738: 1.000000
+
+Small tree 20841 has 6 tips and 3 bipartitions
+Relative RF tree 20841: 0.333333
+
+Small tree 20943 has 6 tips and 3 bipartitions
+Relative RF tree 20943: 0.333333
+
+Small tree 21051 has 6 tips and 2 bipartitions
+Relative RF tree 21051: 0.500000
+
+Small tree 21155 has 6 tips and 1 bipartitions
+Relative RF tree 21155: 1.000000
+
+Small tree 21256 has 6 tips and 1 bipartitions
+Relative RF tree 21256: 1.000000
+
+Small tree 21359 has 6 tips and 1 bipartitions
+Relative RF tree 21359: 0.000000
+
+Small tree 21460 has 6 tips and 3 bipartitions
+Relative RF tree 21460: 0.000000
+
+Small tree 21561 has 6 tips and 3 bipartitions
+Relative RF tree 21561: 0.000000
+
+Small tree 21663 has 5 tips and 2 bipartitions
+Relative RF tree 21663: 0.000000
+
+Small tree 21766 has 6 tips and 3 bipartitions
+Relative RF tree 21766: 0.666667
+
+Small tree 21869 has 6 tips and 2 bipartitions
+Relative RF tree 21869: 0.000000
+
+Small tree 21970 has 6 tips and 3 bipartitions
+Relative RF tree 21970: 0.000000
+
+Small tree 22070 has 6 tips and 1 bipartitions
+Relative RF tree 22070: 0.000000
+
+Small tree 22184 has 6 tips and 3 bipartitions
+Relative RF tree 22184: 0.000000
+
+Small tree 22285 has 6 tips and 3 bipartitions
+Relative RF tree 22285: 1.000000
+
+Small tree 22385 has 6 tips and 3 bipartitions
+Relative RF tree 22385: 0.000000
+
+Small tree 22485 has 6 tips and 3 bipartitions
+Relative RF tree 22485: 0.333333
+
+Small tree 22585 has 6 tips and 3 bipartitions
+Relative RF tree 22585: 0.666667
+
+Small tree 22690 has 6 tips and 3 bipartitions
+Relative RF tree 22690: 0.666667
+
+Small tree 22794 has 6 tips and 1 bipartitions
+Relative RF tree 22794: 1.000000
+
+Small tree 22897 has 6 tips and 1 bipartitions
+Relative RF tree 22897: 0.000000
+
+Small tree 22997 has 6 tips and 2 bipartitions
+Relative RF tree 22997: 0.000000
+
+Small tree 23097 has 6 tips and 3 bipartitions
+Relative RF tree 23097: 0.333333
+
+Small tree 23197 has 6 tips and 3 bipartitions
+Relative RF tree 23197: 0.000000
+
+Small tree 23299 has 6 tips and 1 bipartitions
+Relative RF tree 23299: 0.000000
+
+Small tree 23399 has 6 tips and 3 bipartitions
+Relative RF tree 23399: 0.000000
+
+Small tree 23500 has 6 tips and 3 bipartitions
+Relative RF tree 23500: 0.000000
+
+Small tree 23605 has 6 tips and 3 bipartitions
+Relative RF tree 23605: 0.000000
+
+Small tree 23705 has 6 tips and 3 bipartitions
+Relative RF tree 23705: 0.333333
+
+Small tree 23805 has 6 tips and 3 bipartitions
+Relative RF tree 23805: 0.333333
+
+Small tree 23909 has 6 tips and 3 bipartitions
+Relative RF tree 23909: 0.333333
+
+Small tree 24009 has 6 tips and 3 bipartitions
+Relative RF tree 24009: 0.666667
+
+Small tree 24117 has 6 tips and 3 bipartitions
+Relative RF tree 24117: 0.333333
+
+Small tree 24218 has 6 tips and 3 bipartitions
+Relative RF tree 24218: 0.333333
+
+Small tree 24322 has 5 tips and 2 bipartitions
+Relative RF tree 24322: 1.000000
+
+Small tree 24422 has 6 tips and 3 bipartitions
+Relative RF tree 24422: 0.666667
+
+Small tree 24523 has 6 tips and 3 bipartitions
+Relative RF tree 24523: 0.666667
+
+Small tree 24623 has 5 tips and 2 bipartitions
+Relative RF tree 24623: 1.000000
+
+Small tree 24723 has 5 tips and 2 bipartitions
+Relative RF tree 24723: 0.500000
+
+Small tree 24826 has 4 tips and 1 bipartitions
+Relative RF tree 24826: 0.000000
+
+Small tree 24930 has 4 tips and 1 bipartitions
+Relative RF tree 24930: 0.000000
+
+Small tree 25034 has 5 tips and 2 bipartitions
+Relative RF tree 25034: 0.500000
+
+Small tree 25148 has 5 tips and 2 bipartitions
+Relative RF tree 25148: 0.000000
+
+Small tree 25258 has 4 tips and 1 bipartitions
+Relative RF tree 25258: 1.000000
+
+Small tree 25363 has 5 tips and 2 bipartitions
+Relative RF tree 25363: 0.500000
+
+Small tree 25463 has 5 tips and 2 bipartitions
+Relative RF tree 25463: 0.500000
+
+Small tree 25563 has 5 tips and 2 bipartitions
+Relative RF tree 25563: 1.000000
+
+Small tree 25664 has 5 tips and 2 bipartitions
+Relative RF tree 25664: 0.000000
+
+Small tree 25764 has 5 tips and 2 bipartitions
+Relative RF tree 25764: 0.500000
+
+Small tree 25864 has 5 tips and 2 bipartitions
+Relative RF tree 25864: 0.000000
+
+Small tree 25964 has 5 tips and 2 bipartitions
+Relative RF tree 25964: 0.000000
+
+Small tree 26065 has 5 tips and 2 bipartitions
+Relative RF tree 26065: 0.000000
+
+Small tree 26166 has 5 tips and 2 bipartitions
+Relative RF tree 26166: 0.000000
+
+Small tree 26267 has 5 tips and 1 bipartitions
+Relative RF tree 26267: 1.000000
+
+Small tree 26367 has 5 tips and 2 bipartitions
+Relative RF tree 26367: 0.000000
+
+Small tree 26468 has 5 tips and 2 bipartitions
+Relative RF tree 26468: 0.500000
+
+Small tree 26568 has 5 tips and 2 bipartitions
+Relative RF tree 26568: 0.000000
+
+Small tree 26668 has 5 tips and 2 bipartitions
+Relative RF tree 26668: 0.000000
+
+Small tree 26768 has 5 tips and 2 bipartitions
+Relative RF tree 26768: 0.000000
+
+Small tree 26868 has 5 tips and 2 bipartitions
+Relative RF tree 26868: 0.000000
+
+Small tree 26968 has 5 tips and 2 bipartitions
+Relative RF tree 26968: 0.000000
+
+Small tree 27068 has 5 tips and 2 bipartitions
+Relative RF tree 27068: 0.000000
+
+Small tree 27168 has 5 tips and 2 bipartitions
+Relative RF tree 27168: 0.000000
+
+Small tree 27268 has 5 tips and 1 bipartitions
+Relative RF tree 27268: 0.000000
+
+Small tree 27368 has 5 tips and 2 bipartitions
+Relative RF tree 27368: 0.000000
+
+Small tree 27468 has 5 tips and 2 bipartitions
+Relative RF tree 27468: 1.000000
+
+Small tree 27569 has 5 tips and 2 bipartitions
+Relative RF tree 27569: 0.000000
+
+Small tree 27669 has 5 tips and 2 bipartitions
+Relative RF tree 27669: 0.000000
+
+Small tree 27770 has 5 tips and 2 bipartitions
+Relative RF tree 27770: 0.000000
+
+Small tree 27870 has 5 tips and 2 bipartitions
+Relative RF tree 27870: 0.000000
+
+Small tree 27971 has 5 tips and 2 bipartitions
+Relative RF tree 27971: 0.000000
+
+Small tree 28072 has 5 tips and 2 bipartitions
+Relative RF tree 28072: 0.000000
+
+Small tree 28175 has 5 tips and 2 bipartitions
+Relative RF tree 28175: 0.500000
+
+Small tree 28277 has 5 tips and 2 bipartitions
+Relative RF tree 28277: 1.000000
+
+Small tree 28378 has 5 tips and 2 bipartitions
+Relative RF tree 28378: 0.000000
+
+Small tree 28478 has 5 tips and 2 bipartitions
+Relative RF tree 28478: 0.000000
+
+Small tree 28582 has 5 tips and 2 bipartitions
+Relative RF tree 28582: 0.000000
+
+Small tree 28685 has 5 tips and 2 bipartitions
+Relative RF tree 28685: 0.000000
+
+Small tree 28786 has 5 tips and 2 bipartitions
+Relative RF tree 28786: 0.000000
+
+Small tree 28886 has 5 tips and 2 bipartitions
+Relative RF tree 28886: 0.500000
+
+Small tree 28988 has 5 tips and 2 bipartitions
+Relative RF tree 28988: 0.000000
+
+Small tree 29088 has 5 tips and 2 bipartitions
+Relative RF tree 29088: 0.000000
+
+Small tree 29189 has 5 tips and 2 bipartitions
+Relative RF tree 29189: 0.000000
+
+Small tree 29294 has 5 tips and 2 bipartitions
+Relative RF tree 29294: 0.500000
+
+Small tree 29394 has 5 tips and 2 bipartitions
+Relative RF tree 29394: 0.000000
+
+Small tree 29498 has 5 tips and 2 bipartitions
+Relative RF tree 29498: 0.000000
+
+Small tree 29599 has 5 tips and 2 bipartitions
+Relative RF tree 29599: 0.500000
+
+Small tree 29704 has 5 tips and 2 bipartitions
+Relative RF tree 29704: 0.000000
+
+Small tree 29804 has 5 tips and 1 bipartitions
+Relative RF tree 29804: 0.000000
+
+Small tree 29907 has 5 tips and 2 bipartitions
+Relative RF tree 29907: 0.500000
+
+Small tree 30008 has 5 tips and 2 bipartitions
+Relative RF tree 30008: 0.000000
+
+Small tree 30116 has 5 tips and 2 bipartitions
+Relative RF tree 30116: 0.500000
+
+Small tree 30217 has 5 tips and 2 bipartitions
+Relative RF tree 30217: 0.500000
+
+Small tree 30317 has 5 tips and 2 bipartitions
+Relative RF tree 30317: 0.000000
+
+Small tree 30418 has 5 tips and 2 bipartitions
+Relative RF tree 30418: 0.000000
+
+Small tree 30521 has 5 tips and 1 bipartitions
+Relative RF tree 30521: 0.000000
+
+Small tree 30623 has 5 tips and 2 bipartitions
+Relative RF tree 30623: 0.000000
+
+Small tree 30727 has 5 tips and 1 bipartitions
+Relative RF tree 30727: 0.000000
+
+Small tree 30828 has 5 tips and 2 bipartitions
+Relative RF tree 30828: 1.000000
+
+Small tree 30932 has 5 tips and 2 bipartitions
+Relative RF tree 30932: 0.000000
+
+Small tree 31033 has 5 tips and 2 bipartitions
+Relative RF tree 31033: 0.500000
+
+Small tree 31134 has 5 tips and 2 bipartitions
+Relative RF tree 31134: 0.000000
+
+Small tree 31236 has 5 tips and 2 bipartitions
+Relative RF tree 31236: 1.000000
+
+Small tree 31339 has 5 tips and 2 bipartitions
+Relative RF tree 31339: 0.000000
+
+Small tree 31463 has 5 tips and 2 bipartitions
+Relative RF tree 31463: 0.000000
+
+Small tree 31563 has 5 tips and 2 bipartitions
+Relative RF tree 31563: 0.000000
+
+Small tree 31663 has 5 tips and 2 bipartitions
+Relative RF tree 31663: 0.500000
+
+Small tree 31765 has 5 tips and 2 bipartitions
+Relative RF tree 31765: 1.000000
+
+Small tree 31869 has 5 tips and 2 bipartitions
+Relative RF tree 31869: 1.000000
+
+Small tree 31969 has 5 tips and 2 bipartitions
+Relative RF tree 31969: 0.500000
+
+Small tree 32069 has 5 tips and 2 bipartitions
+Relative RF tree 32069: 0.500000
+
+Small tree 32170 has 5 tips and 2 bipartitions
+Relative RF tree 32170: 0.500000
+
+Small tree 32271 has 5 tips and 2 bipartitions
+Relative RF tree 32271: 0.000000
+
+Small tree 32371 has 5 tips and 2 bipartitions
+Relative RF tree 32371: 0.000000
+
+Small tree 32471 has 5 tips and 2 bipartitions
+Relative RF tree 32471: 0.000000
+
+Small tree 32571 has 5 tips and 2 bipartitions
+Relative RF tree 32571: 0.000000
+
+Small tree 32671 has 5 tips and 2 bipartitions
+Relative RF tree 32671: 0.500000
+
+Small tree 32771 has 5 tips and 2 bipartitions
+Relative RF tree 32771: 0.500000
+
+Small tree 32873 has 5 tips and 2 bipartitions
+Relative RF tree 32873: 0.000000
+
+Small tree 32973 has 5 tips and 2 bipartitions
+Relative RF tree 32973: 0.500000
+
+Small tree 33073 has 5 tips and 2 bipartitions
+Relative RF tree 33073: 0.000000
+
+Small tree 33173 has 5 tips and 2 bipartitions
+Relative RF tree 33173: 0.000000
+
+Small tree 33273 has 5 tips and 2 bipartitions
+Relative RF tree 33273: 0.500000
+
+Small tree 33373 has 5 tips and 2 bipartitions
+Relative RF tree 33373: 0.000000
+
+Small tree 33477 has 5 tips and 2 bipartitions
+Relative RF tree 33477: 0.000000
+
+Small tree 33577 has 5 tips and 2 bipartitions
+Relative RF tree 33577: 0.500000
+
+Small tree 33677 has 5 tips and 2 bipartitions
+Relative RF tree 33677: 0.500000
+
+Small tree 33781 has 5 tips and 2 bipartitions
+Relative RF tree 33781: 0.000000
+
+Small tree 33881 has 5 tips and 2 bipartitions
+Relative RF tree 33881: 0.000000
+
+Small tree 33981 has 5 tips and 2 bipartitions
+Relative RF tree 33981: 0.500000
+
+Small tree 34083 has 5 tips and 2 bipartitions
+Relative RF tree 34083: 0.000000
+
+Small tree 34184 has 5 tips and 2 bipartitions
+Relative RF tree 34184: 0.500000
+
+Small tree 34287 has 5 tips and 2 bipartitions
+Relative RF tree 34287: 0.000000
+
+Small tree 34387 has 5 tips and 2 bipartitions
+Relative RF tree 34387: 0.000000
+
+Small tree 34487 has 5 tips and 2 bipartitions
+Relative RF tree 34487: 0.000000
+
+Small tree 34587 has 5 tips and 2 bipartitions
+Relative RF tree 34587: 0.500000
+
+Small tree 34690 has 5 tips and 2 bipartitions
+Relative RF tree 34690: 0.500000
+
+Small tree 34792 has 5 tips and 2 bipartitions
+Relative RF tree 34792: 0.000000
+
+Small tree 34892 has 5 tips and 2 bipartitions
+Relative RF tree 34892: 0.500000
+
+Small tree 34992 has 5 tips and 2 bipartitions
+Relative RF tree 34992: 1.000000
+
+Small tree 35092 has 5 tips and 2 bipartitions
+Relative RF tree 35092: 0.500000
+
+Small tree 35192 has 5 tips and 2 bipartitions
+Relative RF tree 35192: 0.500000
+
+Small tree 35295 has 5 tips and 1 bipartitions
+Relative RF tree 35295: 0.000000
+
+Small tree 35395 has 5 tips and 2 bipartitions
+Relative RF tree 35395: 0.000000
+
+Small tree 35507 has 5 tips and 2 bipartitions
+Relative RF tree 35507: 0.500000
+
+Small tree 35607 has 5 tips and 2 bipartitions
+Relative RF tree 35607: 0.500000
+
+Small tree 35707 has 5 tips and 2 bipartitions
+Relative RF tree 35707: 1.000000
+
+Small tree 35808 has 5 tips and 2 bipartitions
+Relative RF tree 35808: 1.000000
+
+Small tree 35908 has 5 tips and 2 bipartitions
+Relative RF tree 35908: 0.500000
+
+Small tree 36008 has 5 tips and 2 bipartitions
+Relative RF tree 36008: 0.500000
+
+Small tree 36112 has 5 tips and 2 bipartitions
+Relative RF tree 36112: 0.500000
+
+Small tree 36217 has 5 tips and 2 bipartitions
+Relative RF tree 36217: 0.500000
+
+Small tree 36318 has 5 tips and 2 bipartitions
+Relative RF tree 36318: 0.500000
+
+Small tree 36419 has 5 tips and 2 bipartitions
+Relative RF tree 36419: 0.000000
+
+Small tree 36528 has 5 tips and 2 bipartitions
+Relative RF tree 36528: 0.000000
+
+Small tree 36629 has 5 tips and 2 bipartitions
+Relative RF tree 36629: 0.000000
+
+Small tree 36731 has 5 tips and 2 bipartitions
+Relative RF tree 36731: 0.000000
+
+Small tree 36839 has 5 tips and 2 bipartitions
+Relative RF tree 36839: 0.000000
+
+Small tree 36942 has 5 tips and 2 bipartitions
+Relative RF tree 36942: 0.500000
+
+Small tree 37048 has 4 tips and 1 bipartitions
+Relative RF tree 37048: 0.000000
+
+Small tree 37150 has 5 tips and 2 bipartitions
+Relative RF tree 37150: 0.500000
+
+Small tree 37256 has 5 tips and 2 bipartitions
+Relative RF tree 37256: 0.000000
+
+Small tree 37366 has 5 tips and 2 bipartitions
+Relative RF tree 37366: 0.500000
+
+Small tree 37467 has 5 tips and 2 bipartitions
+Relative RF tree 37467: 0.000000
+
+Small tree 37569 has 5 tips and 2 bipartitions
+Relative RF tree 37569: 0.000000
+
+Small tree 37671 has 5 tips and 2 bipartitions
+Relative RF tree 37671: 0.000000
+
+Small tree 37775 has 5 tips and 2 bipartitions
+Relative RF tree 37775: 0.000000
+
+Small tree 37877 has 5 tips and 2 bipartitions
+Relative RF tree 37877: 0.000000
+
+Small tree 37979 has 5 tips and 2 bipartitions
+Relative RF tree 37979: 0.000000
+
+Small tree 38081 has 5 tips and 1 bipartitions
+Relative RF tree 38081: 0.000000
+
+Small tree 38184 has 5 tips and 2 bipartitions
+Relative RF tree 38184: 0.000000
+
+Small tree 38289 has 5 tips and 2 bipartitions
+Relative RF tree 38289: 0.500000
+
+Small tree 38390 has 5 tips and 2 bipartitions
+Relative RF tree 38390: 0.000000
+
+Small tree 38492 has 5 tips and 2 bipartitions
+Relative RF tree 38492: 0.000000
+
+Small tree 38592 has 5 tips and 2 bipartitions
+Relative RF tree 38592: 1.000000
+
+Small tree 38692 has 5 tips and 2 bipartitions
+Relative RF tree 38692: 0.000000
+
+Small tree 38792 has 5 tips and 2 bipartitions
+Relative RF tree 38792: 0.500000
+
+Small tree 38901 has 5 tips and 2 bipartitions
+Relative RF tree 38901: 0.000000
+
+Small tree 39001 has 5 tips and 2 bipartitions
+Relative RF tree 39001: 0.500000
+
+Small tree 39103 has 5 tips and 2 bipartitions
+Relative RF tree 39103: 0.000000
+
+Small tree 39206 has 5 tips and 2 bipartitions
+Relative RF tree 39206: 0.500000
+
+Small tree 39307 has 5 tips and 2 bipartitions
+Relative RF tree 39307: 0.000000
+
+Small tree 39407 has 5 tips and 2 bipartitions
+Relative RF tree 39407: 0.500000
+
+Small tree 39510 has 5 tips and 2 bipartitions
+Relative RF tree 39510: 0.000000
+
+Small tree 39610 has 5 tips and 1 bipartitions
+Relative RF tree 39610: 0.000000
+
+Small tree 39712 has 5 tips and 2 bipartitions
+Relative RF tree 39712: 0.000000
+
+Small tree 39814 has 5 tips and 1 bipartitions
+Relative RF tree 39814: 0.000000
+
+Small tree 39915 has 5 tips and 1 bipartitions
+Relative RF tree 39915: 1.000000
+
+Small tree 40016 has 5 tips and 2 bipartitions
+Relative RF tree 40016: 0.000000
+
+Small tree 40119 has 5 tips and 2 bipartitions
+Relative RF tree 40119: 0.000000
+
+Small tree 40224 has 5 tips and 2 bipartitions
+Relative RF tree 40224: 0.000000
+
+Small tree 40330 has 5 tips and 1 bipartitions
+Relative RF tree 40330: 0.000000
+
+Small tree 40433 has 5 tips and 2 bipartitions
+Relative RF tree 40433: 0.000000
+
+Small tree 40533 has 5 tips and 2 bipartitions
+Relative RF tree 40533: 0.500000
+
+Small tree 40633 has 5 tips and 1 bipartitions
+Relative RF tree 40633: 0.000000
+
+Small tree 40739 has 5 tips and 2 bipartitions
+Relative RF tree 40739: 0.500000
+
+Small tree 40840 has 5 tips and 2 bipartitions
+Relative RF tree 40840: 0.500000
+
+Small tree 40940 has 5 tips and 2 bipartitions
+Relative RF tree 40940: 0.000000
+
+Small tree 41042 has 5 tips and 2 bipartitions
+Relative RF tree 41042: 0.000000
+
+Small tree 41142 has 5 tips and 2 bipartitions
+Relative RF tree 41142: 0.000000
+
+Small tree 41244 has 5 tips and 2 bipartitions
+Relative RF tree 41244: 0.000000
+
+Small tree 41345 has 5 tips and 2 bipartitions
+Relative RF tree 41345: 0.500000
+
+Small tree 41446 has 5 tips and 2 bipartitions
+Relative RF tree 41446: 0.000000
+
+Small tree 41547 has 5 tips and 2 bipartitions
+Relative RF tree 41547: 0.000000
+
+Small tree 41654 has 5 tips and 2 bipartitions
+Relative RF tree 41654: 0.000000
+
+Small tree 41756 has 5 tips and 2 bipartitions
+Relative RF tree 41756: 0.000000
+
+Small tree 41863 has 5 tips and 1 bipartitions
+Relative RF tree 41863: 0.000000
+
+Small tree 41967 has 5 tips and 2 bipartitions
+Relative RF tree 41967: 0.000000
+
+Small tree 42076 has 5 tips and 1 bipartitions
+Relative RF tree 42076: 1.000000
+
+Small tree 42182 has 5 tips and 1 bipartitions
+Relative RF tree 42182: 0.000000
+
+Small tree 42284 has 5 tips and 1 bipartitions
+Relative RF tree 42284: 0.000000
+
+Small tree 42406 has 5 tips and 2 bipartitions
+Relative RF tree 42406: 0.000000
+
+Small tree 42511 has 5 tips and 2 bipartitions
+Relative RF tree 42511: 0.000000
+
+Small tree 42615 has 5 tips and 2 bipartitions
+Relative RF tree 42615: 0.000000
+
+Small tree 42715 has 5 tips and 1 bipartitions
+Relative RF tree 42715: 0.000000
+
+Small tree 42819 has 5 tips and 2 bipartitions
+Relative RF tree 42819: 0.000000
+
+Small tree 42923 has 5 tips and 1 bipartitions
+Relative RF tree 42923: 0.000000
+
+Small tree 43028 has 5 tips and 2 bipartitions
+Relative RF tree 43028: 0.000000
+
+Small tree 43129 has 5 tips and 2 bipartitions
+Relative RF tree 43129: 0.000000
+
+Small tree 43238 has 5 tips and 1 bipartitions
+Relative RF tree 43238: 0.000000
+
+Small tree 43343 has 5 tips and 1 bipartitions
+Relative RF tree 43343: 0.000000
+
+Small tree 43446 has 5 tips and 2 bipartitions
+Relative RF tree 43446: 1.000000
+
+Small tree 43550 has 5 tips and 1 bipartitions
+Relative RF tree 43550: 0.000000
+
+Small tree 43658 has 5 tips and 2 bipartitions
+Relative RF tree 43658: 0.500000
+
+Small tree 43759 has 5 tips and 2 bipartitions
+Relative RF tree 43759: 0.500000
+
+Small tree 43863 has 5 tips and 2 bipartitions
+Relative RF tree 43863: 0.000000
+
+Small tree 43963 has 5 tips and 2 bipartitions
+Relative RF tree 43963: 0.500000
+
+Small tree 44065 has 5 tips and 2 bipartitions
+Relative RF tree 44065: 0.000000
+
+Small tree 44166 has 5 tips and 2 bipartitions
+Relative RF tree 44166: 0.500000
+
+Small tree 44266 has 5 tips and 2 bipartitions
+Relative RF tree 44266: 0.000000
+
+Small tree 44372 has 5 tips and 2 bipartitions
+Relative RF tree 44372: 0.000000
+
+Small tree 44472 has 5 tips and 2 bipartitions
+Relative RF tree 44472: 1.000000
+
+Small tree 44572 has 5 tips and 2 bipartitions
+Relative RF tree 44572: 0.000000
+
+Small tree 44673 has 5 tips and 2 bipartitions
+Relative RF tree 44673: 0.000000
+
+Small tree 44786 has 5 tips and 1 bipartitions
+Relative RF tree 44786: 0.000000
+
+Small tree 44888 has 5 tips and 1 bipartitions
+Relative RF tree 44888: 1.000000
+
+Small tree 44990 has 5 tips and 2 bipartitions
+Relative RF tree 44990: 0.000000
+
+Small tree 45091 has 5 tips and 2 bipartitions
+Relative RF tree 45091: 1.000000
+
+Small tree 45193 has 5 tips and 2 bipartitions
+Relative RF tree 45193: 0.000000
+
+Small tree 45295 has 5 tips and 1 bipartitions
+Relative RF tree 45295: 1.000000
+
+Small tree 45397 has 5 tips and 2 bipartitions
+Relative RF tree 45397: 0.000000
+
+Small tree 45502 has 5 tips and 2 bipartitions
+Relative RF tree 45502: 1.000000
+
+Small tree 45603 has 5 tips and 2 bipartitions
+Relative RF tree 45603: 0.500000
+
+Small tree 45708 has 5 tips and 2 bipartitions
+Relative RF tree 45708: 0.000000
+
+Small tree 45808 has 5 tips and 1 bipartitions
+Relative RF tree 45808: 1.000000
+
+Small tree 45911 has 5 tips and 1 bipartitions
+Relative RF tree 45911: 0.000000
+
+Small tree 46014 has 5 tips and 2 bipartitions
+Relative RF tree 46014: 0.500000
+
+Small tree 46114 has 5 tips and 2 bipartitions
+Relative RF tree 46114: 0.000000
+
+Small tree 46214 has 5 tips and 2 bipartitions
+Relative RF tree 46214: 0.000000
+
+Small tree 46315 has 5 tips and 2 bipartitions
+Relative RF tree 46315: 0.000000
+
+Small tree 46428 has 5 tips and 2 bipartitions
+Relative RF tree 46428: 0.000000
+
+Small tree 46531 has 5 tips and 2 bipartitions
+Relative RF tree 46531: 0.000000
+
+Small tree 46632 has 5 tips and 2 bipartitions
+Relative RF tree 46632: 0.000000
+
+Small tree 46733 has 5 tips and 2 bipartitions
+Relative RF tree 46733: 0.000000
+
+Small tree 46836 has 5 tips and 2 bipartitions
+Relative RF tree 46836: 0.000000
+
+Small tree 46938 has 4 tips and 1 bipartitions
+Relative RF tree 46938: 1.000000
+
+Small tree 47038 has 4 tips and 1 bipartitions
+Relative RF tree 47038: 1.000000
+
+Small tree 47162 has 4 tips and 1 bipartitions
+Relative RF tree 47162: 0.000000
+
+Small tree 47306 has 4 tips and 1 bipartitions
+Relative RF tree 47306: 0.000000
+
+Small tree 47454 has 4 tips and 1 bipartitions
+Relative RF tree 47454: 0.000000
+
+Small tree 47588 has 4 tips and 1 bipartitions
+Relative RF tree 47588: 1.000000
+
+Small tree 47725 has 4 tips and 1 bipartitions
+Relative RF tree 47725: 0.000000
+
+Small tree 47826 has 4 tips and 1 bipartitions
+Relative RF tree 47826: 0.000000
+
+Small tree 47927 has 4 tips and 1 bipartitions
+Relative RF tree 47927: 0.000000
+
+Small tree 48027 has 4 tips and 1 bipartitions
+Relative RF tree 48027: 0.000000
+
+Small tree 48131 has 4 tips and 1 bipartitions
+Relative RF tree 48131: 0.000000
+
+Small tree 48234 has 4 tips and 1 bipartitions
+Relative RF tree 48234: 0.000000
+
+Small tree 48335 has 4 tips and 1 bipartitions
+Relative RF tree 48335: 0.000000
+
+Small tree 48435 has 4 tips and 1 bipartitions
+Relative RF tree 48435: 0.000000
+
+Small tree 48535 has 4 tips and 1 bipartitions
+Relative RF tree 48535: 0.000000
+
+Small tree 48635 has 4 tips and 1 bipartitions
+Relative RF tree 48635: 0.000000
+
+Small tree 48735 has 4 tips and 1 bipartitions
+Relative RF tree 48735: 0.000000
+
+Small tree 48837 has 4 tips and 1 bipartitions
+Relative RF tree 48837: 0.000000
+
+Small tree 48940 has 4 tips and 1 bipartitions
+Relative RF tree 48940: 0.000000
+
+Small tree 49040 has 4 tips and 1 bipartitions
+Relative RF tree 49040: 0.000000
+
+Small tree 49152 has 4 tips and 1 bipartitions
+Relative RF tree 49152: 0.000000
+
+Small tree 49252 has 4 tips and 1 bipartitions
+Relative RF tree 49252: 1.000000
+
+Small tree 49352 has 4 tips and 1 bipartitions
+Relative RF tree 49352: 0.000000
+
+Small tree 49452 has 4 tips and 1 bipartitions
+Relative RF tree 49452: 1.000000
+
+Small tree 49552 has 4 tips and 1 bipartitions
+Relative RF tree 49552: 0.000000
+
+Small tree 49652 has 4 tips and 1 bipartitions
+Relative RF tree 49652: 1.000000
+
+Small tree 49752 has 4 tips and 1 bipartitions
+Relative RF tree 49752: 0.000000
+
+Small tree 49852 has 4 tips and 1 bipartitions
+Relative RF tree 49852: 0.000000
+
+Small tree 49952 has 4 tips and 1 bipartitions
+Relative RF tree 49952: 0.000000
+
+Small tree 50052 has 4 tips and 1 bipartitions
+Relative RF tree 50052: 1.000000
+
+Small tree 50152 has 4 tips and 1 bipartitions
+Relative RF tree 50152: 0.000000
+
+Small tree 50252 has 4 tips and 1 bipartitions
+Relative RF tree 50252: 1.000000
+
+Small tree 50353 has 4 tips and 1 bipartitions
+Relative RF tree 50353: 1.000000
+
+Small tree 50454 has 4 tips and 1 bipartitions
+Relative RF tree 50454: 0.000000
+
+Small tree 50556 has 4 tips and 1 bipartitions
+Relative RF tree 50556: 0.000000
+
+Small tree 50657 has 4 tips and 1 bipartitions
+Relative RF tree 50657: 0.000000
+
+Small tree 50759 has 4 tips and 1 bipartitions
+Relative RF tree 50759: 1.000000
+
+Small tree 50859 has 4 tips and 1 bipartitions
+Relative RF tree 50859: 1.000000
+
+Small tree 50960 has 4 tips and 1 bipartitions
+Relative RF tree 50960: 0.000000
+
+Small tree 51063 has 4 tips and 1 bipartitions
+Relative RF tree 51063: 0.000000
+
+Small tree 51166 has 4 tips and 1 bipartitions
+Relative RF tree 51166: 0.000000
+
+Small tree 51268 has 4 tips and 1 bipartitions
+Relative RF tree 51268: 0.000000
+
+Small tree 51377 has 4 tips and 1 bipartitions
+Relative RF tree 51377: 1.000000
+
+Small tree 51478 has 4 tips and 1 bipartitions
+Relative RF tree 51478: 0.000000
+
+Small tree 51591 has 4 tips and 1 bipartitions
+Relative RF tree 51591: 0.000000
+
+Small tree 51694 has 4 tips and 1 bipartitions
+Relative RF tree 51694: 0.000000
+
+Small tree 51799 has 4 tips and 1 bipartitions
+Relative RF tree 51799: 0.000000
+
+Small tree 51902 has 4 tips and 1 bipartitions
+Relative RF tree 51902: 0.000000
+
+Small tree 52005 has 4 tips and 1 bipartitions
+Relative RF tree 52005: 0.000000
+
+Small tree 52112 has 4 tips and 1 bipartitions
+Relative RF tree 52112: 0.000000
+
+Small tree 52212 has 4 tips and 1 bipartitions
+Relative RF tree 52212: 0.000000
+
+Small tree 52315 has 4 tips and 1 bipartitions
+Relative RF tree 52315: 0.000000
+
+Small tree 52419 has 4 tips and 1 bipartitions
+Relative RF tree 52419: 0.000000
+
+Small tree 52520 has 4 tips and 1 bipartitions
+Relative RF tree 52520: 1.000000
+
+Small tree 52629 has 4 tips and 1 bipartitions
+Relative RF tree 52629: 0.000000
+
+Small tree 52735 has 4 tips and 1 bipartitions
+Relative RF tree 52735: 0.000000
+
+Small tree 52839 has 4 tips and 1 bipartitions
+Relative RF tree 52839: 0.000000
+
+Small tree 52943 has 4 tips and 1 bipartitions
+Relative RF tree 52943: 0.000000
+
+Small tree 53054 has 4 tips and 1 bipartitions
+Relative RF tree 53054: 1.000000
+
+Small tree 53163 has 4 tips and 1 bipartitions
+Relative RF tree 53163: 0.000000
+
+Small tree 53266 has 4 tips and 1 bipartitions
+Relative RF tree 53266: 0.000000
+
+Small tree 53370 has 4 tips and 1 bipartitions
+Relative RF tree 53370: 0.000000
+
+Small tree 53472 has 4 tips and 1 bipartitions
+Relative RF tree 53472: 0.000000
+
+Small tree 53572 has 4 tips and 1 bipartitions
+Relative RF tree 53572: 0.000000
+
+Small tree 53673 has 4 tips and 1 bipartitions
+Relative RF tree 53673: 0.000000
+
+Small tree 53783 has 4 tips and 1 bipartitions
+Relative RF tree 53783: 0.000000
+
+Small tree 53886 has 4 tips and 1 bipartitions
+Relative RF tree 53886: 0.000000
+
+Small tree 53996 has 4 tips and 1 bipartitions
+Relative RF tree 53996: 0.000000
+
+Small tree 54100 has 4 tips and 1 bipartitions
+Relative RF tree 54100: 0.000000
+
+Small tree 54203 has 4 tips and 1 bipartitions
+Relative RF tree 54203: 0.000000
+
+Small tree 54315 has 4 tips and 1 bipartitions
+Relative RF tree 54315: 0.000000
+
+Small tree 54417 has 4 tips and 1 bipartitions
+Relative RF tree 54417: 0.000000
+
+Small tree 54521 has 4 tips and 1 bipartitions
+Relative RF tree 54521: 1.000000
+
+Small tree 54624 has 4 tips and 1 bipartitions
+Relative RF tree 54624: 0.000000
+
+Small tree 54731 has 4 tips and 1 bipartitions
+Relative RF tree 54731: 0.000000
+
+Small tree 54831 has 4 tips and 1 bipartitions
+Relative RF tree 54831: 0.000000
+
+Small tree 54941 has 4 tips and 1 bipartitions
+Relative RF tree 54941: 0.000000
+
+Small tree 55052 has 4 tips and 1 bipartitions
+Relative RF tree 55052: 0.000000
+
+Small tree 55166 has 4 tips and 1 bipartitions
+Relative RF tree 55166: 0.000000
+
+Small tree 55268 has 4 tips and 1 bipartitions
+Relative RF tree 55268: 0.000000
+
+Small tree 55368 has 4 tips and 1 bipartitions
+Relative RF tree 55368: 0.000000
+
+Small tree 55468 has 4 tips and 1 bipartitions
+Relative RF tree 55468: 0.000000
+
+Small tree 55569 has 4 tips and 1 bipartitions
+Relative RF tree 55569: 0.000000
+
+Small tree 55688 has 4 tips and 1 bipartitions
+Relative RF tree 55688: 0.000000
+
+Small tree 55790 has 4 tips and 1 bipartitions
+Relative RF tree 55790: 0.000000
+
+Small tree 55891 has 4 tips and 1 bipartitions
+Relative RF tree 55891: 1.000000
+
+Small tree 55991 has 4 tips and 1 bipartitions
+Relative RF tree 55991: 0.000000
+
+Small tree 56093 has 4 tips and 1 bipartitions
+Relative RF tree 56093: 1.000000
+
+Small tree 56193 has 4 tips and 1 bipartitions
+Relative RF tree 56193: 0.000000
+
+Small tree 56306 has 4 tips and 1 bipartitions
+Relative RF tree 56306: 0.000000
+
+Small tree 56406 has 4 tips and 1 bipartitions
+Relative RF tree 56406: 1.000000
+
+Small tree 56506 has 4 tips and 1 bipartitions
+Relative RF tree 56506: 0.000000
+
+Small tree 56606 has 4 tips and 1 bipartitions
+Relative RF tree 56606: 0.000000
+
+Small tree 56706 has 4 tips and 1 bipartitions
+Relative RF tree 56706: 0.000000
+
+Small tree 56815 has 4 tips and 1 bipartitions
+Relative RF tree 56815: 0.000000
+
+Small tree 56915 has 4 tips and 1 bipartitions
+Relative RF tree 56915: 0.000000
+
+Small tree 57015 has 4 tips and 1 bipartitions
+Relative RF tree 57015: 0.000000
+
+Small tree 57115 has 4 tips and 1 bipartitions
+Relative RF tree 57115: 1.000000
+
+Small tree 57215 has 4 tips and 1 bipartitions
+Relative RF tree 57215: 0.000000
+
+Small tree 57315 has 4 tips and 1 bipartitions
+Relative RF tree 57315: 0.000000
+
+Small tree 57415 has 4 tips and 1 bipartitions
+Relative RF tree 57415: 0.000000
+
+Small tree 57515 has 4 tips and 1 bipartitions
+Relative RF tree 57515: 0.000000
+
+Small tree 57615 has 4 tips and 1 bipartitions
+Relative RF tree 57615: 0.000000
+
+Small tree 57715 has 4 tips and 1 bipartitions
+Relative RF tree 57715: 0.000000
+
+Small tree 57820 has 4 tips and 1 bipartitions
+Relative RF tree 57820: 0.000000
+
+Small tree 57920 has 4 tips and 1 bipartitions
+Relative RF tree 57920: 0.000000
+
+Small tree 58020 has 4 tips and 1 bipartitions
+Relative RF tree 58020: 0.000000
+
+Small tree 58120 has 4 tips and 1 bipartitions
+Relative RF tree 58120: 0.000000
+
+Small tree 58220 has 4 tips and 1 bipartitions
+Relative RF tree 58220: 0.000000
+
+Small tree 58320 has 4 tips and 1 bipartitions
+Relative RF tree 58320: 1.000000
+
+Small tree 58423 has 4 tips and 1 bipartitions
+Relative RF tree 58423: 0.000000
+
+Small tree 58523 has 4 tips and 1 bipartitions
+Relative RF tree 58523: 0.000000
+
+Small tree 58624 has 4 tips and 1 bipartitions
+Relative RF tree 58624: 0.000000
+
+Small tree 58733 has 4 tips and 1 bipartitions
+Relative RF tree 58733: 1.000000
+
+Small tree 58835 has 4 tips and 1 bipartitions
+Relative RF tree 58835: 0.000000
+
+Small tree 58935 has 4 tips and 1 bipartitions
+Relative RF tree 58935: 0.000000
+
+Small tree 59035 has 4 tips and 1 bipartitions
+Relative RF tree 59035: 0.000000
+
+Small tree 59139 has 4 tips and 1 bipartitions
+Relative RF tree 59139: 0.000000
+
+Small tree 59239 has 4 tips and 1 bipartitions
+Relative RF tree 59239: 0.000000
+
+Small tree 59342 has 4 tips and 1 bipartitions
+Relative RF tree 59342: 0.000000
+
+Small tree 59442 has 4 tips and 1 bipartitions
+Relative RF tree 59442: 0.000000
+
+Small tree 59542 has 4 tips and 1 bipartitions
+Relative RF tree 59542: 0.000000
+
+Small tree 59642 has 4 tips and 1 bipartitions
+Relative RF tree 59642: 1.000000
+
+Small tree 59742 has 4 tips and 1 bipartitions
+Relative RF tree 59742: 1.000000
+
+Small tree 59842 has 4 tips and 1 bipartitions
+Relative RF tree 59842: 0.000000
+
+Small tree 59946 has 4 tips and 1 bipartitions
+Relative RF tree 59946: 0.000000
+
+Small tree 60046 has 4 tips and 1 bipartitions
+Relative RF tree 60046: 0.000000
+
+Small tree 60146 has 4 tips and 1 bipartitions
+Relative RF tree 60146: 1.000000
+
+Small tree 60250 has 4 tips and 1 bipartitions
+Relative RF tree 60250: 0.000000
+
+Small tree 60360 has 4 tips and 1 bipartitions
+Relative RF tree 60360: 1.000000
+
+Small tree 60462 has 4 tips and 1 bipartitions
+Relative RF tree 60462: 0.000000
+
+Small tree 60562 has 4 tips and 1 bipartitions
+Relative RF tree 60562: 1.000000
+
+Small tree 60662 has 4 tips and 1 bipartitions
+Relative RF tree 60662: 0.000000
+
+Small tree 60762 has 4 tips and 1 bipartitions
+Relative RF tree 60762: 1.000000
+
+Small tree 60862 has 4 tips and 1 bipartitions
+Relative RF tree 60862: 1.000000
+
+Small tree 60962 has 4 tips and 1 bipartitions
+Relative RF tree 60962: 1.000000
+
+Small tree 61074 has 4 tips and 1 bipartitions
+Relative RF tree 61074: 0.000000
+
+Small tree 61181 has 4 tips and 1 bipartitions
+Relative RF tree 61181: 1.000000
+
+Small tree 61292 has 4 tips and 1 bipartitions
+Relative RF tree 61292: 1.000000
+
+Small tree 61397 has 4 tips and 1 bipartitions
+Relative RF tree 61397: 1.000000
+
+Small tree 61502 has 4 tips and 1 bipartitions
+Relative RF tree 61502: 0.000000
+
+Small tree 61606 has 4 tips and 1 bipartitions
+Relative RF tree 61606: 0.000000
+
+Small tree 61728 has 4 tips and 1 bipartitions
+Relative RF tree 61728: 0.000000
+
+Small tree 61839 has 4 tips and 1 bipartitions
+Relative RF tree 61839: 0.000000
+
+Small tree 61940 has 4 tips and 1 bipartitions
+Relative RF tree 61940: 1.000000
+
+Small tree 62048 has 4 tips and 1 bipartitions
+Relative RF tree 62048: 0.000000
+
+Small tree 62156 has 4 tips and 1 bipartitions
+Relative RF tree 62156: 0.000000
+
+Small tree 62259 has 4 tips and 1 bipartitions
+Relative RF tree 62259: 1.000000
+
+Small tree 62360 has 4 tips and 1 bipartitions
+Relative RF tree 62360: 1.000000
+
+Small tree 62481 has 4 tips and 1 bipartitions
+Relative RF tree 62481: 0.000000
+
+Small tree 62587 has 4 tips and 1 bipartitions
+Relative RF tree 62587: 0.000000
+
+Small tree 62694 has 4 tips and 1 bipartitions
+Relative RF tree 62694: 1.000000
+
+Small tree 62795 has 4 tips and 1 bipartitions
+Relative RF tree 62795: 0.000000
+
+Small tree 62902 has 4 tips and 1 bipartitions
+Relative RF tree 62902: 0.000000
+
+Small tree 63005 has 4 tips and 1 bipartitions
+Relative RF tree 63005: 1.000000
+
+Small tree 63112 has 4 tips and 1 bipartitions
+Relative RF tree 63112: 0.000000
+
+Small tree 63220 has 4 tips and 1 bipartitions
+Relative RF tree 63220: 0.000000
+
+Small tree 63330 has 4 tips and 1 bipartitions
+Relative RF tree 63330: 0.000000
+
+Small tree 63433 has 4 tips and 1 bipartitions
+Relative RF tree 63433: 0.000000
+
+Small tree 63551 has 4 tips and 1 bipartitions
+Relative RF tree 63551: 0.000000
+
+Small tree 63655 has 4 tips and 1 bipartitions
+Relative RF tree 63655: 0.000000
+
+Small tree 63758 has 4 tips and 1 bipartitions
+Relative RF tree 63758: 1.000000
+
+Small tree 63862 has 4 tips and 1 bipartitions
+Relative RF tree 63862: 0.000000
+
+Small tree 63962 has 4 tips and 1 bipartitions
+Relative RF tree 63962: 1.000000
+
+Small tree 64068 has 4 tips and 1 bipartitions
+Relative RF tree 64068: 1.000000
+
+Small tree 64168 has 4 tips and 1 bipartitions
+Relative RF tree 64168: 0.000000
+
+Small tree 64279 has 4 tips and 1 bipartitions
+Relative RF tree 64279: 0.000000
+
+Small tree 64394 has 4 tips and 1 bipartitions
+Relative RF tree 64394: 0.000000
+
+Small tree 64494 has 4 tips and 1 bipartitions
+Relative RF tree 64494: 0.000000
+
+Small tree 64594 has 4 tips and 1 bipartitions
+Relative RF tree 64594: 0.000000
+
+Small tree 64694 has 4 tips and 1 bipartitions
+Relative RF tree 64694: 0.000000
+
+Small tree 64794 has 4 tips and 1 bipartitions
+Relative RF tree 64794: 1.000000
+
+Small tree 64896 has 4 tips and 1 bipartitions
+Relative RF tree 64896: 0.000000
+
+Small tree 65007 has 4 tips and 1 bipartitions
+Relative RF tree 65007: 0.000000
+
+Small tree 65107 has 4 tips and 1 bipartitions
+Relative RF tree 65107: 1.000000
+
+Small tree 65216 has 4 tips and 1 bipartitions
+Relative RF tree 65216: 1.000000
+
+Small tree 65320 has 4 tips and 1 bipartitions
+Relative RF tree 65320: 0.000000
+
+Small tree 65427 has 4 tips and 1 bipartitions
+Relative RF tree 65427: 0.000000
+
+Small tree 65535 has 4 tips and 1 bipartitions
+Relative RF tree 65535: 1.000000
+
+Small tree 65639 has 4 tips and 1 bipartitions
+Relative RF tree 65639: 0.000000
+
+Small tree 65740 has 4 tips and 1 bipartitions
+Relative RF tree 65740: 0.000000
+
+Small tree 65842 has 4 tips and 1 bipartitions
+Relative RF tree 65842: 0.000000
+
+Small tree 65946 has 4 tips and 1 bipartitions
+Relative RF tree 65946: 0.000000
+
+Small tree 66054 has 4 tips and 1 bipartitions
+Relative RF tree 66054: 0.000000
+
+Small tree 66155 has 4 tips and 1 bipartitions
+Relative RF tree 66155: 1.000000
+
+Small tree 66275 has 4 tips and 1 bipartitions
+Relative RF tree 66275: 0.000000
+
+Small tree 66375 has 4 tips and 1 bipartitions
+Relative RF tree 66375: 0.000000
+
+Small tree 66485 has 4 tips and 1 bipartitions
+Relative RF tree 66485: 0.000000
+
+Small tree 66589 has 4 tips and 1 bipartitions
+Relative RF tree 66589: 0.000000
+
+Small tree 66695 has 4 tips and 1 bipartitions
+Relative RF tree 66695: 0.000000
+
+Small tree 66803 has 4 tips and 1 bipartitions
+Relative RF tree 66803: 0.000000
+
+Small tree 66916 has 4 tips and 1 bipartitions
+Relative RF tree 66916: 0.000000
+
+Small tree 67020 has 4 tips and 1 bipartitions
+Relative RF tree 67020: 0.000000
+
+Small tree 67130 has 4 tips and 1 bipartitions
+Relative RF tree 67130: 1.000000
+
+Small tree 67234 has 4 tips and 1 bipartitions
+Relative RF tree 67234: 0.000000
+
+Small tree 67339 has 4 tips and 1 bipartitions
+Relative RF tree 67339: 1.000000
+
+Small tree 67445 has 4 tips and 1 bipartitions
+Relative RF tree 67445: 0.000000
+
+Small tree 67546 has 4 tips and 1 bipartitions
+Relative RF tree 67546: 0.000000
+
+Small tree 67646 has 4 tips and 1 bipartitions
+Relative RF tree 67646: 0.000000
+
+Small tree 67748 has 4 tips and 1 bipartitions
+Relative RF tree 67748: 1.000000
+
+Small tree 67853 has 4 tips and 1 bipartitions
+Relative RF tree 67853: 0.000000
+
+Small tree 67955 has 4 tips and 1 bipartitions
+Relative RF tree 67955: 0.000000
+
+Small tree 68057 has 4 tips and 1 bipartitions
+Relative RF tree 68057: 0.000000
+
+Small tree 68162 has 4 tips and 1 bipartitions
+Relative RF tree 68162: 0.000000
+
+Small tree 68265 has 4 tips and 1 bipartitions
+Relative RF tree 68265: 1.000000
+
+Small tree 68369 has 4 tips and 1 bipartitions
+Relative RF tree 68369: 1.000000
+
+Small tree 68473 has 4 tips and 1 bipartitions
+Relative RF tree 68473: 0.000000
+
+Small tree 68579 has 4 tips and 1 bipartitions
+Relative RF tree 68579: 0.000000
+
+Small tree 68687 has 4 tips and 1 bipartitions
+Relative RF tree 68687: 0.000000
+
+Small tree 68794 has 4 tips and 1 bipartitions
+Relative RF tree 68794: 0.000000
+
+Small tree 68926 has 4 tips and 1 bipartitions
+Relative RF tree 68926: 1.000000
+
+Small tree 69035 has 4 tips and 1 bipartitions
+Relative RF tree 69035: 0.000000
+
+Small tree 69144 has 4 tips and 1 bipartitions
+Relative RF tree 69144: 0.000000
+
+Small tree 69257 has 4 tips and 1 bipartitions
+Relative RF tree 69257: 1.000000
+
+Small tree 69370 has 4 tips and 1 bipartitions
+Relative RF tree 69370: 0.000000
+
+Small tree 69479 has 4 tips and 1 bipartitions
+Relative RF tree 69479: 0.000000
+
+Small tree 69592 has 4 tips and 1 bipartitions
+Relative RF tree 69592: 1.000000
+
+Small tree 69697 has 4 tips and 1 bipartitions
+Relative RF tree 69697: 0.000000
+
+Small tree 69802 has 4 tips and 1 bipartitions
+Relative RF tree 69802: 0.000000
+
+Small tree 69903 has 4 tips and 1 bipartitions
+Relative RF tree 69903: 0.000000
+
+Small tree 70006 has 4 tips and 1 bipartitions
+Relative RF tree 70006: 1.000000
+
+Small tree 70120 has 4 tips and 1 bipartitions
+Relative RF tree 70120: 1.000000
+
+Small tree 70223 has 4 tips and 1 bipartitions
+Relative RF tree 70223: 0.000000
+
+Small tree 70337 has 4 tips and 1 bipartitions
+Relative RF tree 70337: 0.000000
+
+Small tree 70449 has 4 tips and 1 bipartitions
+Relative RF tree 70449: 0.000000
+
+Small tree 70550 has 4 tips and 1 bipartitions
+Relative RF tree 70550: 0.000000
+
+Small tree 70654 has 4 tips and 1 bipartitions
+Relative RF tree 70654: 0.000000
+
+Small tree 70756 has 4 tips and 1 bipartitions
+Relative RF tree 70756: 0.000000
+
+Small tree 70870 has 4 tips and 1 bipartitions
+Relative RF tree 70870: 0.000000
+
+Small tree 70978 has 4 tips and 1 bipartitions
+Relative RF tree 70978: 1.000000
+
+Small tree 71081 has 4 tips and 1 bipartitions
+Relative RF tree 71081: 0.000000
+
+Small tree 71184 has 4 tips and 1 bipartitions
+Relative RF tree 71184: 0.000000
+
+Small tree 71284 has 4 tips and 1 bipartitions
+Relative RF tree 71284: 0.000000
+
+Small tree 71458 has 4 tips and 1 bipartitions
+Relative RF tree 71458: 1.000000
+
+Small tree 71571 has 4 tips and 1 bipartitions
+Relative RF tree 71571: 0.000000
+
+Small tree 71673 has 4 tips and 1 bipartitions
+Relative RF tree 71673: 1.000000
+
+Small tree 71773 has 4 tips and 1 bipartitions
+Relative RF tree 71773: 0.000000
+
+Small tree 71877 has 4 tips and 1 bipartitions
+Relative RF tree 71877: 0.000000
+
+Small tree 71979 has 4 tips and 1 bipartitions
+Relative RF tree 71979: 0.000000
+
+Small tree 72079 has 4 tips and 1 bipartitions
+Relative RF tree 72079: 0.000000
+
+Small tree 72179 has 4 tips and 1 bipartitions
+Relative RF tree 72179: 0.000000
+
+Small tree 72281 has 4 tips and 1 bipartitions
+Relative RF tree 72281: 1.000000
+
+Small tree 72388 has 4 tips and 1 bipartitions
+Relative RF tree 72388: 0.000000
+
+Small tree 72493 has 4 tips and 1 bipartitions
+Relative RF tree 72493: 1.000000
+
+Small tree 72600 has 4 tips and 1 bipartitions
+Relative RF tree 72600: 0.000000
+
+Small tree 72702 has 4 tips and 1 bipartitions
+Relative RF tree 72702: 1.000000
+
+Small tree 72803 has 4 tips and 1 bipartitions
+Relative RF tree 72803: 0.000000
+
+Small tree 72903 has 4 tips and 1 bipartitions
+Relative RF tree 72903: 0.000000
+
+Small tree 73005 has 4 tips and 1 bipartitions
+Relative RF tree 73005: 1.000000
+
+Small tree 73108 has 4 tips and 1 bipartitions
+Relative RF tree 73108: 0.000000
+
+Small tree 73213 has 4 tips and 1 bipartitions
+Relative RF tree 73213: 1.000000
+
+Small tree 73314 has 4 tips and 1 bipartitions
+Relative RF tree 73314: 0.000000
+
+Small tree 73423 has 4 tips and 1 bipartitions
+Relative RF tree 73423: 0.000000
+
+Small tree 73528 has 4 tips and 1 bipartitions
+Relative RF tree 73528: 0.000000
+
+Small tree 73635 has 4 tips and 1 bipartitions
+Relative RF tree 73635: 1.000000
+
+Small tree 73735 has 4 tips and 1 bipartitions
+Relative RF tree 73735: 0.000000
+
+Small tree 73843 has 4 tips and 1 bipartitions
+Relative RF tree 73843: 1.000000
+
+Small tree 73946 has 4 tips and 1 bipartitions
+Relative RF tree 73946: 0.000000
+
+Small tree 74050 has 4 tips and 1 bipartitions
+Relative RF tree 74050: 0.000000
+
+Small tree 74159 has 4 tips and 1 bipartitions
+Relative RF tree 74159: 0.000000
+
+Small tree 74261 has 4 tips and 1 bipartitions
+Relative RF tree 74261: 1.000000
+
+Small tree 74379 has 4 tips and 1 bipartitions
+Relative RF tree 74379: 0.000000
+
+Small tree 74493 has 4 tips and 1 bipartitions
+Relative RF tree 74493: 0.000000
+
+Small tree 74616 has 4 tips and 1 bipartitions
+Relative RF tree 74616: 0.000000
+
+Small tree 74717 has 4 tips and 1 bipartitions
+Relative RF tree 74717: 0.000000
+
+Small tree 74831 has 4 tips and 1 bipartitions
+Relative RF tree 74831: 0.000000
+
+Small tree 74934 has 4 tips and 1 bipartitions
+Relative RF tree 74934: 0.000000
+
+Small tree 75047 has 4 tips and 1 bipartitions
+Relative RF tree 75047: 0.000000
+
+Small tree 75149 has 4 tips and 1 bipartitions
+Relative RF tree 75149: 0.000000
+
+Small tree 75258 has 4 tips and 1 bipartitions
+Relative RF tree 75258: 0.000000
+
+Small tree 75374 has 4 tips and 1 bipartitions
+Relative RF tree 75374: 0.000000
+
+Small tree 75480 has 4 tips and 1 bipartitions
+Relative RF tree 75480: 0.000000
+
+Small tree 75587 has 4 tips and 1 bipartitions
+Relative RF tree 75587: 0.000000
+
+Small tree 75689 has 4 tips and 1 bipartitions
+Relative RF tree 75689: 0.000000
+
+Small tree 75793 has 4 tips and 1 bipartitions
+Relative RF tree 75793: 0.000000
+
+Number of small trees skipped: 2295
+
+Average RF distance 0.268303
+
+Large Tree: 55473, Number of SmallTrees analyzed: 73535 
+
+Total execution time: 3.597990 secs
+
+File containing all 73535 pair-wise RF distances written to file /Users/David/Desktop/Desktop/rf-optimizer/RAxML_RF-Distances.T1
+
+execution stats:
+
+Accumulated time Effective algorithm: 0.56712 sec 
+Average time for effective: 0.0000077122 sec 
+Preprocessingtime: 0.03521 sec 
+

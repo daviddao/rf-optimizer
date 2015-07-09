@@ -101,7 +101,7 @@ extern volatile int NumberOfJobs;
 /*************************** RF-OPT Algorihm **************************************/
 /**********************************************************************************/
 
-#define _USE_RF_OPT
+//#define _USE_RF_OPT
 
 #ifdef _USE_RF_OPT
 
@@ -121,7 +121,9 @@ void plausibilityChecker(tree *tr, analdef *adef)
 {
   FILE 
     *treeFile,
-    *rfFile;
+    *rfFile,
+    *nameFile,
+    *i_bipsFile;
   
   tree 
     *smallTree = (tree *)rax_malloc(sizeof(tree));
@@ -151,12 +153,30 @@ void plausibilityChecker(tree *tr, analdef *adef)
 
   treeFile = myfopen(tree_file, "r");
 
+
+  /* this file contains mask length, then tree i, taxa number, splits*/
+  i_bipsFile = myfopen("ind_bips.txt","wb");
+  /* this file contains the name vector of the large tree */
+
+  fprintf(i_bipsFile,"MASK_LENGTH %i\n",MASK_LENGTH);
+
   printBothOpen("Parsing reference tree %s\n", tree_file);
 
   treeReadLen(treeFile, tr, FALSE, TRUE, TRUE, adef, TRUE, FALSE);
 
   assert(tr->mxtips == tr->ntips);
+
+  nameFile = myfopen("names.txt","wb");
+
+  int nameCount = 0;
+
+  //saving the tree taxon names into file names.txt
+  for (nameCount = 0; nameCount < tr->mxtips + 1; nameCount++) {
+  	fprintf(nameFile, "%s ", tr->nameList[nameCount+1]);
+  }
   
+  fclose(nameFile);
+
   /*************************************************************************************/
   /* Preprocessing Step */
 
@@ -261,7 +281,10 @@ void plausibilityChecker(tree *tr, analdef *adef)
 	    maxRF;
 
 	  if(numberOfTreesAnalyzed % 100 == 0)
-	    printBothOpen("Small tree %d has %d tips and %d bipartitions\n", i, smallTree->ntips, numberOfSplits);    
+	    printBothOpen("Small tree %d has %d tips and %d bipartitions\n", i, smallTree->ntips, numberOfSplits);
+
+	  /* writes information to ind_bips.txt */
+	  fprintf(i_bipsFile,"Tree\n%d %d %d\n", i, smallTree->ntips, numberOfSplits);    
 	  
 	  /* compute the maximum RF distance for computing the relative RF distance later-on */
 	  
@@ -324,7 +347,6 @@ void plausibilityChecker(tree *tr, analdef *adef)
 	  
 	  /* Preordertraversal of the small tree and save its sequence into seq2 for later extracting the bipartitions, it
 	     also stores information about the degree of every node */
-	  
 	  rec_preOrderTraversalMulti(smallTree->start->back,smallTree->mxtips, smallTree->start->number, seq2, taxonHasDeg, &newcount);
 	  
 	  /* calculate the bitvector length */
@@ -336,10 +358,12 @@ void plausibilityChecker(tree *tr, analdef *adef)
 	  unsigned int 
 	    **bitVectors = rec_initBitVector(smallTree, vectorLength);
 	  
-	  /* store all non trivial bitvectors using an subtree approach for the induced subtree and 
+	  /* store all non trivial bitvectors using an subtree approach for the small subtree and 
 	     store it into a hashtable, this method was changed for multifurcation */
-	  rec_extractBipartitionsMulti(bitVectors, seq2, newcount,tr->mxtips, vectorLength, smallTree->ntips, 
+	  rec_extractBipartitionsMulti(i_bipsFile, bitVectors, seq2, newcount,tr->mxtips, vectorLength, smallTree->ntips, 
 				       firstTaxon, s_hash, taxonToReduction, taxonHasDeg, numberOfSplits);
+
+
 	  
 	  /* counter is set to 0 to be used for correctly storing all EulerIndices */
 	  newcount = 0; 
@@ -354,13 +378,15 @@ void plausibilityChecker(tree *tr, analdef *adef)
 	     Stores the Preordersequence of the induced small tree */
 	  int* 
 	    seq = (int *)rax_malloc((2*smallTree->ntips - 1) * sizeof(int));
-	  
+	  	
 	  
 	  /* iterate through all small tree taxa */
 	  for(ix = 0; ix < smallTree->ntips; ix++) 
 	    {        
 	      int 
 		taxanumber = smallTreeTaxa[ix];
+		/* write small tree taxa array into ind_bip.txt*/
+		fprintf(i_bipsFile,"%i ",smallTreeTaxa[ix]);
 	      
 	      /* To create smallTreeTaxonToEulerIndex we filter taxonToEulerIndex for taxa in the small tree*/
 	      smallTreeTaxonToEulerIndex[newcount] = taxonToEulerIndex[taxanumber-1]; 
@@ -370,6 +396,14 @@ void plausibilityChecker(tree *tr, analdef *adef)
 	      
 	      newcount++;
 	    }
+	    fprintf(i_bipsFile,"\n");
+
+	  // for(ix = 0; ix < smallTree->ntips; ix++)
+	  //   {
+	  //     int
+	  //   _taxanumber = smallTree[ix];
+	  //   fprintf(i_bipsFile,"%i",taxonToReduction[ix])
+	  //   }
 	  
 	  /* sort the euler indices to correctly calculate LCA */
 	  //quicksort(smallTreeTaxonToEulerIndex,0,newcount - 1);             
@@ -395,12 +429,11 @@ void plausibilityChecker(tree *tr, analdef *adef)
 	  
 	  /* sort to construct the Preordersequence of the induced subtree */
 	  //quicksort(seq,0,(2*smallTree->ntips - 2));
-	  
 	  qsort(seq, (2 * smallTree->ntips - 2) + 1, sizeof(int), sortIntegers);
 	  
 	  /* calculates all bipartitions of the reference small tree and count how many bipartition it shares with the induced small tree */
 	  int 
-	    rec_bips = rec_findBipartitions(bitVectors, seq,(2*smallTree->ntips - 1), labelToTaxon, tr->mxtips, vectorLength, smallTree->ntips, firstTaxon, s_hash, taxonToReduction);
+	    rec_bips = rec_findBipartitions(i_bipsFile, bitVectors, seq,(2*smallTree->ntips - 1), labelToTaxon, tr->mxtips, vectorLength, smallTree->ntips, firstTaxon, s_hash, taxonToReduction);
 	  
 	  /* Reconstruction Step End */
 	  /***********************************************************************************/
@@ -458,7 +491,7 @@ void plausibilityChecker(tree *tr, analdef *adef)
   printBothOpen("Average time for effective: %.10f sec \n",sumEffectivetime / (double)numberOfTreesAnalyzed);
   printBothOpen("Preprocessingtime: %0.5f sec \n\n", preprocessendtime);
  
-
+  fclose(i_bipsFile);
   fclose(treeFile);
   fclose(rfFile);    
   

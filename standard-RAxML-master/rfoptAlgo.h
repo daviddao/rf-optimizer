@@ -1,2 +1,2 @@
 //Use the plausibility checker overhead
-void plausibilityChecker(tree *tr, analdef *adef);
+void plausibilityChecker2(tree *tr, analdef *adef);
